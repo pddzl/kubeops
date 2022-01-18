@@ -2,8 +2,6 @@ package middleware
 
 import (
 	"bytes"
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -73,15 +71,4 @@ func (l Logger) SetLoggerMiddleware() gin.HandlerFunc {
 		// 自行处理日志
 		l.Print(layout)
 	}
-}
-
-func DefaultLogger() gin.HandlerFunc {
-	return Logger{
-		Print: func(layout LogLayout) {
-			// 标准输出,k8s做收集
-			v, _ := json.Marshal(layout)
-			fmt.Println(string(v))
-		},
-		Source: "GVA",
-	}.SetLoggerMiddleware()
 }
