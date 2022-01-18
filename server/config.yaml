@@ -1,0 +1,84 @@
+captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+casbin:
+  model-path: ./resource/rbac_model.conf
+cors:
+  mode: whitelist
+  whitelist:
+  - allow-origin: example1.com
+    allow-methods: GET, POST
+    allow-headers: content-type
+    expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers,
+      Content-Type
+    allow-credentials: true
+  - allow-origin: example2.com
+    allow-methods: GET, POST
+    allow-headers: content-type
+    expose-headers: Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers,
+      Content-Type
+    allow-credentials: true
+db-list:
+- disable: false
+  type: ""
+  alias-name: ""
+  path: ""
+  port: ""
+  config: ""
+  db-name: ""
+  username: ""
+  password: ""
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: ""
+  log-zap: false
+jwt:
+  buffer-time: 86400
+  expires-time: 604800
+  issuer: kubeops
+  signing-key: 8544197f-d339-4b1e-9fb9-2ec3ea14794c
+local:
+  path: uploads/file
+mysql:
+  path: 127.0.0.1
+  port: "3307"
+  config: charset=utf8mb4&parseTime=True&loc=Local
+  db-name: kop
+  username: root
+  password: kop@2022
+  max-idle-conns: 0
+  max-open-conns: 0
+  log-mode: ""
+  log-zap: false
+redis:
+  db: 0
+  addr: 127.0.0.1:6379
+  password: ""
+system:
+  env: public
+  addr: 8888
+  db-type: mysql
+  oss-type: local
+  use-multipoint: false
+  iplimit-count: 15000
+  iplimit-time: 3600
+timer:
+  start: true
+  spec: '@daily'
+  detail:
+  - tableName: sys_operation_records
+    compareField: created_at
+    interval: 2160h
+  - tableName: jwt_blacklists
+    compareField: created_at
+    interval: 168h
+zap:
+  level: info
+  format: console
+  prefix: '[kop] '
+  director: /tmp/kop
+  showLine: false
+  encode-level: LowercaseColorLevelEncoder
+  stacktrace-key: stacktrace
+  log-in-console: true
