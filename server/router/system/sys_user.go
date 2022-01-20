@@ -1,9 +1,9 @@
 package system
 
 import (
+	"github.com/gin-gonic/gin"
 	v1 "github.com/pddzl/kubeops/server/api/v1"
 	"github.com/pddzl/kubeops/server/middleware"
-	"github.com/gin-gonic/gin"
 )
 
 type UserRouter struct{}
@@ -19,6 +19,7 @@ func (s *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 		userRouter.DELETE("deleteUser", baseApi.DeleteUser)               // 删除用户
 		userRouter.PUT("setUserInfo", baseApi.SetUserInfo)                // 设置用户信息
 		userRouter.POST("setUserAuthorities", baseApi.SetUserAuthorities) // 设置用户权限组
+		userRouter.PUT("setSelfInfo", baseApi.SetSelfInfo)                // 设置自身信息
 		userRouter.POST("resetPassword", baseApi.ResetPassword)           // 设置用户权限组
 	}
 	{
