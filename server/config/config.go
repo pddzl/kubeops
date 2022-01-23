@@ -14,5 +14,6 @@ type Server struct {
 	Local Local `mapstructure:"local" json:"local" yaml:"local"`
 	Timer Timer `mapstructure:"timer" json:"timer" yaml:"timer"`
 	// 跨域配置
-	Cors CORS `mapstructure:"cors" json:"cors" yaml:"cors"`
+	Cors       CORS       `mapstructure:"cors" json:"cors" yaml:"cors"`
+	Kubernetes Kubernetes `mapstructure:"kubernetes" json:"kubernetes" yaml:"kubernetes"`
 }

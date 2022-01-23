@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
+	"k8s.io/client-go/kubernetes"
 
 	"github.com/pddzl/kubeops/server/config"
 	"github.com/pddzl/kubeops/server/utils/timer"
@@ -22,6 +23,7 @@ var (
 	KOP_LOG                 *zap.Logger
 	KOP_Timer               timer.Timer = timer.NewTimerTask()
 	KOP_Concurrency_Control             = &singleflight.Group{}
+	KOP_KUBERNETES          *kubernetes.Clientset
 
 	BlackCache local_cache.Cache
 )
