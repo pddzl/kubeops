@@ -23,7 +23,8 @@ yarn-error.log*
 *.sw?
 
 /server/log/
-/server/gva
+/server/kop
 /server/latest_log
 
 *.iml
+
