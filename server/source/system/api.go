@@ -65,6 +65,10 @@ func (a *api) Initialize() error {
 		{ApiGroup: "操作记录", Method: "GET", Path: "/sysOperationRecord/getSysOperationRecordList", Description: "获取操作记录列表"},
 		{ApiGroup: "操作记录", Method: "DELETE", Path: "/sysOperationRecord/deleteSysOperationRecord", Description: "删除操作记录"},
 		{ApiGroup: "操作记录", Method: "DELETE", Path: "/sysOperationRecord/deleteSysOperationRecordByIds", Description: "批量删除操作历史"},
+
+		// kubernetes
+		// 1. node
+		{ApiGroup: "节点", Method: "POST", Path: "/node/getNodeList", Description: "获取节点树"},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil {
 		return errors.Wrap(err, a.TableName()+"表数据初始化失败!")

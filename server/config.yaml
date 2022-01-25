@@ -37,7 +37,10 @@ jwt:
   buffer-time: 86400
   expires-time: 604800
   issuer: kubeops
-  signing-key: 8544197f-d339-4b1e-9fb9-2ec3ea14794c
+  signing-key: 3c9a705a-e24a-497b-be02-5fb6da922e14
+kubernetes:
+  kubeconfig: /root/.kube/config
+  in-cluster: false
 local:
   path: uploads/file
 mysql:
@@ -77,11 +80,8 @@ zap:
   level: info
   format: console
   prefix: '[kop] '
-  director: 'log'
+  director: log
   showLine: false
   encode-level: LowercaseColorLevelEncoder
   stacktrace-key: stacktrace
   log-in-console: true
-kubernetes:
-  kubeconfig: '/root/.kube/config'
-  in-cluster: false

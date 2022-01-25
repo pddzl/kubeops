@@ -31,6 +31,8 @@ func (a *authoritiesMenus) Initialize() error {
 		{BaseMenuId: 8, AuthorityId: "888"},
 		{BaseMenuId: 9, AuthorityId: "888"},
 		{BaseMenuId: 10, AuthorityId: "888"},
+		{BaseMenuId: 11, AuthorityId: "888"},
+		{BaseMenuId: 12, AuthorityId: "888"},
 
 		{BaseMenuId: 1, AuthorityId: "9528"},
 		{BaseMenuId: 10, AuthorityId: "9528"},
