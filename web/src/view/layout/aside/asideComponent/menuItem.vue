@@ -24,7 +24,6 @@ const props = defineProps({
     type: Object
   }
 })
-console.log('parameters', props.routerInfo.parameters)
 </script>
 
 <style lang="scss" scoped>
