@@ -25,3 +25,8 @@ type GetAuthorityId struct {
 }
 
 type Empty struct{}
+
+// GetByName Find by name structure
+type GetByName struct {
+	Name string `json:"name" from:"name" validate:"required"`
+}

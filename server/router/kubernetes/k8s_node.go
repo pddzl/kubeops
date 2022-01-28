@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/pddzl/kubeops/server/middleware"
 
 	v1 "github.com/pddzl/kubeops/server/api/v1"
 )
@@ -9,12 +10,12 @@ import (
 type NodeRouter struct{}
 
 func (s *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) {
-	//nodeRouter := Router.Group("node").Use(middleware.OperationRecord())
+	nodeRouter := Router.Group("node").Use(middleware.OperationRecord())
 	nodeRouterWithoutRecord := Router.Group("node")
 	nodeRouterApi := v1.ApiGroupApp.KubernetesApiGroup.NodeApi
-	//{
-	//
-	//}
+	{
+		nodeRouter.POST("detail", nodeRouterApi.GetNodeDetail) // 获取node详情
+	}
 	{
 		nodeRouterWithoutRecord.POST("getNodeList", nodeRouterApi.GetNodeList) // 获取所有node
 	}

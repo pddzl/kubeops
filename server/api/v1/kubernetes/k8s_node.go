@@ -34,3 +34,20 @@ func (n *NodeApi) GetNodeList(c *gin.Context) {
 		}, "获取成功", c)
 	}
 }
+
+func (n *NodeApi) GetNodeDetail(c *gin.Context) {
+	var nameInfo request.GetByName
+	_ = c.ShouldBindJSON(&nameInfo)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&nameInfo); err != nil {
+		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if nodeDetail, err := nodeService.GetNodeDetail(nameInfo.Name); err != nil {
+		response.FailWithMessage(err.Error(), c)
+	} else {
+		response.OkWithDetailed(nodeDetail, "获取成功", c)
+	}
+}
