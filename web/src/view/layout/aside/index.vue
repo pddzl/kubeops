@@ -74,11 +74,11 @@ onUnmounted(() => {
   emitter.off('collapse')
 })
 
-const selectMenuItem = (index, _, ele) => {
+const selectMenuItem = (index, _, ele, aaa) => {
   const query = {}
   const params = {}
-  ele?.route?.parameters &&
-    ele.route.parameters.forEach((item) => {
+  routerStore.routeMap[index]?.parameters &&
+    routerStore.routeMap[index]?.parameters.forEach((item) => {
       if (item.type === 'query') {
         query[item.key] = item.value
       } else {
