@@ -20,8 +20,8 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "dashboard", Name: "dashboard", Component: "view/dashboard/index.vue", Sort: 1, Meta: system.Meta{Title: "仪表盘", Icon: "odometer"}},
 		// Cluster
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "cluster", Name: "cluster", Component: "view/cluster/index.vue", Sort: 2, Meta: system.Meta{Title: "集群", Icon: "ship"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "node", Name: "node", Component: "view/cluster/node/node.vue", Sort: 2, Meta: system.Meta{Title: "节点", Icon: "reading-lamp"}},
-		{MenuLevel: 0, Hidden: true, ParentId: "2", Path: "node/detail", Name: "detail", Component: "view/cluster/node/detail.vue", Sort: 2, Meta: system.Meta{Title: "节点详情", Icon: "reading-lamp"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "node", Name: "node", Component: "view/cluster/node/node.vue", Sort: 2, Meta: system.Meta{Title: "节点", Icon: "monitor"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "2", Path: "node/detail", Name: "detail", Component: "view/cluster/node/detail.vue", Sort: 2, Meta: system.Meta{Title: "节点详情", Icon: "monitor"}},
 		// superAdmin
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 3, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "5", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
