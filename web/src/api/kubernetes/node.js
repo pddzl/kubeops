@@ -8,3 +8,12 @@ export const getNodeList = (data) => {
     data
   })
 }
+
+// 获取节点详情
+export const getNodeDetail = (data) => {
+  return service({
+    url: '/node/getNodeDetail',
+    method: 'post',
+    data
+  })
+}

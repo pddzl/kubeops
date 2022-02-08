@@ -10,7 +10,13 @@
           type="selection"
           width="55"
         />
-        <el-table-column align="left" label="名称" min-width="100" prop="metadata.name" />
+        <el-table-column align="left" label="名称" min-width="100" prop="metadata.name">
+          <template #default="scope">
+            <router-link :to="{name:'detail', query:{name:scope.row.metadata.name}}">
+              <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
+            </router-link>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="内部IP" min-width="120" prop="status.addresses[0].address" />
         <el-table-column align="left" label="角色" min-width="230" prop="roles">
           <template #default="scope">
