@@ -22,7 +22,7 @@ type objectMeta struct {
 	Name            string            `json:"name"`
 	Labels          map[string]string `json:"labels"`
 	Annotations     map[string]string `json:"annotations"`
-	CreateTimestamp time.Time         `json:"CreateTimestamp"`
+	CreateTimestamp time.Time         `json:"createTimestamp"`
 	UID             types.UID         `json:"uid,omitempty"`
 }
 
@@ -91,7 +91,7 @@ type Pod struct {
 	Node            string    `json:"node"`
 	Resource        resource  `json:"resource"`
 	Status          string    `json:"status"`
-	CreateTimestamp time.Time `json:"CreateTimestamp"`
+	CreateTimestamp time.Time `json:"createTimestamp"`
 }
 
 type resource struct {
