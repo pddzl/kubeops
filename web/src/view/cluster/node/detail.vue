@@ -1,44 +1,32 @@
 <template>
   <div>
     <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="nodeDetail.objectMeta" title="元数据" name="1">
-        <el-descriptions>
-          <el-descriptions-item label="名称: ">{{ nodeDetail.objectMeta.name }}</el-descriptions-item>
-          <el-descriptions-item label="UID: ">{{ nodeDetail.objectMeta.uid }}</el-descriptions-item>
-          <el-descriptions-item
-            label="创建时间: "
-          >{{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</el-descriptions-item>
-        </el-descriptions>
-        <p>标签</p>
+      <el-collapse-item v-if="nodeDetail.objectMeta" class="object_meta" title="元数据" name="1">
+        <span style="font-size: 14px; margin-right: 150px;">名称: {{ nodeDetail.objectMeta.name }}</span>
+        <span style="font-size: 14px; margin-right: 150px;">UID: {{ nodeDetail.objectMeta.uid }}</span>
+        <span style="font-size: 14px">创建时间: {{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
+        <p>标签:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
-          <el-tag type="info" size="small" style="margin-top: 3px;">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </el-tag>
+          <span class="label">{{ index }}<span v-if="label">:</span> {{ label }}</span>
         </div>
-        <p>注释</p>
+        <p>注释:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
-          <el-tag type="info" size="small" style="margin-top: 3px;">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </el-tag>
+          <span class="label">{{ index }}<span v-if="label">:</span> {{ label }}</span>
         </div>
       </el-collapse-item>
-      <el-collapse-item title="资源信息" name="2" style="margin-top: 20px;">
+      <el-collapse-item class="resource" title="资源信息" name="2">
         <div>
-          <p>Pod CIDR</p>
-          {{ nodeDetail.podCIDR }}
+          <p>Pod CIDR:</p>
+          <span>{{ nodeDetail.podCIDR }}</span>
         </div>
         <div>
-          <p>地址</p>
-          <span v-for="item in nodeDetail.addresses" :key="item.type" style="margin-right: 5px;">
-            <el-tag type="info" size="small">{{ item.type }}: {{ item.address }}</el-tag>
+          <p>地址:</p>
+          <span v-for="item in nodeDetail.addresses" :key="item.type">
+            {{ item.type }}: {{ item.address }}
           </span>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="3" style="margin-top: 20px;">
+      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="3">
         <el-descriptions direction="vertical">
           <el-descriptions-item label="机器ID">{{ nodeDetail.nodeInfo.machineID }}</el-descriptions-item>
           <el-descriptions-item label="系统UUID">{{ nodeDetail.nodeInfo.systemUUID }}</el-descriptions-item>
@@ -60,7 +48,6 @@
         v-if="nodeDetail.allocatedResources"
         title="分配"
         name="4"
-        style="margin-top: 20px;"
       >
         <el-descriptions direction="vertical" :column="5">
           <el-descriptions-item
@@ -80,20 +67,18 @@
           >{{ nodeDetail.allocatedResources.allocatedPods }} ({{ nodeDetail.allocatedResources.podFraction.toFixed(1) }}%) | Capacity {{ nodeDetail.allocatedResources.podCapacity }}</el-descriptions-item>
         </el-descriptions>
       </el-collapse-item>
-      <el-collapse-item v-if="nodeDetail.conditions" title="状态" name="5" style="margin-top: 20px;">
+      <el-collapse-item v-if="nodeDetail.conditions" title="状态" name="5">
         <el-table :data="nodeDetail.conditions">
           <el-table-column prop="type" label="类别" min-width="120" />
           <el-table-column prop="status" label="状态" />
           <el-table-column prop="reason" label="原因" min-width="180" />
           <el-table-column prop="message" label="信息" min-width="200" />
           <el-table-column label="最后检查时间" width="200">
-            <template #default="scope">
-              {{ formatDate(scope.row.lastProbeTime) }}
-            </template>
+            <template #default="scope">{{ formatDate(scope.row.lastProbeTime) }}</template>
           </el-table-column>
         </el-table>
       </el-collapse-item>
-      <el-collapse-item v-if="nodeDetail.podList" title="Pods" name="6" style="margin-top: 20px;">
+      <el-collapse-item v-if="nodeDetail.podList" title="Pods" name="6">
         <el-table :data="nodeDetail.podList">
           <el-table-column prop="name" label="名称" min-width="240" />
           <el-table-column prop="status" label="状态" min-width="110" />
@@ -104,21 +89,13 @@
           <el-table-column prop="resource.memoryRequests" label="内存限制" width="100" />
           <!-- <el-table-column prop="image" label="镜像" /> -->
           <el-table-column label="创建时间" width="180">
-            <template #default="scope">
-              {{ formatDate(scope.row.createTimestamp) }}
-            </template>
+            <template #default="scope">{{ formatDate(scope.row.createTimestamp) }}</template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="150">
+          <el-table-column fixed="right" label="操作" width="200">
             <template #default>
-              <el-button type="text" size="small">
-                日志
-              </el-button>
-              <el-button type="text" size="small">
-                终端
-              </el-button>
-              <el-button type="text" size="small">
-                删除
-              </el-button>
+              <el-button icon="tickets" type="text" size="small">日志</el-button>
+              <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
+              <el-button icon="delete" type="text" size="small">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -162,4 +139,40 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.object_meta {
+  p {
+    font-size: 14px;
+    margin-top: 15px;
+  }
+  .label {
+    background-color: rgba(128, 128, 128, 0.096);
+    font-size: 13px;
+    padding: 4px;
+    border-radius: 8px;
+  }
+}
+.resource {
+  p {
+    font-size: 14px;
+  }
+  span {
+    background-color: rgba(128, 128, 128, 0.096);
+    font-size: 13px;
+    padding: 4px;
+    border-radius: 8px;
+  }
+  span:last-child {
+    margin-left: 5px;
+  }
+}
+.el-collapse {
+  --el-collapse-header-font-size: 15px;
+  .el-collapse-item {
+    background-color: #ffffff;
+    padding-left: 20px;
+  }
+  .el-collapse-item:not(:last-child) {
+    margin-bottom: 15px;
+  }
+}
 </style>
