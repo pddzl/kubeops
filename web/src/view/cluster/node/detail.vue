@@ -139,16 +139,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@mixin shadow {
+  background-color: rgba(128, 128, 128, 0.096);
+  font-size: 13px;
+  padding: 4px;
+  border-radius: 8px;
+}
 .object_meta {
   p {
     font-size: 14px;
     margin-top: 15px;
   }
   .label {
-    background-color: rgba(128, 128, 128, 0.096);
-    font-size: 13px;
-    padding: 4px;
-    border-radius: 8px;
+    @include shadow;
   }
 }
 .resource {
@@ -156,10 +159,7 @@ export default {
     font-size: 14px;
   }
   span {
-    background-color: rgba(128, 128, 128, 0.096);
-    font-size: 13px;
-    padding: 4px;
-    border-radius: 8px;
+    @include shadow;
   }
   span:last-child {
     margin-left: 5px;
