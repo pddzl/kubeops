@@ -7,11 +7,19 @@
         <span style="font-size: 14px">创建时间: {{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
         <p>标签:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
-          <span class="label">{{ index }}<span v-if="label">:</span> {{ label }}</span>
+          <span class="label">
+            {{ index }}
+            <span v-if="label">:</span>
+            {{ label }}
+          </span>
         </div>
         <p>注释:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
-          <span class="label">{{ index }}<span v-if="label">:</span> {{ label }}</span>
+          <span class="label">
+            {{ index }}
+            <span v-if="label">:</span>
+            {{ label }}
+          </span>
         </div>
       </el-collapse-item>
       <el-collapse-item class="resource" title="资源信息" name="2">
@@ -21,9 +29,10 @@
         </div>
         <div>
           <p>地址:</p>
-          <span v-for="item in nodeDetail.addresses" :key="item.type">
-            {{ item.type }}: {{ item.address }}
-          </span>
+          <span
+            v-for="item in nodeDetail.addresses"
+            :key="item.type"
+          >{{ item.type }}: {{ item.address }}</span>
         </div>
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="3">
@@ -44,11 +53,7 @@
           <el-descriptions-item label="架构">{{ nodeDetail.nodeInfo.architecture }}</el-descriptions-item>
         </el-descriptions>
       </el-collapse-item>
-      <el-collapse-item
-        v-if="nodeDetail.allocatedResources"
-        title="分配"
-        name="4"
-      >
+      <el-collapse-item v-if="nodeDetail.allocatedResources" title="分配" name="4">
         <el-descriptions direction="vertical" :column="5">
           <el-descriptions-item
             label="CPU预留"
