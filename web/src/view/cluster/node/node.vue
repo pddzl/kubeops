@@ -12,7 +12,7 @@
         />
         <el-table-column align="left" label="名称" min-width="100" prop="metadata.name">
           <template #default="scope">
-            <router-link :to="{name:'detail', query:{name:scope.row.metadata.name}}">
+            <router-link :to="{name:'node_detail', query:{name:scope.row.metadata.name}}">
               <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
             </router-link>
           </template>
