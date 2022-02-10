@@ -66,6 +66,7 @@ func Routers() *gin.Engine {
 
 		// kubernetes
 		kubernetesRouter.InitNodeRouter(PrivateGroup) // node
+		kubernetesRouter.InitPodRouter(PrivateGroup)  // pod
 	}
 
 	global.KOP_LOG.Info("router register success")

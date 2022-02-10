@@ -6,8 +6,10 @@ import (
 
 type ApiGroup struct {
 	NodeApi
+	PodApi
 }
 
 var (
 	nodeService = service.ServiceGroupApp.KubernetesServiceGroup.NodeService
+	podService  = service.ServiceGroupApp.KubernetesServiceGroup.PodService
 )
