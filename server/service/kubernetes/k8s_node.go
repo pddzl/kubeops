@@ -28,7 +28,7 @@ func (n *NodeService) GetNodeList(info request.PageInfo) (list interface{}, tota
 	if total < end {
 		list = nodes.Items[offset:]
 	} else {
-		list = nodes.Items[offset : end-1]
+		list = nodes.Items[offset:end]
 	}
 	return list, total, nil
 }

@@ -15,6 +15,7 @@ func (s *NodeRouter) InitPodRouter(Router *gin.RouterGroup) {
 	//	podRouter.POST("getPodDetail") // 获取node详情
 	//}
 	{
+		podRouterWithoutRecord.POST("getPodList", podRouterApi.GetPodList)
 		podRouterWithoutRecord.POST("getPodLog", podRouterApi.GetPodLog) // 获取pod日志
 	}
 }
