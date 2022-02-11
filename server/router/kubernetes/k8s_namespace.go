@@ -15,6 +15,7 @@ func (n *NamespaceRouter) InitNamespaceRouter(Router *gin.RouterGroup) {
 	//	nodeRouter.POST("getNodeDetail", nodeRouterApi.GetNodeDetail) // 获取node详情
 	//}
 	{
-		namespaceRouterWithoutRecord.POST("getNamespaceList", namespaceRouterApi.GetNamespaceList) // 获取所有node
+		namespaceRouterWithoutRecord.POST("getNamespaceList", namespaceRouterApi.GetNamespaceList)        // 获取所有namespace
+		namespaceRouterWithoutRecord.GET("getNamespaceOnlyName", namespaceRouterApi.GetNamespaceOnlyName) // 获取所有namespace(only name)
 	}
 }

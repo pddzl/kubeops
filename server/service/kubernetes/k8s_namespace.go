@@ -48,3 +48,19 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 
 	return namespaceBriefList, total, nil
 }
+
+func (n *NamespaceService) GetNamespaceOnlyName() (list interface{}, err error) {
+	var nameList []string
+	opts := metaV1.ListOptions{}
+	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), opts)
+	if err != nil {
+		return nil, err
+	}
+
+	// 处理namespace原始数据
+	for _, ns := range namespaces.Items {
+		// append
+		nameList = append(nameList, ns.Name)
+	}
+	return nameList, nil
+}

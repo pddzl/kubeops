@@ -36,3 +36,15 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
+// 获取集群所以namespace（只包括name）
+
+func (n *NamespaceApi) GetNamespaceOnlyName(c *gin.Context) {
+	list, err := namespaceService.GetNamespaceOnlyName()
+	if err != nil {
+		global.KOP_LOG.Error("获取namespace失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(list, "获取成功", c)
+}
