@@ -56,7 +56,6 @@
 import { ref } from 'vue'
 import { getNamespaceList } from '@/api/kubernetes/namespace'
 import { formatDate } from '@/utils/format'
-// import '@/style/kop.scss'
 export default {
   name: 'Namespace',
   setup() {

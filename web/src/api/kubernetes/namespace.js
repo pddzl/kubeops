@@ -8,3 +8,11 @@ export const getNamespaceList = (data) => {
     data
   })
 }
+
+// 获取namespace list(only name)
+export const getNamespaceOnlyName = (data) => {
+  return service({
+    url: '/namespace/getNamespaceOnlyName',
+    method: 'get'
+  })
+}
