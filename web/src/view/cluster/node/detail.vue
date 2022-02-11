@@ -7,7 +7,7 @@
         <span style="font-size: 14px">创建时间: {{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
         <p>标签:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
-          <span class="label">
+          <span class="span-shadow">
             {{ index }}
             <span v-if="label">:</span>
             {{ label }}
@@ -15,7 +15,7 @@
         </div>
         <p>注释:</p>
         <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
-          <span class="label">
+          <span class="span-shadow">
             {{ index }}
             <span v-if="label">:</span>
             {{ label }}
@@ -25,13 +25,14 @@
       <el-collapse-item class="resource" title="资源信息" name="2">
         <div>
           <p>Pod CIDR:</p>
-          <span>{{ nodeDetail.podCIDR }}</span>
+          <span class="span-shadow">{{ nodeDetail.podCIDR }}</span>
         </div>
         <div>
           <p>地址:</p>
           <span
             v-for="item in nodeDetail.addresses"
             :key="item.type"
+            class="span-shadow"
           >{{ item.type }}: {{ item.address }}</span>
         </div>
       </el-collapse-item>
@@ -144,27 +145,15 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@mixin shadow {
-  background-color: rgba(128, 128, 128, 0.096);
-  font-size: 13px;
-  padding: 4px;
-  border-radius: 8px;
-}
 .object_meta {
   p {
     font-size: 14px;
     margin-top: 15px;
   }
-  .label {
-    @include shadow;
-  }
 }
 .resource {
   p {
     font-size: 14px;
-  }
-  span {
-    @include shadow;
   }
   span:last-child {
     margin-left: 5px;

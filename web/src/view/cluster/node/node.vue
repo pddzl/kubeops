@@ -34,7 +34,7 @@
         </el-table-column>
         <el-table-column align="left" label="创建时间" min-width="150" prop="metadata.creationTimestamp" sortable="custom">
           <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
-        </el-table-column>>
+        </el-table-column>
 
         <el-table-column align="left" fixed="right" label="操作" width="200">
           <template #default="scope">
