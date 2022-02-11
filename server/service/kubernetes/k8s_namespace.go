@@ -17,7 +17,6 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 	offset := info.PageSize * (info.Page - 1)
 	var namespaceBriefList []kubernetes.NameSpaceBrief
 	var namespaceList v1.NamespaceList
-	//var na1 []*v1.Namespace
 
 	opts := metaV1.ListOptions{}
 	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), opts)
@@ -32,7 +31,6 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 	}
 	if total < end {
 		namespaceList.Items = namespaces.Items[offset:]
-		//na1 = namespaces.Items[offset:]
 	} else {
 		namespaceList.Items = namespaces.Items[offset:end]
 	}
