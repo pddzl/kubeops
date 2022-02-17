@@ -8,3 +8,12 @@ export const getPodList = (data) => {
     data
   })
 }
+
+// 获取pod详情
+export const getPodDetail = (data) => {
+  return service({
+    url: '/pod/getPodDetail',
+    method: 'post',
+    data
+  })
+}

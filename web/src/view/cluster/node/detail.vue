@@ -116,7 +116,7 @@ import { useRoute } from 'vue-router'
 import { getNodeDetail } from '@/api/kubernetes/node'
 import { formatDate } from '@/utils/format'
 export default {
-  name: 'Detail',
+  name: 'NodeDetail',
   setup() {
     const activeNames = ref(['1', '2', '3', '4', '5', '6'])
     const nodeDetail = ref({})
