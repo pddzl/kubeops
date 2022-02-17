@@ -36,21 +36,20 @@
           >{{ item.type }}: {{ item.address }}</span>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="3">
-        <el-descriptions direction="vertical">
+      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="4">
+        <el-descriptions direction="vertical" :column="3">
           <el-descriptions-item label="机器ID">{{ nodeDetail.nodeInfo.machineID }}</el-descriptions-item>
           <el-descriptions-item label="系统UUID">{{ nodeDetail.nodeInfo.systemUUID }}</el-descriptions-item>
           <el-descriptions-item label="启动ID">{{ nodeDetail.nodeInfo.bootID }}</el-descriptions-item>
         </el-descriptions>
-        <el-descriptions direction="vertical" :column="7">
-          <el-descriptions-item label="内核版本">{{ nodeDetail.nodeInfo.kernelVersion }}</el-descriptions-item>
+        <el-descriptions direction="vertical" :column="6">
           <el-descriptions-item label="操作系统镜像">{{ nodeDetail.nodeInfo.osImage }}</el-descriptions-item>
+          <el-descriptions-item label="内核版本">{{ nodeDetail.nodeInfo.kernelVersion }}</el-descriptions-item>
           <el-descriptions-item
             label="容器runtime版本"
           >{{ nodeDetail.nodeInfo.containerRuntimeVersion }}</el-descriptions-item>
           <el-descriptions-item label="kubelet版本">{{ nodeDetail.nodeInfo.kubeletVersion }}</el-descriptions-item>
           <el-descriptions-item label="kube-proxy版本">{{ nodeDetail.nodeInfo.kubeProxyVersion }}</el-descriptions-item>
-          <el-descriptions-item label="操作系统">{{ nodeDetail.nodeInfo.operatingSystem }}</el-descriptions-item>
           <el-descriptions-item label="架构">{{ nodeDetail.nodeInfo.architecture }}</el-descriptions-item>
         </el-descriptions>
       </el-collapse-item>
