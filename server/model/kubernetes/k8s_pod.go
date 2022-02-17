@@ -1,6 +1,8 @@
 package kubernetes
 
-import "time"
+import (
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 type PodDetail struct {
 	MetaData     metadata     `json:"metadata"`
@@ -9,12 +11,12 @@ type PodDetail struct {
 }
 
 type metadata struct {
-	Name              string            `json:"name"`
-	Namespace         string            `json:"namespace"`
-	Uid               string            `json:"uid"`
-	CreationTimestamp time.Time         `json:"creationTimestamp"`
-	Labels            map[string]string `json:"labels"`
-	OwnerReferences   ownerReferences   `json:"ownerReferences"`
+	Name            string            `json:"name"`
+	Namespace       string            `json:"namespace"`
+	Uid             string            `json:"uid"`
+	CreateTimestamp v1.Time           `json:"createTimestamp"`
+	Labels          map[string]string `json:"labels"`
+	OwnerReferences ownerReferences   `json:"ownerReferences"`
 }
 
 type ownerReferences struct {
@@ -34,8 +36,8 @@ type resourceInfo struct {
 }
 
 type Conditions struct {
-	Type               string    `json:"type"`
-	Status             string    `json:"status"`
-	LastProbeTime      time.Time `json:"lastProbeTime"`
-	LastTransitionTime time.Time `json:"lastTransitionTime"`
+	Type               string  `json:"type"`
+	Status             string  `json:"status"`
+	LastProbeTime      v1.Time `json:"lastProbeTime"`
+	LastTransitionTime v1.Time `json:"lastTransitionTime"`
 }

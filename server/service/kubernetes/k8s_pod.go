@@ -61,7 +61,7 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.MetaData.Name = pod.Name
 	podDetail.MetaData.Namespace = pod.Namespace
 	podDetail.MetaData.Uid = string(pod.UID)
-	podDetail.MetaData.CreationTimestamp = pod.CreationTimestamp.Time
+	podDetail.MetaData.CreateTimestamp = pod.CreationTimestamp
 	podDetail.MetaData.Labels = pod.Labels
 	podDetail.MetaData.OwnerReferences.Controller = *pod.OwnerReferences[0].Controller
 	podDetail.MetaData.OwnerReferences.Name = pod.OwnerReferences[0].Name
@@ -79,8 +79,8 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 		var podCondition kubernetes.Conditions
 		podCondition.Type = string(condition.Type)
 		podCondition.Status = string(condition.Status)
-		podCondition.LastProbeTime = condition.LastProbeTime.Time
-		podCondition.LastTransitionTime = condition.LastTransitionTime.Time
+		podCondition.LastProbeTime = condition.LastProbeTime
+		podCondition.LastTransitionTime = condition.LastTransitionTime
 		// append
 		podDetail.Conditions = append(podDetail.Conditions, podCondition)
 	}
