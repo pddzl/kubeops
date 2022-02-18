@@ -1,37 +1,15 @@
-package kubernetes
+package node
 
 import (
 	"context"
+	"github.com/pddzl/kubeops/server/global"
+	"github.com/pddzl/kubeops/server/model/kubernetes"
 	"go.uber.org/zap"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/common/request"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
+	"k8s.io/apimachinery/pkg/fields"
 )
-
-type NodeService struct{}
-
-func (n *NodeService) GetNodeList(info request.PageInfo) (list interface{}, total int, err error) {
-	end := info.PageSize * info.Page
-	offset := info.PageSize * (info.Page - 1)
-	nodes, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metaV1.ListOptions{})
-	if err != nil {
-		return nil, 0, err
-	}
-	total = len(nodes.Items)
-	if total <= offset {
-		return nil, total, nil
-	}
-	if total < end {
-		list = nodes.Items[offset:]
-	} else {
-		list = nodes.Items[offset:end]
-	}
-	return list, total, nil
-}
 
 func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, error) {
 	var nodeDetail kubernetes.NodeDetail
@@ -113,6 +91,20 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 	}
 
 	return &nodeDetail, err
+}
+
+func getNodePods(nodeName string) (*v1.PodList, error) {
+	fieldSelector, err := fields.ParseSelector("spec.nodeName=" + nodeName +
+		",status.phase!=" + string(v1.PodSucceeded) +
+		",status.phase!=" + string(v1.PodFailed))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return global.KOP_KUBERNETES.CoreV1().Pods(v1.NamespaceAll).List(context.TODO(), metaV1.ListOptions{
+		FieldSelector: fieldSelector.String(),
+	})
 }
 
 func getNodeAllocatedResources(node v1.Node, podList *v1.PodList) (kubernetes.NodeAllocatedResources, error) {
