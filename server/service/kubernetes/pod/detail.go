@@ -51,10 +51,7 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.MetaData.Uid = string(pod.UID)
 	podDetail.MetaData.CreateTimestamp = pod.CreationTimestamp
 	podDetail.MetaData.Labels = pod.Labels
-	podDetail.MetaData.OwnerReferences.Controller = *pod.OwnerReferences[0].Controller
-	podDetail.MetaData.OwnerReferences.Name = pod.OwnerReferences[0].Name
-	podDetail.MetaData.OwnerReferences.Kind = pod.OwnerReferences[0].Kind
-	// ownerReferences
+	// resourceInfo
 	podDetail.ResourceInfo.Phase = string(pod.Status.Phase)
 	podDetail.ResourceInfo.Node = pod.Spec.NodeName
 	podDetail.ResourceInfo.IP = pod.Status.HostIP
@@ -62,6 +59,10 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.ResourceInfo.RestartPolicy = string(pod.Spec.RestartPolicy)
 	podDetail.ResourceInfo.Restarts = pod.Status.ContainerStatuses[0].RestartCount
 	podDetail.ResourceInfo.ServiceAccount = pod.Spec.ServiceAccountName
+	// ownerReferences
+	podDetail.OwnerReferences.Controller = *pod.OwnerReferences[0].Controller
+	podDetail.OwnerReferences.Name = pod.OwnerReferences[0].Name
+	podDetail.OwnerReferences.Kind = pod.OwnerReferences[0].Kind
 	// Conditions
 	for _, condition := range pod.Status.Conditions {
 		var podCondition kubernetes.Conditions

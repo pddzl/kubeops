@@ -6,11 +6,12 @@ import (
 )
 
 type PodDetail struct {
-	MetaData       metadata     `json:"metadata"`
-	ResourceInfo   resourceInfo `json:"resource_info"`
-	Conditions     []Conditions `json:"conditions"`
-	Containers     []Container  `json:"containers"`
-	InitContainers []Container  `json:"initContainers"`
+	MetaData        metadata        `json:"metadata"`
+	ResourceInfo    resourceInfo    `json:"resource_info"`
+	Conditions      []Conditions    `json:"conditions"`
+	OwnerReferences ownerReferences `json:"ownerReferences"`
+	Containers      []Container     `json:"containers"`
+	InitContainers  []Container     `json:"initContainers"`
 }
 
 type metadata struct {
@@ -19,7 +20,6 @@ type metadata struct {
 	Uid             string            `json:"uid"`
 	CreateTimestamp metaV1.Time       `json:"createTimestamp"`
 	Labels          map[string]string `json:"labels"`
-	OwnerReferences ownerReferences   `json:"ownerReferences"`
 }
 
 type ownerReferences struct {
