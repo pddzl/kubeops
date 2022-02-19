@@ -25,16 +25,16 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column>
-          <template #default="scope" label="状态" min-width="100">
+        <el-table-column label="状态" min-width="100">
+          <template #default="scope">
             <el-tag :type="statusTypeFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="节点" prop="node" min-width="100" />
-        <el-table-column prop="resource.cpuLimit" label="CPU预留" width="100" />
-        <el-table-column prop="resource.memoryLimit" label="CPU限制" width="100" />
-        <el-table-column prop="resource.cpuRequests" label="内存预留" width="100" />
-        <el-table-column prop="resource.memoryRequests" label="内存限制" width="100" />
+        <el-table-column prop="resource.cpuLimit" label="CPU预留" width="80" />
+        <el-table-column prop="resource.memoryLimit" label="CPU限制" width="80" />
+        <el-table-column prop="resource.cpuRequests" label="内存预留" width="80" />
+        <el-table-column prop="resource.memoryRequests" label="内存限制" width="80" />
         <el-table-column label="创建时间" width="180">
           <template #default="scope">{{ formatDate(scope.row.createTimestamp) }}</template>
         </el-table-column>
