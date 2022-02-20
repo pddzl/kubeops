@@ -96,16 +96,16 @@
           </div>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="podDetail.containers" title="容器" name="5" class="container">
-        <div v-for="(detail, index) in podDetail.containers" :key="index">
-          <div class="bottom">
+      <el-collapse-item v-if="podDetail.containers" title="容器" name="5">
+        <div v-for="(detail, index) in podDetail.containers" :key="index" class="container">
+          <div>
             <p>{{ detail.name }}</p>
           </div>
-          <div class="bottom row_mine">
+          <div class="row_mine">
             <p>镜像</p>
             {{ detail.image }}
           </div>
-          <div class="row_mine status">
+          <div class="row_mine">
             <p>状态</p>
             <div class="row_context">
               <div>
@@ -122,7 +122,7 @@
               </div>
             </div>
           </div>
-          <div v-if="detail.env.length > 0" class="row_mine bottom">
+          <div v-if="detail.env.length > 0" class="row_mine">
             <p>环境变量</p>
             <span
               v-for="(env, indexEnv) in detail.env"
@@ -130,19 +130,19 @@
               class="span-shadow"
             >{{ env.name }}: {{ env.value }}</span>
           </div>
-          <div v-if="detail.commands" class="row_mine bottom">
+          <div v-if="detail.commands" class="row_mine">
             <p>命令</p>
             <div class="div-shadow">
               <div v-for="(command, indexC) in detail.commands" :key="indexC">{{ command }}</div>
             </div>
           </div>
-          <div v-if="detail.args" class="row_mine bottom">
+          <div v-if="detail.args" class="row_mine">
             <p>参数</p>
             <div class="div-shadow">
               <div v-for="(arg, indexA) in detail.args" :key="indexA">{{ arg }}</div>
             </div>
           </div>
-          <div class="row_mine bottom">
+          <div class="row_mine">
             <p>挂载点</p>
             <div class="table">
               <el-table :data="detail.volumeMounts">
@@ -164,7 +164,7 @@
               </el-table>
             </div>
           </div>
-          <div class="row_mine">
+          <div v-if="detail.securityContext" class="row_mine">
             <p>安全性上下文</p>
             <div class="row_context">
               <div
@@ -263,6 +263,93 @@
               </div>
             </div>
           </div>
+          <div v-if="detail.livenessProbe" class="row_mine">
+            <p>Liveness Probe</p>
+            <div class="row_context">
+              <div v-if="detail.livenessProbe.initialDelaySeconds">
+                <p>Initial Delay (Seconds)</p>
+                <span class="content">{{ detail.livenessProbe.initialDelaySeconds }}</span>
+              </div>
+              <div v-if="detail.livenessProbe.timeoutSeconds">
+                <p>Timeout (Seconds)</p>
+                <span class="content">{{ detail.livenessProbe.timeoutSeconds }}</span>
+              </div>
+              <div v-if="detail.livenessProbe.periodSeconds">
+                <p>Probe Period (Seconds)</p>
+                <span class="content">{{ detail.livenessProbe.periodSeconds }}</span>
+              </div>
+              <div v-if="detail.livenessProbe.successThreshold">
+                <p>Success Threshold</p>
+                <span class="content">{{ detail.livenessProbe.successThreshold }}</span>
+              </div>
+              <div v-if="detail.livenessProbe.failureThreshold">
+                <p>Failure Threshold</p>
+                <span class="content">{{ detail.livenessProbe.failureThreshold }}</span>
+              </div>
+              <div v-if="detail.livenessProbe.httpGet">
+                <p>HTTP Healthcheck URI</p>
+                <span class="content_shadow">{{ detail.livenessProbe.httpGet.scheme + '://[host]:' + detail.livenessProbe.httpGet.port + detail.livenessProbe.httpGet.path }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="detail.readinessProbe" class="row_mine">
+            <p>ReadinessProbe</p>
+            <div class="row_context">
+              <div v-if="detail.readinessProbe.initialDelaySeconds">
+                <p>Initial Delay (Seconds)</p>
+                <span class="content">{{ detail.readinessProbe.initialDelaySeconds }}</span>
+              </div>
+              <div v-if="detail.readinessProbe.timeoutSeconds">
+                <p>Timeout (Seconds)</p>
+                <span class="content">{{ detail.readinessProbe.timeoutSeconds }}</span>
+              </div>
+              <div v-if="detail.readinessProbe.periodSeconds">
+                <p>Probe Period (Seconds)</p>
+                <span class="content">{{ detail.readinessProbe.periodSeconds }}</span>
+              </div>
+              <div v-if="detail.readinessProbe.successThreshold">
+                <p>Success Threshold</p>
+                <span class="content">{{ detail.readinessProbe.successThreshold }}</span>
+              </div>
+              <div v-if="detail.readinessProbe.failureThreshold">
+                <p>Failure Threshold</p>
+                <span class="content">{{ detail.readinessProbe.failureThreshold }}</span>
+              </div>
+              <div v-if="detail.readinessProbe.httpGet">
+                <p>HTTP Healthcheck URI</p>
+                <span class="content_shadow">{{ detail.readinessProbe.httpGet.scheme + '://[host]:' + detail.livenessProbe.httpGet.port + detail.livenessProbe.httpGet.path }}</span>
+              </div>
+            </div>
+          </div>
+          <div v-if="detail.startupProbe" class="row_mine">
+            <p>StartupProbe</p>
+            <div class="row_context">
+              <div v-if="detail.startupProbe.initialDelaySeconds">
+                <p>Initial Delay (Seconds)</p>
+                <span class="content">{{ detail.startupProbe.initialDelaySeconds }}</span>
+              </div>
+              <div v-if="detail.startupProbe.timeoutSeconds">
+                <p>Timeout (Seconds)</p>
+                <span class="content">{{ detail.startupProbe.timeoutSeconds }}</span>
+              </div>
+              <div v-if="detail.startupProbe.periodSeconds">
+                <p>Probe Period (Seconds)</p>
+                <span class="content">{{ detail.startupProbe.periodSeconds }}</span>
+              </div>
+              <div v-if="detail.startupProbe.successThreshold">
+                <p>Success Threshold</p>
+                <span class="content">{{ detail.startupProbe.successThreshold }}</span>
+              </div>
+              <div v-if="detail.startupProbe.failureThreshold">
+                <p>Failure Threshold</p>
+                <span class="content">{{ detail.startupProbe.failureThreshold }}</span>
+              </div>
+              <div v-if="detail.startupProbe.httpGet">
+                <p>HTTP Healthcheck URI</p>
+                <span class="content_shadow">{{ detail.startupProbe.httpGet.scheme + '://[host]:' + detail.livenessProbe.httpGet.port + detail.livenessProbe.httpGet.path }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -349,20 +436,12 @@ export default {
 .span-shadow:not(:last-child) {
   margin-right: 10px;
 }
-.container {
-  .bottom {
-    margin-bottom: 30px;
-  }
-  .status {
-    margin-bottom: 20px;
-  }
-}
 .table {
   margin-right: 20px;
 }
 .row_mine {
   > p:first-child {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
   .row_context {
     display: flex;
@@ -376,5 +455,18 @@ export default {
       font-size: 16px;
     }
   }
+}
+.container {
+  >div:not(:last-child) {
+    margin-bottom: 20px;
+  }
+}
+.content_shadow {
+  background-color: rgba(128, 128, 128, 0.253);
+  padding: 5px 15px 5px 15px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-top: 5px;
+  box-sizing: border-box;
 }
 </style>
