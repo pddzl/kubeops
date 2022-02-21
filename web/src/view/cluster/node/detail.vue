@@ -1,34 +1,51 @@
 <template>
   <div>
     <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="nodeDetail.objectMeta" class="object_meta" title="元数据" name="1">
-        <span style="font-size: 14px; margin-right: 150px;">名称: {{ nodeDetail.objectMeta.name }}</span>
-        <span style="font-size: 14px; margin-right: 150px;">UID: {{ nodeDetail.objectMeta.uid }}</span>
-        <span style="font-size: 14px">创建时间: {{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
-        <p>标签:</p>
-        <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
-          <span class="span-shadow">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </span>
+      <el-collapse-item v-if="nodeDetail.objectMeta" title="元数据" name="1">
+        <div class="row_mine">
+          <div class="row_context">
+            <div>
+              <p>名称</p>
+              <span class="content">{{ nodeDetail.objectMeta.name }}</span>
+            </div>
+            <div>
+              <p>UID</p>
+              <span class="content">{{ nodeDetail.objectMeta.uid }}</span>
+            </div>
+            <div>
+              <p>创建时间</p>
+              <span class="content">{{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
+            </div>
+          </div>
         </div>
-        <p>注释:</p>
-        <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
-          <span class="span-shadow">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </span>
+        <div class="common_show">
+          <p>标签:</p>
+          <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
+            <span class="span-shadow">
+              {{ index }}
+              <span v-if="label">:</span>
+              {{ label }}
+            </span>
+          </div>
+        </div>
+        <div class="common_show">
+          <p>注释:</p>
+          <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
+            <span class="span-shadow">
+              {{ index }}
+              <span v-if="label">:</span>
+              {{ label }}
+            </span>
+          </div>
         </div>
       </el-collapse-item>
-      <el-collapse-item class="resource" title="资源信息" name="2">
-        <div>
-          <p>Pod CIDR:</p>
+      <el-collapse-item title="资源信息" name="2">
+        <div class="common_show">
+          <p>Pod CIDR</p>
           <span class="span-shadow">{{ nodeDetail.podCIDR }}</span>
         </div>
-        <div>
-          <p>地址:</p>
+        <div class="common_show address">
+          <p>地址</p>
           <span
             v-for="item in nodeDetail.addresses"
             :key="item.type"
@@ -37,40 +54,86 @@
         </div>
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="4">
-        <el-descriptions direction="vertical" :column="3">
-          <el-descriptions-item label="机器ID">{{ nodeDetail.nodeInfo.machineID }}</el-descriptions-item>
-          <el-descriptions-item label="系统UUID">{{ nodeDetail.nodeInfo.systemUUID }}</el-descriptions-item>
-          <el-descriptions-item label="启动ID">{{ nodeDetail.nodeInfo.bootID }}</el-descriptions-item>
-        </el-descriptions>
-        <el-descriptions direction="vertical" :column="6">
-          <el-descriptions-item label="操作系统镜像">{{ nodeDetail.nodeInfo.osImage }}</el-descriptions-item>
-          <el-descriptions-item label="内核版本">{{ nodeDetail.nodeInfo.kernelVersion }}</el-descriptions-item>
-          <el-descriptions-item
-            label="容器runtime版本"
-          >{{ nodeDetail.nodeInfo.containerRuntimeVersion }}</el-descriptions-item>
-          <el-descriptions-item label="kubelet版本">{{ nodeDetail.nodeInfo.kubeletVersion }}</el-descriptions-item>
-          <el-descriptions-item label="kube-proxy版本">{{ nodeDetail.nodeInfo.kubeProxyVersion }}</el-descriptions-item>
-          <el-descriptions-item label="架构">{{ nodeDetail.nodeInfo.architecture }}</el-descriptions-item>
-        </el-descriptions>
+        <div class="row_mine">
+          <div class="row_context">
+            <div>
+              <p>机器ID</p>
+              <span class="content">{{ nodeDetail.nodeInfo.machineID }}</span>
+            </div>
+            <div>
+              <p>系统UUID</p>
+              <span class="content">{{ nodeDetail.nodeInfo.systemUUID }}</span>
+            </div>
+            <div>
+              <p>启动ID</p>
+              <span class="content">{{ nodeDetail.nodeInfo.bootID }}</span>
+            </div>
+            <div>
+              <p>操作系统镜像</p>
+              <span class="content">{{ nodeDetail.nodeInfo.osImage }}</span>
+            </div>
+            <div>
+              <p>内核版本</p>
+              <span class="content">{{ nodeDetail.nodeInfo.kernelVersion }}</span>
+            </div>
+            <div>
+              <p>容器runtime版本</p>
+              <span class="content">{{ nodeDetail.nodeInfo.containerRuntimeVersion }}</span>
+            </div>
+            <div>
+              <p>kubelet版本</p>
+              <span class="content">{{ nodeDetail.nodeInfo.kubeletVersion }}</span>
+            </div>
+            <div>
+              <p>kube-proxy版本</p>
+              <span class="content">{{ nodeDetail.nodeInfo.kubeProxyVersion }}</span>
+            </div>
+            <div>
+              <p>操作系统</p>
+              <span class="content">{{ nodeDetail.nodeInfo.operatingSystem }}</span>
+            </div>
+            <div>
+              <p>架构</p>
+              <span class="content">{{ nodeDetail.nodeInfo.architecture }}</span>
+            </div>
+          </div>
+        </div>
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.allocatedResources" title="分配" name="4">
-        <el-descriptions direction="vertical" :column="5">
-          <el-descriptions-item
-            label="CPU预留"
-          >{{ nodeDetail.allocatedResources.cpuRequests / 1000 }} cores ({{ nodeDetail.allocatedResources.cpuRequestsFraction.toFixed(1) }}%)</el-descriptions-item>
-          <el-descriptions-item
-            label="CPU限制"
-          >{{ nodeDetail.allocatedResources.cpuLimits / 1000 }} cores ({{ nodeDetail.allocatedResources.cpuLimitsFraction.toFixed(1) }}%) | Capacity {{ nodeDetail.allocatedResources.cpuCapacity / 1000 }} cores</el-descriptions-item>
-          <el-descriptions-item
-            label="内存预留"
-          >{{ Math.round(nodeDetail.allocatedResources.memoryRequests / 1024 / 1024) }} MB ({{ nodeDetail.allocatedResources.memoryRequestsFraction.toFixed(1) }}%)</el-descriptions-item>
-          <el-descriptions-item
-            label="内存限制"
-          >{{ Math.round(nodeDetail.allocatedResources.memoryLimits / 1024 / 1024) }} MB ({{ nodeDetail.allocatedResources.memoryLimitsFraction.toFixed(1) }}%) | Capacity {{ Math.round(nodeDetail.allocatedResources.memoryCapacity / 1024 / 1024) }} MB</el-descriptions-item>
-          <el-descriptions-item
-            label="Pods"
-          >{{ nodeDetail.allocatedResources.allocatedPods }} ({{ nodeDetail.allocatedResources.podFraction.toFixed(1) }}%) | Capacity {{ nodeDetail.allocatedResources.podCapacity }}</el-descriptions-item>
-        </el-descriptions>
+        <div class="row_mine">
+          <div class="row_context">
+            <div>
+              <p>CPU预留</p>
+              <span
+                class="content"
+              >{{ nodeDetail.allocatedResources.cpuRequests / 1000 }} cores ({{ nodeDetail.allocatedResources.cpuRequestsFraction.toFixed(1) }}%)</span>
+            </div>
+            <div>
+              <p>CPU限制</p>
+              <span
+                class="content"
+              >{{ nodeDetail.allocatedResources.cpuLimits / 1000 }} cores ({{ nodeDetail.allocatedResources.cpuLimitsFraction.toFixed(1) }}%) | Capacity {{ nodeDetail.allocatedResources.cpuCapacity / 1000 }} cores</span>
+            </div>
+            <div>
+              <p>内存预留</p>
+              <span
+                class="content"
+              >{{ Math.round(nodeDetail.allocatedResources.memoryRequests / 1024 / 1024) }} MB ({{ nodeDetail.allocatedResources.memoryRequestsFraction.toFixed(1) }}%)</span>
+            </div>
+            <div>
+              <p>内存限制</p>
+              <span
+                class="content"
+              >{{ Math.round(nodeDetail.allocatedResources.memoryLimits / 1024 / 1024) }} MB ({{ nodeDetail.allocatedResources.memoryLimitsFraction.toFixed(1) }}%) | Capacity {{ Math.round(nodeDetail.allocatedResources.memoryCapacity / 1024 / 1024) }} MB</span>
+            </div>
+            <div>
+              <p>Pods</p>
+              <span
+                class="content"
+              >{{ nodeDetail.allocatedResources.allocatedPods }} ({{ nodeDetail.allocatedResources.podFraction.toFixed(1) }}%) | Capacity {{ nodeDetail.allocatedResources.podCapacity }}</span>
+            </div>
+          </div>
+        </div>
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.conditions" title="状态" name="5">
         <el-table :data="nodeDetail.conditions">
@@ -127,7 +190,6 @@ export default {
     const getData = async() => {
       await getNodeDetail({ name: nodeName }).then(response => {
         if (response.code === 0) {
-          // console.log('data', response.data)
           nodeDetail.value = response.data
         }
       })
@@ -144,20 +206,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.object_meta {
-  p {
-    font-size: 14px;
-    margin-top: 15px;
-  }
-}
-.resource {
-  p {
-    font-size: 14px;
-  }
-  span:last-child {
-    margin-left: 5px;
-  }
-}
 .el-collapse {
   --el-collapse-header-font-size: 15px;
   .el-collapse-item {
@@ -166,6 +214,11 @@ export default {
   }
   .el-collapse-item:not(:last-child) {
     margin-bottom: 15px;
+  }
+}
+.address {
+  span:not(:last-child) {
+    margin-right: 5px;
   }
 }
 </style>

@@ -22,7 +22,7 @@
             </div>
           </div>
         </div>
-        <div class="labels">
+        <div class="common_show">
           <p>标签</p>
           <span
             v-for="(label, index) in podDetail.metadata.labels"
@@ -145,13 +145,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.labels {
-  margin-top: 10px;
-  p {
-    margin-bottom: 5px;
-    font-size: 13px;
-  }
-}
 .el-collapse {
   --el-collapse-header-font-size: 15px;
   .el-collapse-item {
