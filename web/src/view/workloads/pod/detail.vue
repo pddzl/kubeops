@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="podDetail.metadata" class="object_meta" title="元数据" name="1">
+      <el-collapse-item v-if="podDetail.metadata" title="元数据" name="1">
         <div class="row_mine">
           <div class="row_context">
             <div>
@@ -22,7 +22,7 @@
             </div>
           </div>
         </div>
-        <div class="row_mine">
+        <div class="labels">
           <p>标签</p>
           <span
             v-for="(label, index) in podDetail.metadata.labels"
@@ -145,10 +145,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.object_meta {
+.labels {
+  margin-top: 10px;
   p {
-    font-size: 14px;
-    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 13px;
   }
 }
 .el-collapse {
