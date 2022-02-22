@@ -306,7 +306,7 @@ export default {
   }
   .container {
     > div:not(:last-child) {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
   }
   .table {

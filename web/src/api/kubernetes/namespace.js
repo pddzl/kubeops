@@ -16,3 +16,12 @@ export const getNamespaceOnlyName = (data) => {
     method: 'get'
   })
 }
+
+// 获取namespace detail
+export const getNamespaceDetail = (data) => {
+  return service({
+    url: '/namespace/getNamespaceDetail',
+    method: 'post',
+    data
+  })
+}

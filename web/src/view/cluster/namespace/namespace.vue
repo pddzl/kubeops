@@ -2,7 +2,13 @@
   <div>
     <div class="gva-table-box">
       <el-table :data="tableData">
-        <el-table-column align="left" label="名称" min-width="180" prop="name" />
+        <el-table-column align="left" label="名称" min-width="180">
+          <template #default="scope">
+            <router-link :to="{name:'namespace_detail', query:{name:scope.row.name}}">
+              <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
+            </router-link>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="状态" width="100" prop="status">
           <template #default="scope">
             <el-tag :type="statusTypeFilter(scope.row.status)" size="small">
