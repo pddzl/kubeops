@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -113,7 +114,7 @@ func GetConfigMapListChannel(nsQuery *NamespaceQuery, numReads int) ConfigMapLis
 	}
 
 	go func() {
-		list, err := global.KOP_KUBERNETES.CoreV1().ConfigMaps(nsQuery.ToRequestParam()).List(context.TODO(), ListEverything)
+		list, err := global.KOP_KUBERNETES.CoreV1().ConfigMaps(nsQuery.ToRequestParam()).List(context.TODO(), api.ListEverything)
 		var filteredItems []v1.ConfigMap
 		for _, item := range list.Items {
 			if nsQuery.Matches(item.ObjectMeta.Namespace) {
@@ -146,7 +147,7 @@ func GetSecretListChannel(nsQuery *NamespaceQuery, numReads int) SecretListChann
 	}
 
 	go func() {
-		list, err := global.KOP_KUBERNETES.CoreV1().Secrets(nsQuery.ToRequestParam()).List(context.TODO(), ListEverything)
+		list, err := global.KOP_KUBERNETES.CoreV1().Secrets(nsQuery.ToRequestParam()).List(context.TODO(), api.ListEverything)
 		var filteredItems []v1.Secret
 		for _, item := range list.Items {
 			if nsQuery.Matches(item.ObjectMeta.Namespace) {

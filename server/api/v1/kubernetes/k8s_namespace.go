@@ -48,3 +48,23 @@ func (n *NamespaceApi) GetNamespaceOnlyName(c *gin.Context) {
 	}
 	response.OkWithDetailed(list, "获取成功", c)
 }
+
+// 获取namespace详情
+
+func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
+	var nameInfo request.GetByName
+	_ = c.ShouldBindJSON(&nameInfo)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&nameInfo); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	detail, err := namespaceService.GetNamespaceDetail(nameInfo.Name)
+	if err != nil {
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(detail, "获取成功", c)
+}

@@ -41,7 +41,6 @@ func (n *NodeApi) GetNodeDetail(c *gin.Context) {
 	// 校验
 	validate := validator.New()
 	if err := validate.Struct(&nameInfo); err != nil {
-		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}

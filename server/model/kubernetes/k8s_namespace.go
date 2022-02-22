@@ -1,14 +1,16 @@
 package kubernetes
 
 import (
+	resource2 "github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	api "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"time"
 )
 
 type NameSpaceBrief struct {
 	Name              string            `json:"name"`
 	Labels            map[string]string `json:"labels"`
-	CreationTimestamp time.Time         `json:"createTimestamp"`
+	CreationTimestamp time.Time         `json:"creationTimestamp"`
 	Status            string            `json:"status"`
 }
 
@@ -49,4 +51,21 @@ func (n *NamespaceQuery) Matches(namespace string) bool {
 		}
 	}
 	return false
+}
+
+type NameSpaceDetail struct {
+	Metadata NSMetadata `json:"metadata"`
+	Status   string     `json:"status"`
+	// ResourceQuotaList is list of resource quotas associated to the namespace
+	ResourceQuotaList *resource2.ResourceQuotaDetailList `json:"resourceQuotaList"`
+
+	// ResourceLimits is list of limit ranges associated to the namespace
+	ResourceLimits []resource2.LimitRangeItem `json:"resourceLimits"`
+}
+
+type NSMetadata struct {
+	Name              string            `json:"name"`
+	Labels            map[string]string `json:"labels"`
+	CreationTimestamp v1.Time           `json:"creationTimestamp"`
+	Uid               string            `json:"uid"`
 }
