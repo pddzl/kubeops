@@ -1,4 +1,4 @@
-package kubernetes
+package namespace
 
 import (
 	"context"
@@ -9,8 +9,6 @@ import (
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes"
 )
-
-type NamespaceService struct{}
 
 func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interface{}, total int, err error) {
 	end := info.PageSize * info.Page
