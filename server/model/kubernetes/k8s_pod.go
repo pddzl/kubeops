@@ -15,11 +15,11 @@ type PodDetail struct {
 }
 
 type metadata struct {
-	Name            string            `json:"name"`
-	Namespace       string            `json:"namespace"`
-	Uid             string            `json:"uid"`
-	CreateTimestamp metaV1.Time       `json:"createTimestamp"`
-	Labels          map[string]string `json:"labels"`
+	Name              string            `json:"name,omitempty"`
+	Namespace         string            `json:"namespace,omitempty"`
+	Uid               string            `json:"uid,omitempty"`
+	CreationTimestamp metaV1.Time       `json:"creationTimestamp,omitempty"`
+	Labels            map[string]string `json:"labels,omitempty"`
 }
 
 type ownerReferences struct {

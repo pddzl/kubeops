@@ -49,7 +49,7 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.MetaData.Name = pod.Name
 	podDetail.MetaData.Namespace = pod.Namespace
 	podDetail.MetaData.Uid = string(pod.UID)
-	podDetail.MetaData.CreateTimestamp = pod.CreationTimestamp
+	podDetail.MetaData.CreationTimestamp = pod.CreationTimestamp
 	podDetail.MetaData.Labels = pod.Labels
 	// resourceInfo
 	podDetail.ResourceInfo.Phase = string(pod.Status.Phase)
