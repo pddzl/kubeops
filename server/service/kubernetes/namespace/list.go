@@ -38,7 +38,7 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 		var namespaceBrief kubernetes.NameSpaceBrief
 		namespaceBrief.Name = ns.Name
 		namespaceBrief.Labels = ns.Labels
-		namespaceBrief.CreationTimestamp = ns.CreationTimestamp.Time
+		namespaceBrief.CreationTimestamp = ns.CreationTimestamp
 		namespaceBrief.Status = string(ns.Status.Phase)
 		// append
 		namespaceBriefList = append(namespaceBriefList, namespaceBrief)

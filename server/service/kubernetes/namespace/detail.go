@@ -27,7 +27,7 @@ func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, 
 	namespaceDetail.Status = string(namespace.Status.Phase)
 
 	// resourceQuotaList
-	resourceQuotaList, err := getResourceQuotas(*namespace)
+	resourceQuotaList, err := getResourceQuotas(name)
 	if err != nil {
 		return nil, err
 	}
@@ -42,17 +42,14 @@ func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, 
 	return namespaceDetail, nil
 }
 
-func getResourceQuotas(namespace v1.Namespace) (*resource.ResourceQuotaDetailList, error) {
-	list, err := global.KOP_KUBERNETES.CoreV1().ResourceQuotas(namespace.Name).List(context.TODO(), api.ListEverything)
+func getResourceQuotas(namespace string) ([]resource.ResourceQuotaDetail, error) {
+	list, err := global.KOP_KUBERNETES.CoreV1().ResourceQuotas(namespace).List(context.TODO(), api.ListEverything)
 
-	result := &resource.ResourceQuotaDetailList{
-		Items:    make([]resource.ResourceQuotaDetail, 0),
-		ListMeta: api.ListMeta{TotalItems: len(list.Items)},
-	}
+	result := make([]resource.ResourceQuotaDetail, 0)
 
 	for _, item := range list.Items {
 		detail := resource.ToResourceQuotaDetail(&item)
-		result.Items = append(result.Items, *detail)
+		result = append(result, *detail)
 	}
 
 	return result, err
