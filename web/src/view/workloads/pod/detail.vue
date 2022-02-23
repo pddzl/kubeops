@@ -40,7 +40,9 @@
             </div>
             <div>
               <p>状态</p>
-              <span class="content">{{ podDetail.resource_info.phase }}</span>
+              <el-tag :type="statusPodFilter(podDetail.resource_info.phase)" size="small">
+                {{ podDetail.resource_info.phase }}
+              </el-tag>
             </div>
             <div>
               <p>IP</p>
@@ -109,6 +111,7 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { statusPodFilter } from '@/mixin/filter.js'
 import { getPodDetail } from '@/api/kubernetes/pod'
 import { formatDate } from '@/utils/format'
 import Container from './components/container.vue'
@@ -139,6 +142,8 @@ export default {
       activeNames,
       podDetail,
       formatDate,
+      // filter
+      statusPodFilter
     }
   }
 }

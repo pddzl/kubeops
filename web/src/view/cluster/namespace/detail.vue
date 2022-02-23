@@ -34,15 +34,63 @@
           <div class="row_context">
             <div>
               <p>状态</p>
-              <span class="content">{{ namespaceDetail.status }}</span>
+              <span class="content">
+                <el-tag :type="statusNsFilter(namespaceDetail.status)" size="small">
+                  {{ namespaceDetail.status }}
+                </el-tag>
+              </span>
             </div>
           </div>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="namespaceDetail.resourceQuotaList" title="资源配额" name="3">
-        <p>123</p>
+      <el-collapse-item
+        v-if="namespaceDetail.resourceQuotaList && namespaceDetail.resourceQuotaList.length > 0"
+        title="资源配额"
+        name="3"
+      >
+        <div class="table">
+          <el-table :data="namespaceDetail.resourceQuotaList">
+            <el-table-column label="名称" align="center">
+              <template #default="scope">
+                <el-tag size="small" effect="plain">{{ scope.row.objectMeta.name }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="limits" align="center">
+              <el-table-column label="cpu used" align="center" prop="statusList.limits_cpu.used" />
+              <el-table-column label="cpu hard" align="center" prop="statusList.limits_cpu.hard" />
+              <el-table-column
+                label="memory used"
+                align="center"
+                prop="statusList.limits_memory.used"
+              />
+              <el-table-column
+                label="memory hard"
+                align="center"
+                prop="statusList.limits_memory.hard"
+              />
+            </el-table-column>
+            <el-table-column label="requests" align="center">
+              <el-table-column label="cpu used" align="center" prop="statusList.requests_cpu.used" />
+              <el-table-column label="cpu hard" align="center" prop="statusList.requests_cpu.hard" />
+              <el-table-column
+                label="memory used"
+                align="center"
+                prop="statusList.requests_memory.used"
+              />
+              <el-table-column
+                label="memory hard"
+                align="center"
+                prop="statusList.requests_memory.hard"
+              />
+            </el-table-column>
+          </el-table>
+        </div>
       </el-collapse-item>
-      <el-collapse-item v-if="namespaceDetail.resourceLimits && namespaceDetail.resourceLimits.length > 0" title="资源限制" name="4">
+      <el-collapse-item
+        v-if="namespaceDetail.resourceLimits && namespaceDetail.resourceLimits.length > 0"
+        title="资源限制"
+        name="4"
+      >
         <p>456</p>
       </el-collapse-item>
     </el-collapse>
@@ -52,8 +100,9 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getNamespaceDetail } from '@/api/kubernetes/namespace'
 import { formatDate } from '@/utils/format'
+import { statusNsFilter } from '@/mixin/filter'
+import { getNamespaceDetail } from '@/api/kubernetes/namespace'
 export default {
   name: 'NamespaceDetail',
   setup() {
@@ -64,7 +113,7 @@ export default {
     const namespace = route.query.name
 
     // 加载namespace详情
-    const getData = async () => {
+    const getData = async() => {
       await getNamespaceDetail({ name: namespace }).then(response => {
         if (response.code === 0) {
           namespaceDetail.value = response.data
@@ -76,7 +125,8 @@ export default {
     return {
       activeNames,
       namespaceDetail,
-      formatDate
+      formatDate,
+      statusNsFilter
     }
   }
 }
@@ -93,9 +143,7 @@ export default {
     margin-bottom: 15px;
   }
 }
-.address {
-  span:not(:last-child) {
-    margin-right: 5px;
-  }
+.table {
+  margin-right: 20px;
 }
 </style>

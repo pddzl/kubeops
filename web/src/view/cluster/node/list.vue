@@ -10,33 +10,33 @@
           type="selection"
           width="55"
         />
-        <el-table-column align="left" label="名称" min-width="100">
+        <el-table-column label="名称" min-width="100">
           <template #default="scope">
             <router-link :to="{name:'node_detail', query:{name:scope.row.metadata.name}}">
               <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="内部IP" min-width="120" prop="status.addresses[0].address" />
-        <el-table-column align="left" label="角色" min-width="230" prop="roles">
+        <el-table-column label="内部IP" min-width="120" prop="status.addresses[0].address" />
+        <el-table-column label="角色" min-width="230" prop="roles">
           <template #default="scope">
             <span v-for="(role, index) in scope.row.roles" :key="index" style="margin-right: 5px;">
               <el-tag size="small">{{ role }}</el-tag>
             </span>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="状态" min-width="150" prop="ready">
+        <el-table-column label="状态" min-width="150" prop="ready">
           <template #default="scope">
-            <el-tag :type="statusTypeFilter(scope.row.ready)" size="small">
-              {{ statusFilter(scope.row.ready) }}
+            <el-tag :type="statusNodeTypeFilter(scope.row.ready)" size="small">
+              {{ statusNodeFilter(scope.row.ready) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="创建时间" min-width="150" prop="metadata.creationTimestamp" sortable="custom">
+        <el-table-column label="创建时间" min-width="150" prop="metadata.creationTimestamp" sortable="custom">
           <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
         </el-table-column>
 
-        <el-table-column align="left" fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
             <el-button
               icon="edit"
@@ -93,6 +93,7 @@ import warningBar from '@/components/warningBar/warningBar.vue'
 import { formatDate } from '@/utils/format'
 import { ref, reactive } from 'vue'
 import { ElMessageBox } from 'element-plus'
+import { statusNodeTypeFilter, statusNodeFilter } from '@/mixin/filter.js'
 export default {
   name: 'Node',
   components: {
@@ -190,25 +191,6 @@ export default {
       getTableData()
     }
 
-    // statusFilter
-    const statusTypeMap = {
-      'True': 'success',
-      'Unknown': 'danger',
-    }
-
-    const statusTypeFilter = (status) => {
-      return statusTypeMap[status] || 'info'
-    }
-
-    const statusMap = {
-      'True': 'Ready',
-      'Unknown': 'NotReady'
-    }
-
-    const statusFilter = (status) => {
-      return statusMap[status] || 'Unknown'
-    }
-
     return {
       // 响应式数据
       page,
@@ -228,8 +210,9 @@ export default {
       // 排序
       sortChange,
       // 过滤器
-      statusTypeFilter,
-      statusFilter,
+      statusNodeTypeFilter,
+      statusNodeFilter,
+      // 时间格式化
       formatDate
     }
   }

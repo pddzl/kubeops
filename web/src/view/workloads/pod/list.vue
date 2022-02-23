@@ -18,7 +18,7 @@
     </div>
     <div class="gva-table-box">
       <el-table :data="tableData">
-        <el-table-column align="left" label="名称" min-width="220">
+        <el-table-column label="名称" min-width="220">
           <template #default="scope">
             <router-link :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }">
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
@@ -28,7 +28,7 @@
         <el-table-column label="命名空间" prop="namespace" min-width="120" />
         <el-table-column label="状态" min-width="100">
           <template #default="scope">
-            <el-tag :type="statusTypeFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
+            <el-tag :type="statusPodFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="节点" prop="node" min-width="100" />
@@ -66,6 +66,7 @@
 <script>
 import { ref, reactive } from 'vue'
 import { formatDate } from '@/utils/format'
+import { statusPodFilter } from '@/mixin/filter.js'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getPodList } from '@/api/kubernetes/pod'
 export default {
@@ -102,15 +103,6 @@ export default {
     }
     getTableData()
 
-    // filter
-    const statusTypeMap = {
-      'Running': 'success'
-    }
-
-    const statusTypeFilter = (status) => {
-      return statusTypeMap[status] || 'info'
-    }
-
     // 分页
     const handleSizeChange = (val) => {
       pageSize.value = val
@@ -139,7 +131,7 @@ export default {
       searchInfo,
       tableData,
       // filter
-      statusTypeFilter,
+      statusPodFilter,
       // time format
       formatDate,
       // 分页
