@@ -3,6 +3,7 @@ package resource
 import (
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	v1 "k8s.io/api/core/v1"
+	"strings"
 )
 
 // ResourceStatus provides the status of the resource defined by a resource quota.
@@ -23,18 +24,13 @@ type ResourceQuotaDetail struct {
 	StatusList map[v1.ResourceName]ResourceStatus `json:"statusList,omitempty"`
 }
 
-// ResourceQuotaDetailList provides a set of resource Quotas.
-type ResourceQuotaDetailList struct {
-	ListMeta api.ListMeta          `json:"listMeta"`
-	Items    []ResourceQuotaDetail `json:"items"`
-}
-
 func ToResourceQuotaDetail(rawResourceQuota *v1.ResourceQuota) *ResourceQuotaDetail {
 	statusList := make(map[v1.ResourceName]ResourceStatus)
 
 	for key, value := range rawResourceQuota.Status.Hard {
 		used := rawResourceQuota.Status.Used[key]
-		statusList[key] = ResourceStatus{
+		keyCustom := strings.Replace(string(key), ".", "_", 1)
+		statusList[v1.ResourceName(keyCustom)] = ResourceStatus{
 			Used: used.String(),
 			Hard: value.String(),
 		}
