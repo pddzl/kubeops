@@ -4,25 +4,25 @@
       <el-collapse-item v-if="podDetail.metadata" title="元数据" name="1">
         <div class="row_mine">
           <div class="row_context">
-            <div>
+            <div v-if="podDetail.metadata.name">
               <p>名称</p>
               <span class="content">{{ podDetail.metadata.name }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.metadata.namespace">
               <p>命名空间</p>
               <span class="content">{{ podDetail.metadata.namespace }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.metadata.uid">
               <p>UID</p>
               <span class="content">{{ podDetail.metadata.uid }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.metadata.createTimestamp">
               <p>创建时间</p>
               <span class="content">{{ formatDate(podDetail.metadata.createTimestamp) }}</span>
             </div>
           </div>
         </div>
-        <div class="common_show">
+        <div v-if="podDetail.metadata.labels" class="common_show">
           <p>标签</p>
           <span
             v-for="(label, index) in podDetail.metadata.labels"
