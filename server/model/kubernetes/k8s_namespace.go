@@ -4,13 +4,12 @@ import (
 	resource2 "github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	api "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"time"
 )
 
 type NameSpaceBrief struct {
 	Name              string            `json:"name"`
 	Labels            map[string]string `json:"labels"`
-	CreationTimestamp time.Time         `json:"creationTimestamp"`
+	CreationTimestamp v1.Time           `json:"creationTimestamp"`
 	Status            string            `json:"status"`
 }
 

@@ -20,13 +20,13 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "dashboard", Name: "dashboard", Component: "view/dashboard/index.vue", Sort: 1, Meta: system.Meta{Title: "仪表盘", Icon: "odometer"}},
 		// k8s Cluster
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "cluster", Name: "cluster", Component: "view/cluster/index.vue", Sort: 2, Meta: system.Meta{Title: "集群", Icon: "house"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "namespace", Name: "namespace", Component: "view/cluster/namespace/namespace.vue", Sort: 1, Meta: system.Meta{Title: "命名空间", Icon: "wind-power"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "namespace", Name: "namespace", Component: "view/cluster/namespace/list.vue", Sort: 1, Meta: system.Meta{Title: "命名空间", Icon: "wind-power"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "2", Path: "namespace/detail", Name: "namespace_detail", Component: "view/cluster/namespace/detail.vue", Sort: 1, Meta: system.Meta{Title: "命名空间详情", Icon: "wind-power"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "node", Name: "node", Component: "view/cluster/node/node.vue", Sort: 2, Meta: system.Meta{Title: "节点", Icon: "monitor"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "2", Path: "node", Name: "node", Component: "view/cluster/node/list.vue", Sort: 2, Meta: system.Meta{Title: "节点", Icon: "monitor"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "2", Path: "node/detail", Name: "node_detail", Component: "view/cluster/node/detail.vue", Sort: 2, Meta: system.Meta{Title: "节点详情", Icon: "monitor"}},
 		// k8s workloads
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "workloads", Name: "workloads", Component: "view/workloads/index.vue", Sort: 3, Meta: system.Meta{Title: "工作负载", Icon: "help-filled"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "pod", Name: "pod", Component: "view/workloads/pod/pod.vue", Sort: 3, Meta: system.Meta{Title: "Pods", Icon: "ship"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "pod", Name: "pod", Component: "view/workloads/pod/list.vue", Sort: 3, Meta: system.Meta{Title: "Pods", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "pod/detail", Name: "pod_detail", Component: "view/workloads/pod/detail.vue", Sort: 3, Meta: system.Meta{Title: "Pod详情", Icon: "ship"}},
 		// superAdmin
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 3, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},

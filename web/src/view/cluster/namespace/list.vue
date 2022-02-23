@@ -9,7 +9,7 @@
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column align="left" label="状态" width="100" prop="status">
+        <el-table-column align="left" label="状态" width="120" prop="status">
           <template #default="scope">
             <el-tag :type="statusTypeFilter(scope.row.status)" size="small">
               {{ scope.row.status }}
@@ -24,7 +24,7 @@
           </template>
         </el-table-column>
         <el-table-column align="left" label="创建时间" min-width="200">
-          <template #default="scope">{{ scope.row.createTimestamp }}</template>
+          <template #default="scope">{{ scope.row.creationTimestamp }}</template>
         </el-table-column>
         <el-table-column align="left" fixed="right" label="操作" min-width="160">
           <template #default="scope">
