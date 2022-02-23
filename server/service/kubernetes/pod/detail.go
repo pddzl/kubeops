@@ -60,9 +60,11 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.ResourceInfo.Restarts = pod.Status.ContainerStatuses[0].RestartCount
 	podDetail.ResourceInfo.ServiceAccount = pod.Spec.ServiceAccountName
 	// ownerReferences
-	podDetail.OwnerReferences.Controller = *pod.OwnerReferences[0].Controller
-	podDetail.OwnerReferences.Name = pod.OwnerReferences[0].Name
-	podDetail.OwnerReferences.Kind = pod.OwnerReferences[0].Kind
+	if len(pod.OwnerReferences) > 0 {
+		podDetail.OwnerReferences.Controller = *pod.OwnerReferences[0].Controller
+		podDetail.OwnerReferences.Name = pod.OwnerReferences[0].Name
+		podDetail.OwnerReferences.Kind = pod.OwnerReferences[0].Kind
+	}
 	// Conditions
 	for _, condition := range pod.Status.Conditions {
 		var podCondition kubernetes.Conditions
@@ -76,7 +78,9 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	// Containers
 	podDetail.Containers = extractContainerInfo(pod.Spec.Containers, pod, configMapList, secretList)
 	// initContainers
-	podDetail.InitContainers = extractContainerInfo(pod.Spec.InitContainers, pod, configMapList, secretList)
+	if len(pod.Spec.InitContainers) > 0 {
+		podDetail.InitContainers = extractContainerInfo(pod.Spec.InitContainers, pod, configMapList, secretList)
+	}
 	return podDetail, nil
 }
 

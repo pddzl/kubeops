@@ -6,12 +6,12 @@ import (
 )
 
 type PodDetail struct {
-	MetaData        metadata        `json:"metadata"`
-	ResourceInfo    resourceInfo    `json:"resource_info"`
-	Conditions      []Conditions    `json:"conditions"`
-	OwnerReferences ownerReferences `json:"ownerReferences"`
-	Containers      []Container     `json:"containers"`
-	InitContainers  []Container     `json:"initContainers"`
+	MetaData        metadata         `json:"metadata"`
+	ResourceInfo    resourceInfo     `json:"resource_info"`
+	Conditions      []Conditions     `json:"conditions"`
+	OwnerReferences *ownerReferences `json:"ownerReferences,omitempty"`
+	Containers      []Container      `json:"containers"`
+	InitContainers  []Container      `json:"initContainers,omitempty"`
 }
 
 type metadata struct {
