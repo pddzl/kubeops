@@ -59,7 +59,7 @@ type NameSpaceDetail struct {
 	ResourceQuotaList []resource2.ResourceQuotaDetail `json:"resourceQuotaList"`
 
 	// ResourceLimits is list of limit ranges associated to the namespace
-	ResourceLimits []resource2.LimitRangeItem `json:"resourceLimits"`
+	ResourceLimits []resource2.LimitRangeDetail `json:"resourceLimits"`
 }
 
 type NSMetadata struct {

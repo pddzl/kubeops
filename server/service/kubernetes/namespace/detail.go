@@ -55,16 +55,16 @@ func getResourceQuotas(namespace string) ([]resource.ResourceQuotaDetail, error)
 	return result, err
 }
 
-func getLimitRanges(namespace v1.Namespace) ([]resource.LimitRangeItem, error) {
+func getLimitRanges(namespace v1.Namespace) ([]resource.LimitRangeDetail, error) {
 	list, err := global.KOP_KUBERNETES.CoreV1().LimitRanges(namespace.Name).List(context.TODO(), api.ListEverything)
 	if err != nil {
 		return nil, err
 	}
 
-	resourceLimits := make([]resource.LimitRangeItem, 0)
+	resourceLimits := make([]resource.LimitRangeDetail, 0)
 	for _, item := range list.Items {
 		list := resource.ToLimitRanges(&item)
-		resourceLimits = append(resourceLimits, list...)
+		resourceLimits = append(resourceLimits, list)
 	}
 
 	return resourceLimits, nil
