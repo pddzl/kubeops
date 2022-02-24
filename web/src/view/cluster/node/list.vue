@@ -18,24 +18,29 @@
           </template>
         </el-table-column>
         <el-table-column label="内部IP" min-width="120" prop="status.addresses[0].address" />
-        <el-table-column label="角色" min-width="230" prop="roles">
+        <el-table-column label="角色" min-width="220" prop="roles">
           <template #default="scope">
             <span v-for="(role, index) in scope.row.roles" :key="index" style="margin-right: 5px;">
               <el-tag size="small">{{ role }}</el-tag>
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="150" prop="ready">
+        <el-table-column label="状态" min-width="120" prop="ready">
           <template #default="scope">
             <el-tag :type="statusNodeTypeFilter(scope.row.ready)" size="small">
               {{ statusNodeFilter(scope.row.ready) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" min-width="150" prop="metadata.creationTimestamp" sortable="custom">
+        <el-table-column label="CPU (core)" min-width="100" prop="status.capacity.cpu" />
+        <el-table-column label="内存 (GB)" min-width="100">
+          <template #default="scope">
+            {{ (parseInt(scope.row.status.capacity.memory.slice(0, -2))/1024/1024).toFixed(2) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" min-width="180" prop="metadata.creationTimestamp" sortable="custom">
           <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
         </el-table-column>
-
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
             <el-button
