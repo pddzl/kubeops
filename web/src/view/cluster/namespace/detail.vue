@@ -35,9 +35,10 @@
             <div>
               <p>状态</p>
               <span class="content">
-                <el-tag :type="statusNsFilter(namespaceDetail.status)" size="small">
-                  {{ namespaceDetail.status }}
-                </el-tag>
+                <el-tag
+                  :type="statusNsFilter(namespaceDetail.status)"
+                  size="small"
+                >{{ namespaceDetail.status }}</el-tag>
               </span>
             </div>
           </div>
@@ -92,7 +93,9 @@
         name="4"
       >
         <div v-for="(rLimit, keyRl) in namespaceDetail.resourceLimits" :key="keyRl" class="table">
-          <el-tag size="small">{{ rLimit.name }}</el-tag>
+          <div class="name">
+            <el-tag size="small">{{ rLimit.name }}</el-tag>
+          </div>
           <el-table :data="rLimit.limits">
             <el-table-column label="类型" align="center" prop="type" />
             <el-table-column label="max" align="center">
@@ -166,5 +169,8 @@ export default {
 }
 .table {
   margin-right: 20px;
+}
+.name {
+  margin-bottom: 10px;
 }
 </style>
