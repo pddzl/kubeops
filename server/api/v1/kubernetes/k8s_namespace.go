@@ -19,13 +19,12 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 	// 校验
 	validate := validator.New()
 	if err := validate.Struct(&pageInfo); err != nil {
-		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	list, total, err := namespaceService.GetNamespaceList(pageInfo)
 	if err != nil {
-		global.KOP_LOG.Error("获取namespace失败", zap.Error(err))
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 		return
 	}
@@ -42,7 +41,7 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 func (n *NamespaceApi) GetNamespaceOnlyName(c *gin.Context) {
 	list, err := namespaceService.GetNamespaceOnlyName()
 	if err != nil {
-		global.KOP_LOG.Error("获取namespace失败", zap.Error(err))
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 		return
 	}

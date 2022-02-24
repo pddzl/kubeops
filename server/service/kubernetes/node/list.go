@@ -2,16 +2,16 @@ package node
 
 import (
 	"context"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 )
 
-func (n *NodeService) GetNodeList(info request.PageInfo) (list interface{}, total int, err error) {
+func (n *NodeService) GetNodeList(info *request.PageInfo) (list interface{}, total int, err error) {
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
-	nodes, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metaV1.ListOptions{})
+	nodes, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), api.ListEverything)
 	if err != nil {
 		return nil, 0, err
 	}

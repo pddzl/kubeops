@@ -3,11 +3,11 @@ package namespace
 import (
 	"context"
 	v1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes"
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 )
 
 func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interface{}, total int, err error) {
@@ -16,8 +16,7 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 	var namespaceBriefList []kubernetes.NameSpaceBrief
 	var namespaceList v1.NamespaceList
 
-	opts := metaV1.ListOptions{}
-	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), opts)
+	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), api.ListEverything)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -49,8 +48,7 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 
 func (n *NamespaceService) GetNamespaceOnlyName() (list interface{}, err error) {
 	var nameList []string
-	opts := metaV1.ListOptions{}
-	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), opts)
+	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), api.ListEverything)
 	if err != nil {
 		return nil, err
 	}

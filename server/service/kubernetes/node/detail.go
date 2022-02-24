@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes"
-	"go.uber.org/zap"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,7 +27,6 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 	// PodList
 	podList, err := getNodePods(nodeName)
 	if err != nil {
-		global.KOP_LOG.Error("getNodePods", zap.Error(err))
 		return nil, err
 	}
 	for _, podRaw := range podList.Items {
