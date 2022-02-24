@@ -91,7 +91,28 @@
         title="资源限制"
         name="4"
       >
-        <p>456</p>
+        <div v-for="(rLimit, keyRl) in namespaceDetail.resourceLimits" :key="keyRl" class="table">
+          <el-tag size="small">{{ rLimit.name }}</el-tag>
+          <el-table :data="rLimit.limits">
+            <el-table-column label="类型" align="center" prop="type" />
+            <el-table-column label="max" align="center">
+              <el-table-column label="cpu" align="center" prop="max.cpu" />
+              <el-table-column label="memory" align="center" prop="max.memory" />
+            </el-table-column>
+            <el-table-column label="min" align="center">
+              <el-table-column label="cpu" align="center" prop="min.cpu" />
+              <el-table-column label="memory" align="center" prop="min.memory" />
+            </el-table-column>
+            <el-table-column label="default" align="center">
+              <el-table-column label="cpu" align="center" prop="default.cpu" />
+              <el-table-column label="memory" align="center" prop="default.memory" />
+            </el-table-column>
+            <el-table-column label="defaultRequest" align="center">
+              <el-table-column label="cpu" align="center" prop="defaultRequest.cpu" />
+              <el-table-column label="memory" align="center" prop="defaultRequest.memory" />
+            </el-table-column>
+          </el-table>
+        </div>
       </el-collapse-item>
     </el-collapse>
   </div>
