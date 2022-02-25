@@ -2,18 +2,18 @@ package namespace
 
 import (
 	"context"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 )
 
 func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interface{}, total int, err error) {
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
-	var namespaceBriefList []kubernetes.NameSpaceBrief
+	var namespaceBriefList []resource.NameSpaceBrief
 	var namespaceList v1.NamespaceList
 
 	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), api.ListEverything)
@@ -34,7 +34,7 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 
 	// 处理namespace原始数据
 	for _, ns := range namespaceList.Items {
-		var namespaceBrief kubernetes.NameSpaceBrief
+		var namespaceBrief resource.NameSpaceBrief
 		namespaceBrief.Name = ns.Name
 		namespaceBrief.Labels = ns.Labels
 		namespaceBrief.CreationTimestamp = ns.CreationTimestamp

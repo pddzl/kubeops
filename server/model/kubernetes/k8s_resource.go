@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -106,7 +107,7 @@ type ConfigMapListChannel struct {
 
 // GetConfigMapListChannel returns a pair of channels to a ConfigMap list and errors that both must be read
 // numReads times.
-func GetConfigMapListChannel(nsQuery *NamespaceQuery, numReads int) ConfigMapListChannel {
+func GetConfigMapListChannel(nsQuery *resource.NamespaceQuery, numReads int) ConfigMapListChannel {
 
 	channel := ConfigMapListChannel{
 		List:  make(chan *v1.ConfigMapList, numReads),
@@ -139,7 +140,7 @@ type SecretListChannel struct {
 
 // GetSecretListChannel returns a pair of channels to a Secret list and errors that
 // both must be read numReads times.
-func GetSecretListChannel(nsQuery *NamespaceQuery, numReads int) SecretListChannel {
+func GetSecretListChannel(nsQuery *resource.NamespaceQuery, numReads int) SecretListChannel {
 
 	channel := SecretListChannel{
 		List:  make(chan *v1.SecretList, numReads),

@@ -6,13 +6,12 @@ import (
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 )
 
 func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, err error) {
-	var namespaceDetail kubernetes.NameSpaceDetail
+	var namespaceDetail resource.NameSpaceDetail
 	namespace, err := global.KOP_KUBERNETES.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, err

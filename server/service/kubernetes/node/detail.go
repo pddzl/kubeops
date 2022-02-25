@@ -3,15 +3,15 @@ package node
 import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
+	resource2 "github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 )
 
-func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, error) {
-	var nodeDetail kubernetes.NodeDetail
+func (n *NodeService) GetNodeDetail(nodeName string) (*resource2.NodeDetail, error) {
+	var nodeDetail resource2.NodeDetail
 	node, err := global.KOP_KUBERNETES.CoreV1().Nodes().Get(context.TODO(), nodeName, metaV1.GetOptions{})
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 		return nil, err
 	}
 	for _, podRaw := range podList.Items {
-		var pod kubernetes.Pod
+		var pod resource2.Pod
 		pod.Name = podRaw.Name
 		pod.Namespace = podRaw.Namespace
 		pod.Image = podRaw.Spec.Containers[0].Image
@@ -56,7 +56,7 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 
 	// Conditions
 	for _, conditionRaw := range node.Status.Conditions {
-		var condition kubernetes.Condition
+		var condition resource2.Condition
 		condition.Type = string(conditionRaw.Type)
 		condition.Status = string(conditionRaw.Status)
 		condition.LastProbeTime = conditionRaw.LastHeartbeatTime
@@ -77,7 +77,7 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 
 	// Addresses
 	for _, addr := range node.Status.Addresses {
-		var address kubernetes.Addresses
+		var address resource2.Addresses
 		address.Type = string(addr.Type)
 		address.Address = addr.Address
 		// append
@@ -104,13 +104,13 @@ func getNodePods(nodeName string) (*v1.PodList, error) {
 	})
 }
 
-func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (kubernetes.NodeAllocatedResources, error) {
+func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (resource2.NodeAllocatedResources, error) {
 	reqs, limits := map[v1.ResourceName]resource.Quantity{}, map[v1.ResourceName]resource.Quantity{}
 
 	for _, pod := range podList.Items {
 		podReqs, podLimits, err := PodRequestsAndLimits(&pod)
 		if err != nil {
-			return kubernetes.NodeAllocatedResources{}, err
+			return resource2.NodeAllocatedResources{}, err
 		}
 		for podReqName, podReqValue := range podReqs {
 			if value, ok := reqs[podReqName]; !ok {
@@ -151,7 +151,7 @@ func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (kubernetes.N
 		podFraction = float64(len(podList.Items)) / float64(podCapacity) * 100
 	}
 
-	return kubernetes.NodeAllocatedResources{
+	return resource2.NodeAllocatedResources{
 		CPURequests:            cpuRequests.MilliValue(),
 		CPURequestsFraction:    cpuRequestsFraction,
 		CPULimits:              cpuLimits.MilliValue(),

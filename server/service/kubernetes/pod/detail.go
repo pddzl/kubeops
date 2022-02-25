@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
 	res "k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -19,11 +20,11 @@ import (
 // 获取pod详情
 
 func (p *PodService) GetPodDetail(namespace string, name string) (info interface{}, err error) {
-	var podDetail kubernetes.PodDetail
+	var podDetail resource.PodDetail
 
 	channels := &kubernetes.ResourceChannels{
-		ConfigMapList: kubernetes.GetConfigMapListChannel(kubernetes.NewSameNamespaceQuery(namespace), 1),
-		SecretList:    kubernetes.GetSecretListChannel(kubernetes.NewSameNamespaceQuery(namespace), 1),
+		ConfigMapList: kubernetes.GetConfigMapListChannel(resource.NewSameNamespaceQuery(namespace), 1),
+		SecretList:    kubernetes.GetSecretListChannel(resource.NewSameNamespaceQuery(namespace), 1),
 	}
 
 	pod, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
@@ -63,7 +64,7 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	podDetail.OwnerReferences = pod.OwnerReferences
 	// Conditions
 	for _, condition := range pod.Status.Conditions {
-		var podCondition kubernetes.Conditions
+		var podCondition resource.Conditions
 		podCondition.Type = string(condition.Type)
 		podCondition.Status = string(condition.Status)
 		podCondition.LastProbeTime = condition.LastProbeTime
@@ -80,12 +81,12 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	return podDetail, nil
 }
 
-func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []kubernetes.Container {
-	containers := make([]kubernetes.Container, 0)
+func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []resource.Container {
+	containers := make([]resource.Container, 0)
 	for _, container := range containerList {
-		vars := make([]kubernetes.EnvVar, 0)
+		vars := make([]resource.EnvVar, 0)
 		for _, envVar := range container.Env {
-			variable := kubernetes.EnvVar{
+			variable := resource.EnvVar{
 				Name:      envVar.Name,
 				Value:     envVar.Value,
 				ValueFrom: envVar.ValueFrom,
@@ -100,7 +101,7 @@ func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps 
 
 		volumeMounts := extractContainerMounts(container, pod)
 
-		containers = append(containers, kubernetes.Container{
+		containers = append(containers, resource.Container{
 			Name:            container.Name,
 			Image:           container.Image,
 			Env:             vars,
@@ -117,10 +118,10 @@ func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps 
 	return containers
 }
 
-func extractContainerMounts(container v1.Container, pod *v1.Pod) []kubernetes.VolumeMount {
-	volumeMounts := make([]kubernetes.VolumeMount, 0)
+func extractContainerMounts(container v1.Container, pod *v1.Pod) []resource.VolumeMount {
+	volumeMounts := make([]resource.VolumeMount, 0)
 	for _, aVolumeMount := range container.VolumeMounts {
-		volumeMount := kubernetes.VolumeMount{
+		volumeMount := resource.VolumeMount{
 			Name:      aVolumeMount.Name,
 			ReadOnly:  aVolumeMount.ReadOnly,
 			MountPath: aVolumeMount.MountPath,
@@ -230,8 +231,8 @@ func extractContainerStatus(pod *v1.Pod, container *v1.Container) *v1.ContainerS
 	return nil
 }
 
-func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []kubernetes.EnvVar {
-	vars := make([]kubernetes.EnvVar, 0)
+func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []resource.EnvVar {
+	vars := make([]resource.EnvVar, 0)
 	for _, envFromVar := range container.EnvFrom {
 		switch {
 		case envFromVar.ConfigMapRef != nil:
@@ -247,7 +248,7 @@ func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *
 								Key: key,
 							},
 						}
-						variable := kubernetes.EnvVar{
+						variable := resource.EnvVar{
 							Name:      envFromVar.Prefix + key,
 							Value:     value,
 							ValueFrom: valueFrom,
@@ -270,7 +271,7 @@ func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *
 								Key: key,
 							},
 						}
-						variable := kubernetes.EnvVar{
+						variable := resource.EnvVar{
 							Name:      envFromVar.Prefix + key,
 							Value:     base64.StdEncoding.EncodeToString(value),
 							ValueFrom: valueFrom,

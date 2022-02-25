@@ -3,11 +3,11 @@ package kubernetes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	"go.uber.org/zap"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/response"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
 	"github.com/pddzl/kubeops/server/model/kubernetes/request"
 )
 
@@ -17,7 +17,7 @@ type PodApi struct{}
 
 func (p *PodApi) GetPodList(c *gin.Context) {
 	var pageInfo request.SearchPodParams
-	var list []kubernetes.Pod
+	var list []resource.Pod
 	_ = c.ShouldBindJSON(&pageInfo)
 	// 校验字段
 	validate := validator.New()
@@ -32,7 +32,7 @@ func (p *PodApi) GetPodList(c *gin.Context) {
 	}
 	// 处理pod原始数据
 	for _, podRaw := range podList {
-		var pod kubernetes.Pod
+		var pod resource.Pod
 		pod.Name = podRaw.Name
 		pod.Namespace = podRaw.Namespace
 		pod.Image = podRaw.Spec.Containers[0].Image
