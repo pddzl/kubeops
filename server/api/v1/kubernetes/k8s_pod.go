@@ -42,7 +42,7 @@ func (p *PodApi) GetPodList(c *gin.Context) {
 		pod.Resource.CpuRequests = podRaw.Spec.Containers[0].Resources.Requests.Cpu().String()
 		pod.Resource.MemoryRequests = podRaw.Spec.Containers[0].Resources.Requests.Memory().String()
 		pod.Status = string(podRaw.Status.Phase)
-		pod.CreateTimestamp = podRaw.CreationTimestamp.Time
+		pod.CreationTimestamp = podRaw.CreationTimestamp
 		// append
 		list = append(list, pod)
 	}
