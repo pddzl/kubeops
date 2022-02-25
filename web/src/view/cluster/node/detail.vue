@@ -14,7 +14,7 @@
             </div>
             <div>
               <p>创建时间</p>
-              <span class="content">{{ formatDate(nodeDetail.objectMeta.createTimestamp) }}</span>
+              <span class="content">{{ formatDate(nodeDetail.objectMeta.creationTimestamp) }}</span>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@
           <el-table-column prop="resource.memoryRequests" label="内存限制" width="100" />
           <!-- <el-table-column prop="image" label="镜像" /> -->
           <el-table-column label="创建时间" width="180">
-            <template #default="scope">{{ formatDate(scope.row.createTimestamp) }}</template>
+            <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="200">
             <template #default>

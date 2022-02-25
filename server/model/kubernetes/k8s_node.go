@@ -2,8 +2,7 @@ package kubernetes
 
 import (
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"time"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type NodeDetail struct {
@@ -19,11 +18,11 @@ type NodeDetail struct {
 }
 
 type objectMeta struct {
-	Name            string            `json:"name"`
-	Labels          map[string]string `json:"labels"`
-	Annotations     map[string]string `json:"annotations"`
-	CreateTimestamp time.Time         `json:"createTimestamp"`
-	UID             types.UID         `json:"uid,omitempty"`
+	Name              string            `json:"name,omitempty"`
+	Labels            map[string]string `json:"labels,omitempty"`
+	Annotations       map[string]string `json:"annotations,omitempty"`
+	CreationTimestamp metaV1.Time       `json:"creationTimestamp,omitempty"`
+	UID               string            `json:"uid,omitempty"`
 }
 
 type NodeAllocatedResources struct {
@@ -75,9 +74,9 @@ type Condition struct {
 	// Status of a condition.
 	Status string `json:"status"`
 	// Last probe time of a condition.
-	LastProbeTime time.Time `json:"lastProbeTime"`
+	LastProbeTime metaV1.Time `json:"lastProbeTime"`
 	// Last transition time of a condition.
-	LastTransitionTime time.Time `json:"lastTransitionTime"`
+	LastTransitionTime metaV1.Time `json:"lastTransitionTime"`
 	// Reason of a condition.
 	Reason string `json:"reason"`
 	// Message of a condition.
@@ -85,13 +84,13 @@ type Condition struct {
 }
 
 type Pod struct {
-	Name            string    `json:"name"`
-	Namespace       string    `json:"namespace"`
-	Image           string    `json:"image"`
-	Node            string    `json:"node"`
-	Resource        resource  `json:"resource"`
-	Status          string    `json:"status"`
-	CreateTimestamp time.Time `json:"createTimestamp"`
+	Name              string      `json:"name"`
+	Namespace         string      `json:"namespace"`
+	Image             string      `json:"image"`
+	Node              string      `json:"node"`
+	Resource          resource    `json:"resource"`
+	Status            string      `json:"status"`
+	CreationTimestamp metaV1.Time `json:"creationTimestamp"`
 }
 
 type resource struct {

@@ -21,8 +21,8 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 	nodeDetail.ObjectMeta.Name = node.ObjectMeta.Name
 	nodeDetail.ObjectMeta.Labels = node.ObjectMeta.Labels
 	nodeDetail.ObjectMeta.Annotations = node.ObjectMeta.Annotations
-	nodeDetail.ObjectMeta.CreateTimestamp = node.ObjectMeta.CreationTimestamp.Time
-	nodeDetail.ObjectMeta.UID = node.ObjectMeta.UID
+	nodeDetail.ObjectMeta.CreationTimestamp = node.ObjectMeta.CreationTimestamp
+	nodeDetail.ObjectMeta.UID = string(node.ObjectMeta.UID)
 
 	// PodList
 	podList, err := getNodePods(nodeName)
@@ -40,13 +40,13 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 		pod.Resource.CpuRequests = podRaw.Spec.Containers[0].Resources.Requests.Cpu().String()
 		pod.Resource.MemoryRequests = podRaw.Spec.Containers[0].Resources.Requests.Memory().String()
 		pod.Status = string(podRaw.Status.Phase)
-		pod.CreateTimestamp = podRaw.CreationTimestamp.Time
+		pod.CreationTimestamp = podRaw.CreationTimestamp
 		// append
 		nodeDetail.PodList = append(nodeDetail.PodList, pod)
 	}
 
 	// NodeAllocatedResources
-	allocatedResources, err := getNodeAllocatedResources(*node, podList)
+	allocatedResources, err := getNodeAllocatedResources(node, podList)
 	nodeDetail.NodeAllocatedResources = allocatedResources
 
 	// PodCIDR
@@ -63,8 +63,8 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 		var condition kubernetes.Condition
 		condition.Type = string(conditionRaw.Type)
 		condition.Status = string(conditionRaw.Status)
-		condition.LastProbeTime = conditionRaw.LastHeartbeatTime.Time
-		condition.LastTransitionTime = conditionRaw.LastTransitionTime.Time
+		condition.LastProbeTime = conditionRaw.LastHeartbeatTime
+		condition.LastTransitionTime = conditionRaw.LastTransitionTime
 		condition.Reason = conditionRaw.Reason
 		condition.Message = conditionRaw.Message
 		// append
@@ -105,7 +105,7 @@ func getNodePods(nodeName string) (*v1.PodList, error) {
 	})
 }
 
-func getNodeAllocatedResources(node v1.Node, podList *v1.PodList) (kubernetes.NodeAllocatedResources, error) {
+func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (kubernetes.NodeAllocatedResources, error) {
 	reqs, limits := map[v1.ResourceName]resource.Quantity{}, map[v1.ResourceName]resource.Quantity{}
 
 	for _, pod := range podList.Items {

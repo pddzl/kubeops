@@ -12,6 +12,8 @@ import (
 
 type NodeApi struct{}
 
+// 获取所有节点
+
 func (n *NodeApi) GetNodeList(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -33,6 +35,8 @@ func (n *NodeApi) GetNodeList(c *gin.Context) {
 		}, "获取成功", c)
 	}
 }
+
+// 获取节点详情
 
 func (n *NodeApi) GetNodeDetail(c *gin.Context) {
 	var nameInfo request.GetByName
