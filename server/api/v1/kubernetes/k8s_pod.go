@@ -58,14 +58,13 @@ func (p *PodApi) GetPodDetail(c *gin.Context) {
 	// 校验
 	validate := validator.New()
 	if err := validate.Struct(&podDetail); err != nil {
-		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	info, err := podService.GetPodDetail(podDetail.NameSpace, podDetail.Pod)
 	if err != nil {
-		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
 	}
 	response.OkWithDetailed(info, "获取成功", c)
 }

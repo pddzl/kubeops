@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
 	res "k8s.io/apimachinery/pkg/api/resource"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -14,7 +13,8 @@ import (
 	"strconv"
 
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/kubernetes"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource/common"
 )
 
 // 获取pod详情
@@ -22,9 +22,9 @@ import (
 func (p *PodService) GetPodDetail(namespace string, name string) (info interface{}, err error) {
 	var podDetail resource.PodDetail
 
-	channels := &kubernetes.ResourceChannels{
-		ConfigMapList: kubernetes.GetConfigMapListChannel(resource.NewSameNamespaceQuery(namespace), 1),
-		SecretList:    kubernetes.GetSecretListChannel(resource.NewSameNamespaceQuery(namespace), 1),
+	channels := &common.ResourceChannels{
+		ConfigMapList: common.GetConfigMapListChannel(common.NewSameNamespaceQuery(namespace), 1),
+		SecretList:    common.GetSecretListChannel(common.NewSameNamespaceQuery(namespace), 1),
 	}
 
 	pod, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
