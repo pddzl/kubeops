@@ -44,7 +44,7 @@
           <p>Pod CIDR</p>
           <span class="span-shadow">{{ nodeDetail.podCIDR }}</span>
         </div>
-        <div class="common_show interval">
+        <div v-if="nodeDetail.addresses" class="common_show interval">
           <p>地址</p>
           <span
             v-for="item in nodeDetail.addresses"
@@ -52,7 +52,7 @@
             class="span-shadow"
           >{{ item.type }}: {{ item.address }}</span>
         </div>
-        <div class="common_show interval">
+        <div v-if="nodeDetail.taints" class="common_show interval">
           <p>污点</p>
           <span
             v-for="item in nodeDetail.taints"
