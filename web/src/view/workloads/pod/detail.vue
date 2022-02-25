@@ -34,25 +34,25 @@
       <el-collapse-item v-if="podDetail.resource_info" title="资源信息" name="2">
         <div class="row_mine">
           <div class="row_context">
-            <div>
+            <div v-if="podDetail.resource_info.node">
               <p>节点</p>
               <span class="content">{{ podDetail.resource_info.node }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.resource_info.phase">
               <p>状态</p>
               <el-tag :type="statusPodFilter(podDetail.resource_info.phase)" size="small">
                 {{ podDetail.resource_info.phase }}
               </el-tag>
             </div>
-            <div>
+            <div v-if="podDetail.resource_info.ip">
               <p>IP</p>
               <span class="content">{{ podDetail.resource_info.ip }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.resource_info.qosClass">
               <p>服务质量</p>
               <span class="content">{{ podDetail.resource_info.qosClass }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.resource_info.restartPolicy">
               <p>重启策略</p>
               <span class="content">{{ podDetail.resource_info.restartPolicy }}</span>
             </div>
@@ -60,7 +60,7 @@
               <p>重启次数</p>
               <span class="content">{{ podDetail.resource_info.restarts }}</span>
             </div>
-            <div>
+            <div v-if="podDetail.resource_info.serviceAccount">
               <p>服务账号</p>
               <span class="content">{{ podDetail.resource_info.serviceAccount }}</span>
             </div>

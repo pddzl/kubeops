@@ -29,13 +29,13 @@ type metadata struct {
 //}
 
 type resourceInfo struct {
-	Phase          string `json:"phase"`
-	Node           string `json:"node"`
-	IP             string `json:"ip"`
-	QosClass       string `json:"qosClass"`
-	RestartPolicy  string `json:"restartPolicy"`
+	Phase          string `json:"phase,omitempty"`
+	Node           string `json:"node,omitempty"`
+	IP             string `json:"ip,omitempty"`
+	QosClass       string `json:"qosClass,omitempty"`
+	RestartPolicy  string `json:"restartPolicy,omitempty"`
 	Restarts       int32  `json:"restarts"`
-	ServiceAccount string `json:"serviceAccount"`
+	ServiceAccount string `json:"serviceAccount,omitempty"`
 }
 
 type Conditions struct {
