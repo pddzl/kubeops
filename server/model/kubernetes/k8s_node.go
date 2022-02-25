@@ -89,16 +89,8 @@ type Pod struct {
 	Namespace         string      `json:"namespace"`
 	Image             string      `json:"image"`
 	Node              string      `json:"node"`
-	Resource          resource    `json:"resource"`
 	Status            string      `json:"status"`
 	CreationTimestamp metaV1.Time `json:"creationTimestamp"`
-}
-
-type resource struct {
-	CpuLimit       string `json:"cpuLimit"`
-	MemoryLimit    string `json:"memoryLimit"`
-	CpuRequests    string `json:"cpuRequests"`
-	MemoryRequests string `json:"memoryRequests"`
 }
 
 type Addresses struct {

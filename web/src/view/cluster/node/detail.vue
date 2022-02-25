@@ -156,20 +156,22 @@
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.podList" title="Pods" name="6">
         <el-table :data="nodeDetail.podList">
-          <el-table-column prop="name" label="名称" min-width="240" />
-          <el-table-column prop="status" label="状态" min-width="110">
+          <el-table-column label="名称" min-width="200">
             <template #default="scope">
-              <el-tag :type="statusPodFilter(scope.row.status)" size="small">
-                {{ scope.row.status }}
-              </el-tag>
+              <router-link
+                :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }"
+              >
+                <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
+              </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="namespace" label="命名空间" min-width="120" />
-          <el-table-column prop="resource.cpuLimit" label="CPU预留" width="100" />
-          <el-table-column prop="resource.memoryLimit" label="CPU限制" width="100" />
-          <el-table-column prop="resource.cpuRequests" label="内存预留" width="100" />
-          <el-table-column prop="resource.memoryRequests" label="内存限制" width="100" />
-          <!-- <el-table-column prop="image" label="镜像" /> -->
+          <el-table-column prop="status" label="状态" min-width="90">
+            <template #default="scope">
+              <el-tag :type="statusPodFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="namespace" label="命名空间" min-width="100" />
+          <el-table-column prop="image" label="镜像" min-width="340" />
           <el-table-column label="创建时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
           </el-table-column>
@@ -202,7 +204,7 @@ export default {
     const nodeName = route.query.name
 
     // 加载node详情
-    const getData = async() => {
+    const getData = async () => {
       await getNodeDetail({ name: nodeName }).then(response => {
         if (response.code === 0) {
           nodeDetail.value = response.data

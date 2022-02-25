@@ -37,10 +37,6 @@ func (p *PodApi) GetPodList(c *gin.Context) {
 		pod.Namespace = podRaw.Namespace
 		pod.Image = podRaw.Spec.Containers[0].Image
 		pod.Node = podRaw.Spec.NodeName
-		pod.Resource.CpuLimit = podRaw.Spec.Containers[0].Resources.Limits.Cpu().String()
-		pod.Resource.MemoryLimit = podRaw.Spec.Containers[0].Resources.Limits.Memory().String()
-		pod.Resource.CpuRequests = podRaw.Spec.Containers[0].Resources.Requests.Cpu().String()
-		pod.Resource.MemoryRequests = podRaw.Spec.Containers[0].Resources.Requests.Memory().String()
 		pod.Status = string(podRaw.Status.Phase)
 		pod.CreationTimestamp = podRaw.CreationTimestamp
 		// append
