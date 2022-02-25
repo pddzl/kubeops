@@ -44,13 +44,21 @@
           <p>Pod CIDR</p>
           <span class="span-shadow">{{ nodeDetail.podCIDR }}</span>
         </div>
-        <div class="common_show address">
+        <div class="common_show interval">
           <p>地址</p>
           <span
             v-for="item in nodeDetail.addresses"
             :key="item.type"
             class="span-shadow"
           >{{ item.type }}: {{ item.address }}</span>
+        </div>
+        <div class="common_show interval">
+          <p>污点</p>
+          <span
+            v-for="item in nodeDetail.taints"
+            :key="item.type"
+            class="span-shadow"
+          >{{ item.key }}={{ item.effect }}</span>
         </div>
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="4">
@@ -149,7 +157,13 @@
       <el-collapse-item v-if="nodeDetail.podList" title="Pods" name="6">
         <el-table :data="nodeDetail.podList">
           <el-table-column prop="name" label="名称" min-width="240" />
-          <el-table-column prop="status" label="状态" min-width="110" />
+          <el-table-column prop="status" label="状态" min-width="110">
+            <template #default="scope">
+              <el-tag :type="statusPodFilter(scope.row.status)" size="small">
+                {{ scope.row.status }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="namespace" label="命名空间" min-width="120" />
           <el-table-column prop="resource.cpuLimit" label="CPU预留" width="100" />
           <el-table-column prop="resource.memoryLimit" label="CPU限制" width="100" />
@@ -176,6 +190,7 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getNodeDetail } from '@/api/kubernetes/node'
+import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 export default {
   name: 'NodeDetail',
@@ -199,7 +214,9 @@ export default {
     return {
       activeNames,
       nodeDetail,
-      formatDate
+      formatDate,
+      // filter
+      statusPodFilter
     }
   }
 }
@@ -216,7 +233,7 @@ export default {
     margin-bottom: 15px;
   }
 }
-.address {
+.interval {
   span:not(:last-child) {
     margin-right: 5px;
   }

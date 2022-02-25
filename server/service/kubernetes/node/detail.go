@@ -88,6 +88,9 @@ func (n *NodeService) GetNodeDetail(nodeName string) (*kubernetes.NodeDetail, er
 		nodeDetail.Addresses = append(nodeDetail.Addresses, address)
 	}
 
+	// Taints
+	nodeDetail.Taints = node.Spec.Taints
+
 	return &nodeDetail, err
 }
 

@@ -14,7 +14,8 @@ type NodeDetail struct {
 	Conditions             []Condition            `json:"conditions"`
 	ContainerImages        []string               `json:"containerImages"`
 	PodList                []Pod                  `json:"podList"`
-	Addresses              []Addresses            `json:"addresses"`
+	Taints                 []v1.Taint             `json:"taints,omitempty"`
+	Addresses              []Addresses            `json:"addresses,omitempty"`
 }
 
 type objectMeta struct {
