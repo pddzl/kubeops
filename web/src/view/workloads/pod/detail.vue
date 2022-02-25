@@ -84,16 +84,16 @@
           </el-table>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="podDetail.ownerReferences && Object.keys(podDetail.ownerReferences).length > 0" title="控制器" name="4">
-        <div class="row_mine">
-          <div class="row_context">
+      <el-collapse-item v-if="podDetail.ownerReferences && podDetail.ownerReferences.length > 0" title="控制器" name="4">
+        <div v-for="reference in podDetail.ownerReferences" :key="reference" class="row_mine">
+          <div v-if="reference.controller" class="row_context">
             <div>
               <p>名称</p>
-              <span class="content">{{ podDetail.ownerReferences.name }}</span>
+              <span class="content">{{ reference.name }}</span>
             </div>
             <div>
               <p>类型</p>
-              <span class="content">{{ podDetail.ownerReferences.kind }}</span>
+              <span class="content">{{ reference.kind }}</span>
             </div>
           </div>
         </div>

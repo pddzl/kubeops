@@ -6,12 +6,12 @@ import (
 )
 
 type PodDetail struct {
-	MetaData        metadata         `json:"metadata"`
-	ResourceInfo    resourceInfo     `json:"resource_info"`
-	Conditions      []Conditions     `json:"conditions"`
-	OwnerReferences *ownerReferences `json:"ownerReferences,omitempty"`
-	Containers      []Container      `json:"containers"`
-	InitContainers  []Container      `json:"initContainers,omitempty"`
+	MetaData        metadata                `json:"metadata"`
+	ResourceInfo    resourceInfo            `json:"resource_info"`
+	Conditions      []Conditions            `json:"conditions"`
+	OwnerReferences []metaV1.OwnerReference `json:"ownerReferences,omitempty"`
+	Containers      []Container             `json:"containers"`
+	InitContainers  []Container             `json:"initContainers,omitempty"`
 }
 
 type metadata struct {
@@ -22,11 +22,11 @@ type metadata struct {
 	Labels            map[string]string `json:"labels,omitempty"`
 }
 
-type ownerReferences struct {
-	Controller bool   `json:"controller"`
-	Name       string `json:"name"`
-	Kind       string `json:"kind"`
-}
+//type ownerReferences struct {
+//	Controller bool   `json:"controller"`
+//	Name       string `json:"name"`
+//	Kind       string `json:"kind"`
+//}
 
 type resourceInfo struct {
 	Phase          string `json:"phase"`
