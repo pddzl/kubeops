@@ -29,11 +29,14 @@ func (i *InitDB) MysqlEmptyDsn() string {
 // ToMysqlConfig 转换 config.Mysql
 func (i *InitDB) ToMysqlConfig() config.Mysql {
 	return config.Mysql{
-		Path:     i.Host,
-		Port:     i.Port,
-		Dbname:   i.DBName,
-		Username: i.UserName,
-		Password: i.Password,
-		Config:   "charset=utf8mb4&parseTime=True&loc=Local",
+		Path:         i.Host,
+		Port:         i.Port,
+		Dbname:       i.DBName,
+		Username:     i.UserName,
+		Password:     i.Password,
+		MaxIdleConns: 10,
+		MaxOpenConns: 100,
+		LogMode:      "error",
+		Config:       "charset=utf8mb4&parseTime=True&loc=Local",
 	}
 }

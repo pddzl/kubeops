@@ -10,6 +10,10 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+type DBBASE interface {
+	GetLogMode() string
+}
+
 var Gorm = new(_gorm)
 
 type _gorm struct{}
@@ -22,7 +26,16 @@ func (g *_gorm) Config() *gorm.Config {
 		LogLevel:      logger.Warn,
 		Colorful:      true,
 	})
-	switch global.KOP_CONFIG.Mysql.LogMode {
+	var logMode DBBASE
+	switch global.KOP_CONFIG.System.DbType {
+	case "mysql":
+		logMode = &global.KOP_CONFIG.Mysql
+		break
+	default:
+		logMode = &global.KOP_CONFIG.Mysql
+	}
+
+	switch logMode.GetLogMode() {
 	case "silent", "Silent":
 		config.Logger = _default.LogMode(logger.Silent)
 	case "error", "Error":
