@@ -3,24 +3,12 @@
     <div class="login_panle">
       <div class="login_panle_form">
         <div class="login_panle_form_title">
-          <img
-            class="login_panle_form_title_logo"
-            src="@/assets/kop.png"
-            alt
-          >
+          <img class="login_panle_form_title_logo" src="@/assets/kop.png" alt />
           <p class="login_panle_form_title_p">{{ $KUBE_OPS.appName }}</p>
         </div>
-        <el-form
-          ref="loginForm"
-          :model="loginFormData"
-          :rules="rules"
-          @keyup.enter="submitForm"
-        >
+        <el-form ref="loginForm" :model="loginFormData" :rules="rules" @keyup.enter="submitForm">
           <el-form-item prop="username">
-            <el-input
-              v-model="loginFormData.username"
-              placeholder="请输入用户名"
-            >
+            <el-input v-model="loginFormData.username" placeholder="请输入用户名">
               <template #suffix>
                 <span class="input-icon">
                   <el-icon>
@@ -39,41 +27,23 @@
               <template #suffix>
                 <span class="input-icon">
                   <el-icon>
-                    <component
-                      :is="lock"
-                      @click="changeLock"
-                    />
+                    <component :is="lock" @click="changeLock" />
                   </el-icon>
                 </span>
               </template>
             </el-input>
           </el-form-item>
-          <el-form-item style="position: relative" prop="captcha">
-            <el-input
-              v-model="loginFormData.captcha"
-              placeholder="请输入验证码"
-              style="width: 60%"
-            />
-            <div class="vPic">
-              <img
-                v-if="picPath"
-                :src="picPath"
-                alt="请输入验证码"
-                @click="loginVerify()"
-              >
+          <el-form-item prop="captcha">
+            <div class="vPicBox">
+              <el-input v-model="loginFormData.captcha" placeholder="请输入验证码" style="width: 60%" />
+              <div class="vPic">
+                <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
+              </div>
             </div>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              style="width: 46%"
-              @click="checkInit"
-            >前往初始化</el-button>
-            <el-button
-              type="primary"
-              style="width: 46%; margin-left: 8%"
-              @click="submitForm"
-            >登 录</el-button>
+            <el-button type="primary" style="width: 46%" size="large" @click="checkInit">前往初始化</el-button>
+            <el-button type="primary" style="width: 46%; margin-left: 8%" size="large" @click="submitForm">登 录</el-button>
           </el-form-item>
         </el-form>
       </div>

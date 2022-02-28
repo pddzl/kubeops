@@ -2,8 +2,8 @@
   <div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button size="mini" type="primary" icon="plus">扩容</el-button>
-        <el-button icon="delete" size="mini" :disabled="!nodes.length" style="margin-left: 10px;">删除</el-button>
+        <el-button size="small" type="primary" icon="plus">扩容</el-button>
+        <el-button icon="delete" size="small" :disabled="!nodes.length" style="margin-left: 10px;">删除</el-button>
       </div>
       <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
         <el-table-column
