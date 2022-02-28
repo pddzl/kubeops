@@ -127,10 +127,10 @@ func (userService *UserService) SetUserAuthorities(id uint, authorityIds []strin
 
 //@function: DeleteUser
 //@description: 删除用户
-//@param: id float64
+//@param: id int
 //@return: err error
 
-func (userService *UserService) DeleteUser(id float64) (err error) {
+func (userService *UserService) DeleteUser(id int) (err error) {
 	var user system.SysUser
 	err = global.KOP_DB.Where("id = ?", id).Delete(&user).Error
 	if err != nil {

@@ -107,10 +107,10 @@ func (apiService *ApiService) GetAllApis() (err error, apis []system.SysApi) {
 
 //@function: GetApiById
 //@description: 根据id获取api
-//@param: id float64
+//@param: id int
 //@return: err error, api model.SysApi
 
-func (apiService *ApiService) GetApiById(id float64) (err error, api system.SysApi) {
+func (apiService *ApiService) GetApiById(id int) (err error, api system.SysApi) {
 	err = global.KOP_DB.Where("id = ?", id).First(&api).Error
 	return
 }

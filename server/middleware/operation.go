@@ -2,18 +2,20 @@ package middleware
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/pddzl/kubeops/server/utils"
-
-	"github.com/gin-gonic/gin"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/system"
 	"github.com/pddzl/kubeops/server/service"
-	"go.uber.org/zap"
+	"github.com/pddzl/kubeops/server/utils"
 )
 
 var operationRecordService = service.ServiceGroupApp.SystemServiceGroup.OperationRecordService
@@ -30,6 +32,18 @@ func OperationRecord() gin.HandlerFunc {
 			} else {
 				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 			}
+		} else {
+			query := c.Request.URL.RawQuery
+			query, _ = url.QueryUnescape(query)
+			split := strings.Split(query, "&")
+			m := make(map[string]string)
+			for _, v := range split {
+				kv := strings.Split(v, "=")
+				if len(kv) == 2 {
+					m[kv[0]] = kv[1]
+				}
+			}
+			body, _ = json.Marshal(&m)
 		}
 		claims, _ := utils.GetClaims(c)
 		if claims.ID != 0 {

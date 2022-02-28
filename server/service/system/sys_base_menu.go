@@ -12,10 +12,10 @@ type BaseMenuService struct{}
 
 //@function: DeleteBaseMenu
 //@description: 删除基础路由
-//@param: id float64
+//@param: id int
 //@return: err error
 
-func (baseMenuService *BaseMenuService) DeleteBaseMenu(id float64) (err error) {
+func (baseMenuService *BaseMenuService) DeleteBaseMenu(id int) (err error) {
 	err = global.KOP_DB.Preload("Parameters").Where("parent_id = ?", id).First(&system.SysBaseMenu{}).Error
 	if err != nil {
 		var menu system.SysBaseMenu
@@ -94,10 +94,10 @@ func (baseMenuService *BaseMenuService) UpdateBaseMenu(menu system.SysBaseMenu) 
 
 //@function: GetBaseMenuById
 //@description: 返回当前选中menu
-//@param: id float64
+//@param: id int
 //@return: err error, menu model.SysBaseMenu
 
-func (baseMenuService *BaseMenuService) GetBaseMenuById(id float64) (err error, menu system.SysBaseMenu) {
+func (baseMenuService *BaseMenuService) GetBaseMenuById(id int) (err error, menu system.SysBaseMenu) {
 	err = global.KOP_DB.Preload("Parameters").Where("id = ?", id).First(&menu).Error
 	return
 }

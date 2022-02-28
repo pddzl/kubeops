@@ -20,19 +20,19 @@ cors:
       Content-Type
     allow-credentials: true
 db-list:
-- disable: false
-  type: ""
-  alias-name: ""
-  path: ""
-  port: ""
-  config: ""
-  db-name: ""
-  username: ""
-  password: ""
-  max-idle-conns: 10
-  max-open-conns: 100
-  log-mode: ""
-  log-zap: false
+  - disable: false
+    type: ""
+    alias-name: ""
+    path: ""
+    port: ""
+    config: ""
+    db-name: ""
+    username: ""
+    password: ""
+    max-idle-conns: 10
+    max-open-conns: 100
+    log-mode: ""
+    log-zap: false
 jwt:
   buffer-time: 86400
   expires-time: 604800
@@ -50,8 +50,8 @@ mysql:
   db-name: kop
   username: root
   password: kop@2022
-  max-idle-conns: 0
-  max-open-conns: 0
+  max-idle-conns: 10
+  max-open-conns: 100
   log-mode: ""
   log-zap: false
 redis:
@@ -71,12 +71,12 @@ timer:
   start: true
   spec: '@daily'
   detail:
-  - tableName: sys_operation_records
-    compareField: created_at
-    interval: 2160h
-  - tableName: jwt_blacklists
-    compareField: created_at
-    interval: 168h
+    - tableName: sys_operation_records
+      compareField: created_at
+      interval: 2160h
+    - tableName: jwt_blacklists
+      compareField: created_at
+      interval: 168h
 zap:
   level: info
   format: console
