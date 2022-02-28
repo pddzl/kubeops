@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/system/request"
 )

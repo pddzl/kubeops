@@ -1,13 +1,12 @@
 package initialize
 
 import (
-	"os"
-
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/example"
 	"github.com/pddzl/kubeops/server/model/system"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"os"
 )
 
 // Gorm 初始化数据库并产生数据库全局变量
@@ -31,7 +30,6 @@ func RegisterTables(db *gorm.DB) {
 		system.SysAuthority{},
 		system.SysOperationRecord{},
 		system.SysBaseMenuParameter{},
-
 		// 示例模块表
 		example.ExaFileUploadAndDownload{},
 	)
