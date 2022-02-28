@@ -18,8 +18,8 @@ func (u *user) TableName() string {
 
 func (u *user) Initialize() error {
 	entities := []system.SysUser{
-		{UUID: uuid.NewV4(), Username: "admin", Password: "e10adc3949ba59abbe56e057f20f883e", NickName: "超级管理员", HeaderImg: "http://127.0.0.1:8888/uploads/file/doge.png", AuthorityId: "888"},
-		{UUID: uuid.NewV4(), Username: "a303176530", Password: "e10adc3949ba59abbe56e057f20f883e", NickName: "测试", HeaderImg: "http://127.0.0.1:8888/uploads/file/doge.png", AuthorityId: "9528"},
+		{UUID: uuid.NewV4(), Username: "admin", Password: "e10adc3949ba59abbe56e057f20f883e", NickName: "超级管理员", HeaderImg: "http://127.0.0.1:8888/uploads/file/doge.png", AuthorityId: "888", Phone: "13588888888", Email: "88888888@qq.com"},
+		{UUID: uuid.NewV4(), Username: "a303176530", Password: "e10adc3949ba59abbe56e057f20f883e", NickName: "测试", HeaderImg: "http://127.0.0.1:8888/uploads/file/doge.png", AuthorityId: "9528", Phone: "13588888888", Email: "88888888@qq.com"},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil {
 		return errors.Wrap(err, u.TableName()+"表数据初始化失败!")

@@ -300,6 +300,8 @@ func (b *BaseApi) SetUserInfo(c *gin.Context) {
 	var user system.SysUser
 	_ = c.ShouldBindJSON(&user)
 	user.Username = ""
+	user.Password = ""
+	user.AuthorityId = ""
 	// 校验 -> 字段
 	if user.ID == 0 {
 		global.KOP_LOG.Error("请求参数有误", zap.String("ID", "ID为空"))
@@ -327,6 +329,8 @@ func (b *BaseApi) SetSelfInfo(c *gin.Context) {
 	var user system.SysUser
 	_ = c.ShouldBindJSON(&user)
 	user.Username = ""
+	user.Password = ""
+	user.AuthorityId = ""
 	user.ID = utils.GetUserID(c)
 	if err, ReqUser := userService.SetUserInfo(user); err != nil {
 		global.KOP_LOG.Error("设置失败!", zap.Error(err))
