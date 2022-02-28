@@ -4,6 +4,7 @@ import (
 	"github.com/pddzl/kubeops/server/core"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/initialize"
+	"go.uber.org/zap"
 )
 
 //go:generate go env -w GO111MODULE=on
@@ -19,8 +20,9 @@ import (
 // @name x-token
 // @BasePath /
 func main() {
-	global.KOP_VP = core.Viper()                    // 初始化Viper
-	global.KOP_LOG = core.Zap()                     // 初始化zap日志库
+	global.KOP_VP = core.Viper() // 初始化Viper
+	global.KOP_LOG = core.Zap()  // 初始化zap日志库
+	zap.ReplaceGlobals(global.KOP_LOG)
 	global.KOP_DB = initialize.Gorm()               // gorm连接数据库
 	global.KOP_KUBERNETES = initialize.Kubernetes() // 初始化kubernetes api
 	initialize.Timer()

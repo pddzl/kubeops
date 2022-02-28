@@ -63,6 +63,7 @@ system:
   addr: 8888
   db-type: mysql
   oss-type: local
+  use-redis: false     # 使用redis
   use-multipoint: false
   iplimit-count: 15000
   iplimit-time: 3600

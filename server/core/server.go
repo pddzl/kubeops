@@ -15,12 +15,8 @@ import (
 	"github.com/pddzl/kubeops/server/service/system"
 )
 
-type server interface {
-	ListenAndServe() error
-}
-
 func RunServer() {
-	if global.KOP_CONFIG.System.UseMultipoint {
+	if global.KOP_CONFIG.System.UseMultipoint || global.KOP_CONFIG.System.UseRedis {
 		// 初始化redis服务
 		initialize.Redis()
 	}

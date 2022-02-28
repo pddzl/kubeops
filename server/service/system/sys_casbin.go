@@ -8,7 +8,6 @@ import (
 	gormadapter "github.com/casbin/gorm-adapter/v3"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/system"
 	"github.com/pddzl/kubeops/server/model/system/request"
 )
 
@@ -23,15 +22,9 @@ var CasbinServiceApp = new(CasbinService)
 
 func (casbinService *CasbinService) UpdateCasbin(authorityId string, casbinInfos []request.CasbinInfo) error {
 	casbinService.ClearCasbin(0, authorityId)
-	rules := [][]string{}
+	var rules [][]string
 	for _, v := range casbinInfos {
-		cm := system.CasbinModel{
-			Ptype:       "p",
-			AuthorityId: authorityId,
-			Path:        v.Path,
-			Method:      v.Method,
-		}
-		rules = append(rules, []string{cm.AuthorityId, cm.Path, cm.Method})
+		rules = append(rules, []string{authorityId, v.Path, v.Method})
 	}
 	e := casbinService.Casbin()
 	success, _ := e.AddPolicies(rules)
@@ -47,7 +40,7 @@ func (casbinService *CasbinService) UpdateCasbin(authorityId string, casbinInfos
 //@return: error
 
 func (casbinService *CasbinService) UpdateCasbinApi(oldPath string, newPath string, oldMethod string, newMethod string) error {
-	err := global.KOP_DB.Table("casbin_rule").Model(&system.CasbinModel{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]interface{}{
+	err := global.KOP_DB.Model(&gormadapter.CasbinRule{}).Where("v1 = ? AND v2 = ?", oldPath, oldMethod).Updates(map[string]interface{}{
 		"v1": newPath,
 		"v2": newMethod,
 	}).Error
