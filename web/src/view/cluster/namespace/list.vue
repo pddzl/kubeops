@@ -28,7 +28,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" min-width="160">
           <template #default="scope">
-            <el-button icon="edit" size="small" type="text" @click="editNamespace(scope.row)">编辑</el-button>
+            <el-button icon="view" size="small" type="text" @click="editNamespace(scope.row)">查看</el-button>
             <el-button icon="delete" size="small" type="text" @click="deleteNamespace(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -47,17 +47,8 @@
     </div>
 
     <el-dialog v-model="dialogFormVisible" title="编辑资源">
-      <div>
-        <el-tabs type="border-card">
-          <el-tab-pane label="JSON">
-            <vue-code-mirror ref="codeEditorRef" v-model="namespaceFormat" />
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <!-- <div>
-        <vue-code-mirror ref="codeEditorRef" v-model="namespaceFormat" />
-      </div> -->
-      <warning-bar title="此操作相当于：kubectl apply -f <spec.json>" style="margin-top: 10px;" />
+      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+      <vue-code-mirror v-model:modelValue="namespaceFormat" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -67,12 +58,10 @@ import { ref } from 'vue'
 import { statusNsFilter } from '@/mixin/filter'
 import { getNamespaceList } from '@/api/kubernetes/namespace'
 import { formatDate } from '@/utils/format'
-import warningBar from '@/components/warningBar/warningBar.vue'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
   name: 'Namespace',
   components: {
-    warningBar,
     VueCodeMirror
   },
   setup() {
@@ -83,7 +72,6 @@ export default {
     const tableData = ref([])
     const dialogFormVisible = ref(false)
     const namespaceFormat = ref({})
-    const codeEditorRef = ref(null)
 
     // 加载namespace数据
     const getTableData = async() => {
@@ -101,10 +89,6 @@ export default {
     const editNamespace = async(row) => {
       dialogFormVisible.value = true
       namespaceFormat.value = JSON.stringify(row)
-      console.log('row', namespaceFormat.value)
-      // nextTick(() => {
-      //   console.log('childData1', codeEditorRef.value.childData)
-      // })
     }
 
     // 分页
@@ -117,13 +101,6 @@ export default {
       page.value = val
       getTableData()
     }
-
-    // onMounted(() => {
-    //   nextTick(() => {
-    //     codeEditorRef.value.refresh()
-    //     console.log('childData2', codeEditorRef.value.childData)
-    //   })
-    // })
 
     return {
       dialogFormVisible,
@@ -141,9 +118,7 @@ export default {
       statusNsFilter,
       // 操作
       editNamespace,
-      namespaceFormat,
-      // ref
-      codeEditorRef
+      namespaceFormat
     }
   }
 }
