@@ -17,6 +17,7 @@ import yaml from 'js-yaml'
 // codemirror基础资源引入
 import _CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
+import 'codemirror/lib/codemirror.js'
 import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/yaml/yaml.js'
 
@@ -95,10 +96,12 @@ export default {
     watch(mimeType, () => {
       if (editor != null && mimeType.value) {
         if (mimeType.value === 'JSON') {
-          editor.mime = 'text/javascript'
+          editor.setOption('mode', 'javascript')
+          editor.setOption('mime', 'text/javascript')
           editor.setValue(JSON.stringify(yaml.load(modelValue.value), null, 2))
         } else if (mimeType.value === 'YAML') {
-          editor.mime = 'text/x-yaml'
+          editor.setOption('mode', 'yaml')
+          editor.setOption('mime', 'text/x-yaml')
           editor.setValue(yaml.dump(JSON.parse(modelValue.value)))
         }
         setTimeout(function() {
@@ -114,6 +117,7 @@ export default {
     onMounted(() => {
       editor = CodeMirror.fromTextArea(codeEditor.value, {
         value: modelValue.value,
+        // mode: 'yaml',
         // mime: 'text/x-yaml',
         indentWithTabs: false, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符，默认为false
         smartIndent: true, // 自动缩进，设置是否根据上下文自动缩进（和上一行相同的缩进量）。默认为true
@@ -138,10 +142,12 @@ export default {
         editor.setValue(defaultValue.value)
       } else {
         if (mimeType.value === 'JSON') {
-          editor.mime = 'text/javascript'
+          editor.setOption('mode', 'javascript')
+          editor.setOption('mime', 'text/javascript')
           editor.setValue(JSON.stringify(JSON.parse(modelValue.value), null, 2))
         } else if (mimeType.value === 'YAML') {
-          editor.mime = 'text/x-yaml'
+          editor.setOption('mode', 'yaml')
+          editor.setOption('mime', 'text/x-yaml')
           editor.setValue(yaml.dump(JSON.parse(modelValue.value)))
         }
       }

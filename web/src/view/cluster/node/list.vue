@@ -3,21 +3,27 @@
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button size="small" type="primary" icon="plus">扩容</el-button>
-        <el-button icon="delete" size="small" :disabled="!nodes.length" style="margin-left: 10px;">删除</el-button>
+        <el-button
+          icon="delete"
+          size="small"
+          :disabled="!nodes.length"
+          style="margin-left: 10px;"
+        >删除</el-button>
       </div>
-      <el-table :data="tableData" @sort-change="sortChange" @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55"
-        />
+      <el-table
+        :data="tableData"
+        @sort-change="sortChange"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
         <el-table-column label="名称" min-width="100">
           <template #default="scope">
-            <router-link :to="{name:'node_detail', query:{name:scope.row.metadata.name}}">
+            <router-link :to="{ name: 'node_detail', query: { name: scope.row.metadata.name } }">
               <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="内部IP" min-width="120" prop="status.addresses[0].address" />
+        <el-table-column label="内部IP" min-width="130" prop="status.addresses[0].address" />
         <el-table-column label="角色" min-width="220" prop="roles">
           <template #default="scope">
             <span v-for="(role, index) in scope.row.roles" :key="index" style="margin-right: 5px;">
@@ -27,34 +33,30 @@
         </el-table-column>
         <el-table-column label="状态" min-width="120" prop="ready">
           <template #default="scope">
-            <el-tag :type="statusNodeTypeFilter(scope.row.ready)" size="small">
-              {{ statusNodeFilter(scope.row.ready) }}
-            </el-tag>
+            <el-tag
+              :type="statusNodeTypeFilter(scope.row.ready)"
+              size="small"
+            >{{ statusNodeFilter(scope.row.ready) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="CPU (core)" min-width="100" prop="status.capacity.cpu" />
         <el-table-column label="内存 (GB)" min-width="100">
-          <template #default="scope">
-            {{ (parseInt(scope.row.status.capacity.memory.slice(0, -2))/1024/1024).toFixed(2) }}
-          </template>
+          <template
+            #default="scope"
+          >{{ (parseInt(scope.row.status.capacity.memory.slice(0, -2)) / 1024 / 1024).toFixed(2) }}</template>
         </el-table-column>
-        <el-table-column label="创建时间" min-width="180" prop="metadata.creationTimestamp" sortable="custom">
+        <el-table-column
+          label="创建时间"
+          min-width="180"
+          prop="metadata.creationTimestamp"
+          sortable="custom"
+        >
           <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <el-button
-              icon="edit"
-              size="small"
-              type="text"
-              @click="editNode(scope.row)"
-            >编辑</el-button>
-            <el-button
-              icon="delete"
-              size="small"
-              type="text"
-              @click="deleteNode(scope.row)"
-            >删除</el-button>
+            <el-button icon="view" size="small" type="text" @click="editNode(scope.row)">查看</el-button>
+            <el-button icon="delete" size="small" type="text" @click="deleteNode(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,8 +73,8 @@
       </div>
     </div>
 
-    <el-dialog v-model="dialogFormVisible" title="编辑资源">
-      <el-tabs type="border-card">
+    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <!-- <el-tabs type="border-card">
         <el-tab-pane label="JSON">
           <vue-json-pretty
             style="height:400px"
@@ -82,28 +84,29 @@
             :data="state.data"
           />
         </el-tab-pane>
-      </el-tabs>
-      <warning-bar title="此操作相当于：kubectl apply -f <spec.json>" style="margin-top: 10px;" />
+      </el-tabs> -->
+      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+      <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
+      <!-- <warning-bar title="此操作相当于：kubectl apply -f <spec.json>" style="margin-top: 10px;" /> -->
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import { getNodeList } from '@/api/kubernetes/node'
 import { toSQLLine } from '@/utils/stringFun'
-import warningBar from '@/components/warningBar/warningBar.vue'
+// import warningBar from '@/components/warningBar/warningBar.vue'
 import { formatDate } from '@/utils/format'
 import { ref, reactive } from 'vue'
 import { ElMessageBox } from 'element-plus'
 import { statusNodeTypeFilter, statusNodeFilter } from '@/mixin/filter.js'
+import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
   name: 'Node',
   components: {
-    VueJsonPretty,
-    warningBar
+    VueCodeMirror,
+    // warningBar
   },
   setup() {
     // 响应式数据
@@ -113,6 +116,7 @@ export default {
     const tableData = ref([])
     const searchInfo = reactive({})
     const dialogFormVisible = ref(false)
+    const nodeFormat = ref({})
     const state = reactive({
       virtualLines: 30,
       showLength: true
@@ -152,12 +156,8 @@ export default {
 
     // 操作
     const editNode = async(row) => {
-      const nodeData = JSON.parse(JSON.stringify(row))
-      delete nodeData.roles
-      delete nodeData.ready
-      state.val = JSON.stringify(nodeData)
-      state.data = nodeData
       dialogFormVisible.value = true
+      nodeFormat.value = JSON.stringify(row)
     }
 
     const deleteNode = async(row) => {
@@ -205,6 +205,7 @@ export default {
       dialogFormVisible,
       state,
       nodes,
+      nodeFormat,
       // 操作
       editNode,
       deleteNode,
