@@ -109,11 +109,11 @@ export default {
         }, 0)
       }
     })
-    watch(readOnly, () => {
-      if (editor != null) {
-        editor.setOption('readOnly', readOnly.value)
-      }
-    })
+    // watch(readOnly, () => {
+    //   if (editor != null) {
+    //     editor.setOption('readOnly', readOnly.value)
+    //   }
+    // })
     onMounted(() => {
       editor = CodeMirror.fromTextArea(codeEditor.value, {
         value: modelValue.value,
