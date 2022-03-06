@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
@@ -16,7 +17,7 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 	var namespaceBriefList []resource.NameSpaceBrief
 	var namespaceList v1.NamespaceList
 
-	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), api.ListEverything)
+	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}

@@ -67,3 +67,23 @@ func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
+
+// 获取namespace in raw
+
+func (n *NamespaceApi) GetNamespaceRaw(c *gin.Context) {
+	var nameInfo request.GetByName
+	_ = c.ShouldBindJSON(&nameInfo)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&nameInfo); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	detail, err := namespaceService.GetNamespaceRaw(nameInfo.Name)
+	if err != nil {
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(detail, "获取成功", c)
+}

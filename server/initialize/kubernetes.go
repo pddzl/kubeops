@@ -27,5 +27,6 @@ func Kubernetes() *kubernetes.Clientset {
 		global.KOP_LOG.Error("k8s clientset", zap.Error(err))
 		return nil
 	}
+
 	return clientset
 }

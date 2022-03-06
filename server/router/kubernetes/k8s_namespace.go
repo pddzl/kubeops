@@ -14,6 +14,7 @@ func (n *NamespaceRouter) InitNamespaceRouter(Router *gin.RouterGroup) {
 	namespaceRouterApi := v1.ApiGroupApp.KubernetesApiGroup.NamespaceApi
 	{
 		namespaceRouter.POST("getNamespaceDetail", namespaceRouterApi.GetNamespaceDetail) // 获取namespace详情
+		namespaceRouter.POST("getNamespaceRaw", namespaceRouterApi.GetNamespaceRaw)       // 获取namespace in raw
 	}
 	{
 		namespaceRouterWithoutRecord.POST("getNamespaceList", namespaceRouterApi.GetNamespaceList)        // 获取所有namespace

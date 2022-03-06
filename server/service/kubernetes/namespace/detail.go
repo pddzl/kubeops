@@ -2,17 +2,19 @@ package namespace
 
 import (
 	"context"
-	v1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
+	v1 "k8s.io/api/core/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, err error) {
 	var namespaceDetail resource.NameSpaceDetail
-	namespace, err := global.KOP_KUBERNETES.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{})
+	namespace, err := global.KOP_KUBERNETES.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{TypeMeta: metaV1.TypeMeta{}})
+	//req, err := global.KOP_KUBERNETES.RESTClient().Get().AbsPath("/api/v1/namespaces/kubeops").DoRaw(context.TODO())
+	//req, err := global.KOP_KUBERNETES.RESTClient().Get().Resource("namespaces").Namespace("kube-system").DoRaw(context.TODO())
+
 	if err != nil {
 		return nil, err
 	}
