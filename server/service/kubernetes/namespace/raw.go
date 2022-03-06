@@ -2,6 +2,8 @@ package namespace
 
 import (
 	"context"
+	"encoding/json"
+	
 	"github.com/pddzl/kubeops/server/global"
 )
 
@@ -12,5 +14,5 @@ func (n *NamespaceService) GetNamespaceRaw(name string) (raw interface{}, err er
 	if err != nil {
 		return nil, err
 	}
-	return string(req), nil
+	return json.RawMessage(req), nil
 }
