@@ -20,7 +20,9 @@
       <el-table :data="tableData">
         <el-table-column label="名称" min-width="220">
           <template #default="scope">
-            <router-link :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }">
+            <router-link
+              :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }"
+            >
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
           </template>
@@ -36,8 +38,8 @@
           <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
-          <template #default>
-            <el-button icon="edit" type="text" size="small">编辑</el-button>
+          <template #default="scope">
+            <el-button icon="view" type="text" size="small" @click="editPod(scope.row)">查看</el-button>
             <el-button icon="tickets" type="text" size="small">日志</el-button>
             <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
@@ -55,6 +57,11 @@
           @size-change="handleSizeChange"
         />
       </div>
+
+      <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+        <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+        <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -64,9 +71,13 @@ import { ref, reactive } from 'vue'
 import { formatDate } from '@/utils/format'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getPodList } from '@/api/kubernetes/pod'
+import { getPodList, getPodRaw } from '@/api/kubernetes/pod'
+import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
   name: 'Pod',
+  components: {
+    VueCodeMirror,
+  },
   setup() {
     // 响应式数据
     const namespace = ref([])
@@ -77,6 +88,8 @@ export default {
     const pageSize = ref(10)
     const total = ref(0)
     const tableData = ref([])
+    const podFormat = ref({})
+    const dialogFormVisible = ref(false)
 
     // 加载namespace数据
     const getNamespace = async() => {
@@ -98,6 +111,15 @@ export default {
       }
     }
     getTableData()
+
+    // 操作
+    const editPod = async(row) => {
+      const result = await getPodRaw({ pod: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        podFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -123,9 +145,12 @@ export default {
     }
 
     return {
+      // 响应式数据
       namespace,
       searchInfo,
       tableData,
+      podFormat,
+      dialogFormVisible,
       // filter
       statusPodFilter,
       // time format
@@ -138,7 +163,8 @@ export default {
       handleCurrentChange,
       // 查询
       onSubmit,
-      onReset
+      onReset,
+      editPod
     }
   }
 }

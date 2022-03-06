@@ -69,6 +69,25 @@ func (p *PodApi) GetPodDetail(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
+// 获取pod in raw
+
+func (p *PodApi) GetPodRaw(c *gin.Context) {
+	var podDetail request.PodDetail
+	_ = c.ShouldBindJSON(&podDetail)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&podDetail); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	info, err := podService.GetPodRaw(podDetail.NameSpace, podDetail.Pod)
+	if err != nil {
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	}
+	response.OkWithDetailed(info, "获取成功", c)
+}
+
 // 获取pod日志
 
 func (p *PodApi) GetPodLog(c *gin.Context) {

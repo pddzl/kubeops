@@ -17,3 +17,12 @@ export const getPodDetail = (data) => {
     data
   })
 }
+
+// 获取pod详情
+export const getPodRaw = (data) => {
+  return service({
+    url: '/pod/getPodRaw',
+    method: 'post',
+    data
+  })
+}

@@ -17,3 +17,12 @@ export const getNodeDetail = (data) => {
     data
   })
 }
+
+// 获取节点信息 in raw
+export const getNodeRaw = (data) => {
+  return service({
+    url: '/node/getNodeRaw',
+    method: 'post',
+    data
+  })
+}

@@ -74,17 +74,6 @@
     </div>
 
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
-      <!-- <el-tabs type="border-card">
-        <el-tab-pane label="JSON">
-          <vue-json-pretty
-            style="height:400px"
-            :virtual="true"
-            :virtual-lines="+state.virtualLines"
-            :show-length="state.showLength"
-            :data="state.data"
-          />
-        </el-tab-pane>
-      </el-tabs> -->
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
       <!-- <warning-bar title="此操作相当于：kubectl apply -f <spec.json>" style="margin-top: 10px;" /> -->
@@ -94,7 +83,7 @@
 
 <script>
 import 'vue-json-pretty/lib/styles.css'
-import { getNodeList } from '@/api/kubernetes/node'
+import { getNodeList, getNodeRaw } from '@/api/kubernetes/node'
 import { toSQLLine } from '@/utils/stringFun'
 // import warningBar from '@/components/warningBar/warningBar.vue'
 import { formatDate } from '@/utils/format'
@@ -156,8 +145,11 @@ export default {
 
     // 操作
     const editNode = async(row) => {
+      const result = await getNodeRaw({ name: row.metadata.name })
+      if (result.code === 0) {
+        nodeFormat.value = JSON.stringify(result.data)
+      }
       dialogFormVisible.value = true
-      nodeFormat.value = JSON.stringify(row)
     }
 
     const deleteNode = async(row) => {

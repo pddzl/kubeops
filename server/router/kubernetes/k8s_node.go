@@ -15,6 +15,7 @@ func (s *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) {
 	nodeRouterApi := v1.ApiGroupApp.KubernetesApiGroup.NodeApi
 	{
 		nodeRouter.POST("getNodeDetail", nodeRouterApi.GetNodeDetail) // 获取node详情
+		nodeRouter.POST("getNodeRaw", nodeRouterApi.GetNodeRaw)       // 获取node in raw
 	}
 	{
 		nodeRouterWithoutRecord.POST("getNodeList", nodeRouterApi.GetNodeList) // 获取所有node

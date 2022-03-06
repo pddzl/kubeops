@@ -14,6 +14,7 @@ func (s *NodeRouter) InitPodRouter(Router *gin.RouterGroup) {
 	podRouterApi := v1.ApiGroupApp.KubernetesApiGroup.PodApi
 	{
 		podRouter.POST("getPodDetail", podRouterApi.GetPodDetail) // 获取pod详情
+		podRouter.POST("getPodRaw", podRouterApi.GetPodRaw)       // 获取pod in raw
 	}
 	{
 		podRouterWithoutRecord.POST("getPodList", podRouterApi.GetPodList) // 获取所有pod
