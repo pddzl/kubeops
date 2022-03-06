@@ -25,3 +25,12 @@ export const getNamespaceDetail = (data) => {
     data
   })
 }
+
+// 获取namespace detail
+export const getNamespaceRaw = (data) => {
+  return service({
+    url: '/namespace/getNamespaceRaw',
+    method: 'post',
+    data
+  })
+}

@@ -56,7 +56,7 @@
 <script>
 import { ref } from 'vue'
 import { statusNsFilter } from '@/mixin/filter'
-import { getNamespaceList } from '@/api/kubernetes/namespace'
+import { getNamespaceList, getNamespaceRaw } from '@/api/kubernetes/namespace'
 import { formatDate } from '@/utils/format'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
@@ -87,8 +87,12 @@ export default {
 
     // 操作
     const editNamespace = async(row) => {
+      // namespaceFormat.value = JSON.stringify(row)
+      const result = await getNamespaceRaw({ name: row.name })
+      if (result.code === 0) {
+        namespaceFormat.value = JSON.stringify(result.data)
+      }
       dialogFormVisible.value = true
-      namespaceFormat.value = JSON.stringify(row)
     }
 
     // 分页
