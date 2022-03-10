@@ -5,9 +5,10 @@ import (
 )
 
 type PodLog struct {
-	NameSpace string `json:"namespace" default:"default"`
+	NameSpace string `json:"namespace" validate:"required"`
 	Pod       string `json:"pod" validate:"required"`
-	Lines     int64  `json:"lines" default:"20"`
+	Container string `json:"container"`
+	Lines     int64  `json:"lines"`
 }
 
 type SearchPodParams struct {
@@ -17,5 +18,5 @@ type SearchPodParams struct {
 
 type PodDetail struct {
 	Pod       string `json:"pod" validate:"required"`
-	NameSpace string `json:"namespace" default:"default"`
+	NameSpace string `json:"namespace" validate:"required"`
 }

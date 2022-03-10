@@ -28,16 +28,17 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "workloads", Name: "workloads", Component: "view/workloads/index.vue", Sort: 3, Meta: system.Meta{Title: "工作负载", Icon: "help-filled"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "pod", Name: "pod", Component: "view/workloads/pod/list.vue", Sort: 3, Meta: system.Meta{Title: "Pods", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "pod/detail", Name: "pod_detail", Component: "view/workloads/pod/detail.vue", Sort: 3, Meta: system.Meta{Title: "Pod详情", Icon: "ship"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "pod/log", Name: "pod_log", Component: "view/workloads/pod/log.vue", Sort: 3, Meta: system.Meta{Title: "Pod日志", Icon: "ship"}},
 		// superAdmin
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 3, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "10", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "10", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "10", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "10", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "10", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 6, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "11", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "11", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "11", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "11", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "11", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 6, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
 		// example
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 6, Meta: system.Meta{Title: "示例文件", Icon: "management"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 5, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "17", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 5, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
 		// person
 		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 4, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
 	}

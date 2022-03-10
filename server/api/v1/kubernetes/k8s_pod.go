@@ -99,7 +99,7 @@ func (p *PodApi) GetPodLog(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	log, err := podService.GetPodLog(podLog.NameSpace, podLog.Pod, podLog.Lines)
+	log, err := podService.GetPodLog(podLog.NameSpace, podLog.Container, podLog.Pod, podLog.Lines)
 	if err != nil {
 		global.KOP_LOG.Error(err.Error())
 		response.FailWithMessage("获取日志失败", c)
