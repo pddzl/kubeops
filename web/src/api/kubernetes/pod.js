@@ -26,3 +26,12 @@ export const getPodRaw = (data) => {
     data
   })
 }
+
+// 获取pod日志
+export const getPodLog = (data) => {
+  return service({
+    url: '/pod/getPodLog',
+    method: 'post',
+    data
+  })
+}

@@ -40,7 +40,12 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editPod(scope.row)">查看</el-button>
-            <el-button icon="tickets" type="text" size="small">日志</el-button>
+            <el-button
+              icon="tickets"
+              type="text"
+              size="small"
+              @click="routerPod(scope.row)"
+            >日志</el-button>
             <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
@@ -68,6 +73,7 @@
 
 <script>
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { formatDate } from '@/utils/format'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
@@ -90,6 +96,8 @@ export default {
     const tableData = ref([])
     const podFormat = ref({})
     const dialogFormVisible = ref(false)
+
+    const router = useRouter()
 
     // 加载namespace数据
     const getNamespace = async() => {
@@ -119,6 +127,11 @@ export default {
         podFormat.value = JSON.stringify(result.data)
       }
       dialogFormVisible.value = true
+    }
+
+    // 跳转日志页面
+    const routerPod = async(row) => {
+      router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})
     }
 
     // 分页
@@ -164,7 +177,8 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editPod
+      editPod,
+      routerPod
     }
   }
 }
