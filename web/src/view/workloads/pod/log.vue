@@ -15,16 +15,15 @@
         <el-form-item>
           <el-button size="small" type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button size="small" icon="refresh" @click="onReset">重置</el-button>
-          <el-button size="small" type="primary" plain icon="download" @click="onReset">下载日志</el-button>
+          <el-button size="small" type="primary" plain icon="download" @click="donwloadLog">下载日志</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="log">
-      <p
-        v-for="(log, key) in podLogList"
-        :key="key"
-        style="color: rgba(0, 128, 0, 0.856)"
-      ><span style="color: rgba(255, 255, 0, 0.671);">{{ key+1 }}</span> {{ log }}</p>
+      <p v-for="(log, key) in podLogList" :key="key" style="color: rgba(0, 128, 0, 0.856)">
+        <span style="color: rgba(255, 255, 0, 0.671);">{{ key + 1 }}</span>
+        {{ log }}
+      </p>
     </div>
   </div>
 </template>
@@ -67,6 +66,22 @@ export default {
     }
     getPodContainer()
 
+    // 下载日志
+    const donwloadLog = async() => {
+      const podLog = await getPodLog({ ...searchInfo })
+      if (podLog.code === 0) {
+        const url = window.URL.createObjectURL(new Blob([podLog.data]))
+        const a = document.createElement('a')
+        a.style.display = 'none'
+        a.href = url
+        a.setAttribute('download', 'pod-log.txt')
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(a.href)
+        document.body.removeChild(a)
+      }
+    }
+
     const onSubmit = () => {
       getPodLogData()
     }
@@ -83,6 +98,7 @@ export default {
       podLogList,
       lines,
       // 函数
+      donwloadLog,
       onSubmit,
       onReset
     }
