@@ -119,7 +119,6 @@ import { useRouterStore } from '@/pinia/modules/router'
 const router = useRouter()
 const route = useRoute()
 const routerStore = useRouterStore()
-console.log(routerStore.keepAliveRouters)
 // 三种窗口适配
 const isCollapse = ref(false)
 const isSider = ref(true)

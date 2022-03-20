@@ -44,9 +44,9 @@
               icon="tickets"
               type="text"
               size="small"
-              @click="routerPod(scope.row)"
+              @click="routerPod(scope.row, 'log')"
             >日志</el-button>
-            <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
+            <el-button icon="ArrowRight" type="text" size="small" @click="routerPod(scope.row, 'terminal')">终端</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -130,8 +130,12 @@ export default {
     }
 
     // 跳转日志页面
-    const routerPod = async(row) => {
-      router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})
+    const routerPod = async(row, dest) => {
+      if (dest === 'log') {
+        router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})
+      } else if (dest === 'terminal') {
+        router.push({ name: 'pod_terminal', query: { pod: row.name, namespace: row.namespace }})
+      }
     }
 
     // 分页
