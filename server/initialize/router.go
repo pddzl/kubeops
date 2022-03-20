@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/middleware"
+	"github.com/pddzl/kubeops/server/middleware/log"
 	"github.com/pddzl/kubeops/server/router"
 	"net/http"
 )
@@ -11,7 +12,8 @@ import (
 // 初始化总路由
 
 func Routers() *gin.Engine {
-	Router := gin.Default()
+	var Router = gin.New()
+	Router.Use(log.GinLogger(), log.GinRecovery(true))
 
 	// 如果想要不使用nginx代理前端网页，可以修改 web/.env.production 下的
 	// VUE_APP_BASE_API = /
