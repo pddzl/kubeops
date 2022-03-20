@@ -23,8 +23,8 @@ func main() {
 	global.KOP_VP = core.Viper() // 初始化Viper
 	global.KOP_LOG = core.Zap()  // 初始化zap日志库
 	zap.ReplaceGlobals(global.KOP_LOG)
-	global.KOP_DB = initialize.Gorm()               // gorm连接数据库
-	global.KOP_KUBERNETES = initialize.Kubernetes() // 初始化kubernetes api
+	global.KOP_DB = initialize.Gorm()                                         // gorm连接数据库
+	global.KOP_KUBERNETES, global.KUBERNETES_CONFIG = initialize.Kubernetes() // 初始化kubernetes api
 	initialize.Timer()
 	initialize.DBList()
 	if global.KOP_DB != nil {

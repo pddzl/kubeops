@@ -8,9 +8,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func Kubernetes() *kubernetes.Clientset {
+func Kubernetes() (clientset *kubernetes.Clientset, config *rest.Config) {
 	var err error
-	var config *rest.Config
 
 	if global.KOP_CONFIG.Kubernetes.InCluster {
 		config, err = rest.InClusterConfig()
@@ -19,14 +18,14 @@ func Kubernetes() *kubernetes.Clientset {
 	}
 	if err != nil {
 		global.KOP_LOG.Error("k8s config", zap.Error(err))
-		return nil
+		return nil, nil
 	}
 
-	clientset, err := kubernetes.NewForConfig(config)
+	clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		global.KOP_LOG.Error("k8s clientset", zap.Error(err))
-		return nil
+		return nil, nil
 	}
 
-	return clientset
+	return clientset, config
 }

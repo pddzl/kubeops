@@ -10,9 +10,14 @@ import (
 
 var casbinService = service.ServiceGroupApp.SystemServiceGroup.CasbinService
 
-// 拦截器
+// CasbinHandler 拦截器
 func CasbinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// websocket跳过验证
+		if c.IsWebsocket() {
+			c.Next()
+			return
+		}
 		waitUse, _ := utils.GetClaims(c)
 		// 获取请求的PATH
 		obj := c.Request.URL.Path

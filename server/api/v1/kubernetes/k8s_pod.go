@@ -1,13 +1,16 @@
 package kubernetes
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/websocket"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/response"
 	"github.com/pddzl/kubeops/server/model/kubernetes/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type PodApi struct{}
@@ -105,4 +108,34 @@ func (p *PodApi) GetPodLog(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(log, "获取日志成功", c)
+}
+
+// 获取pod webShell
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func (p *PodApi) GetPodTerminal(c *gin.Context) {
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		global.KOP_LOG.Error(fmt.Sprintf("初始化websocket失败 %s", c.Errors))
+	}
+	defer ws.Close()
+
+	session, err := podService.NewTerminalSession(ws)
+	if err != nil {
+		global.KOP_LOG.Error(fmt.Sprintf("初始化session失败 %s", c.Errors))
+	}
+
+	namespace, _ := c.GetQuery("namespace")
+	pod, _ := c.GetQuery("pod")
+	container, _ := c.GetQuery("container")
+
+	err = podService.GetPodTerminal(namespace, pod, container, global.KUBERNETES_CONFIG, session)
+	if err != nil {
+		global.KOP_LOG.Error(fmt.Sprintf("terminal失败 %s", c.Errors))
+	}
 }

@@ -18,7 +18,7 @@ func (s *NodeRouter) InitPodRouter(Router *gin.RouterGroup) {
 		podRouter.POST("getPodLog", podRouterApi.GetPodLog)       // 获取pod日志
 	}
 	{
-		podRouterWithoutRecord.POST("getPodList", podRouterApi.GetPodList) // 获取所有pod
-
+		podRouterWithoutRecord.POST("getPodList", podRouterApi.GetPodList)        // 获取所有pod
+		podRouterWithoutRecord.GET("getPodTerminal", podRouterApi.GetPodTerminal) // 获取pod webShell websocket携带不了jwt
 	}
 }

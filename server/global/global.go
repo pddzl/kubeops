@@ -8,6 +8,7 @@ import (
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"github.com/pddzl/kubeops/server/config"
 	"github.com/pddzl/kubeops/server/utils/timer"
@@ -24,6 +25,7 @@ var (
 	KOP_Timer               timer.Timer = timer.NewTimerTask()
 	KOP_Concurrency_Control             = &singleflight.Group{}
 	KOP_KUBERNETES          *kubernetes.Clientset
+	KUBERNETES_CONFIG       *rest.Config
 
 	BlackCache local_cache.Cache
 )
