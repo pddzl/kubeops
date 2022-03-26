@@ -48,8 +48,11 @@ func (p *PodService) NewTerminalSession(conn *websocket.Conn) (*TerminalSession,
 // stdout  be->fe     Data           Output from the process
 // toast   be->fe     Data           OOB message to be shown to the user
 type TerminalMessage struct {
-	Op, Data, SessionID string
-	Rows, Cols          uint16
+	Op        string `json:"op"`
+	Data      string `json:"data"`
+	SessionID string `json:"sessionID"`
+	Rows      uint16 `json:"rows"`
+	Cols      uint16 `json:"cols"`
 }
 
 // Next TerminalSize handles pty->process resize events

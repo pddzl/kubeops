@@ -30,7 +30,7 @@ import { FitAddon } from 'xterm-addon-fit'
 // web链接插件
 // import * as webLinks from 'xterm/lib/addons/webLinks/webLinks'
 // websocket插件
-import { AttachAddon } from 'xterm-addon-attach'
+// import { AttachAddon } from 'xterm-addon-attach'
 
 import { ref, reactive, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
@@ -67,20 +67,46 @@ export default {
       ws.onopen = () => {
         console.log('初始化terminal')
         initTerminal()
+        terminal.write('\r')
+        const msg = { op: 'stdin', data: 'export TERM=xterm && clear \r' }
+        ws.send(JSON.stringify(msg))
+      }
+    }
+
+    const wsOnMessage = () => {
+      ws.onmessage = (event) => {
+        console.log('event', event.data)
+        // let msg = ''
+        // if (typeof (event) === 'string') {
+        //   msg = JSON.parse(event.data)
+        // }
+        terminal.write(event.data)
+        const msg = JSON.parse(event.data)
+        if (msg.op === 'stdout') {
+          terminal.write(msg.data)
+        } else {
+          console.log('invalid msg op: ' + msg)
+        }
       }
     }
 
     const wsOnError = () => {
-      ws.onerror = () => {
-        console.log('websocket连接失败')
+      ws.onerror = (error) => {
+        console.log('[error] Connection error')
+        terminal.write('error: ' + error.message)
+        terminal.destroy()
       }
     }
 
     const wsOnClose = () => {
-      ws.onclose = (e) => {
-        console.log('关闭websocket')
-        console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
-        console.log(e)
+      ws.onclose = (event) => {
+        if (event.wasClean) {
+          console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`)
+        } else {
+          console.log('[close] Connection died')
+          terminal.writeln('')
+        }
+        terminal.write('Connection Reset By Peer! Try Refresh.')
       }
     }
 
@@ -89,6 +115,7 @@ export default {
       ws = new WebSocket(`ws://10.192.104.101:8888/pod/getPodTerminal?namespace=${namespace}&pod=${pod}`)
       wsOnClose()
       wsOnOpen()
+      wsOnMessage()
       wsOnError()
     }
     initWs()
@@ -103,13 +130,27 @@ export default {
         cursorBlink: true,
         disableStdin: false
       })
-      const attachAddon = new AttachAddon(ws)
+      // const attachAddon = new AttachAddon(ws)
       const fitAddon = new FitAddon()
-      terminal.loadAddon(attachAddon)
+      // terminal.loadAddon(attachAddon)
       terminal.loadAddon(fitAddon)
       terminal.open(terminalRef.value)
       fitAddon.fit()
       terminal.focus()
+      terminal.onData(function(data) {
+        const msg = { op: 'stdin', data: data }
+        ws.send(JSON.stringify(msg))
+      })
+      // term.toggleFullScreen(true);
+      // terminal.on('data', function(data) {
+      //   const msg = { op: 'stdin', data: data }
+      //   ws.send(JSON.stringify(msg))
+      // })
+      // terminal.on('resize', function(size) {
+      //   console.log('resize: ' + size)
+      //   const msg = { op: 'resize', cols: size.cols, rows: rows }
+      //   ws.send(JSON.stringify(msg))
+      // })
     }
 
     const onSubmit = () => {

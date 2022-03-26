@@ -136,6 +136,6 @@ func (p *PodApi) GetPodTerminal(c *gin.Context) {
 
 	err = podService.GetPodTerminal(namespace, pod, container, global.KUBERNETES_CONFIG, session)
 	if err != nil {
-		global.KOP_LOG.Error(fmt.Sprintf("terminal失败 %s", c.Errors))
+		global.KOP_LOG.Error("terminal失败", zap.Error(err))
 	}
 }
