@@ -21,14 +21,22 @@
             :style="{
               color: activeValue === name(item) ? userStore.activeColor : '#333',
             }"
-          ><i
-             class="dot"
-             :style="{
-               backgroundColor:
-                 activeValue === name(item) ? userStore.activeColor : '#ddd',
-             }"
-           />
-            {{ item.meta.title }}</span>
+          >
+            <i
+              class="dot"
+              :style="{
+                backgroundColor:
+                  activeValue === name(item) ? userStore.activeColor : '#ddd',
+              }"
+            />
+            {{ item.meta.title }}
+            <span
+              v-if="['namespace_detail', 'node_detail'].includes(item.name)"
+            >{{ item.query.name }}</span>
+            <span
+              v-else-if="['pod_detail', 'pod_log', 'pod_terminal'].includes(item.name)"
+            >{{ item.query.pod }}</span>
+          </span>
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -87,7 +95,7 @@ const defaultRouter = computed(() => userStore.userInfo.authority.defaultRouter)
 const openContextMenu = (e) => {
   if (
     historys.value.length === 1 &&
-        route.name === defaultRouter.value
+    route.name === defaultRouter.value
   ) {
     return false
   }
@@ -194,6 +202,21 @@ const isSame = (route1, route2) => {
 }
 const setTab = (route) => {
   if (!historys.value.some((item) => isSame(item, route))) {
+    if (route.name === 'namespace_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'namespace_detail')
+    }
+    if (route.name === 'node_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'node_detail')
+    }
+    if (route.name === 'pod_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'pod_detail')
+    }
+    if (route.name === 'pod_log') {
+      historys.value = historys.value.filter(element => element.name !== 'pod_log')
+    }
+    if (route.name === 'pod_terminal') {
+      historys.value = historys.value.filter(element => element.name !== 'pod_terminal')
+    }
     const obj = {}
     obj.name = route.name
     obj.meta = { ...route.meta }
@@ -286,7 +309,7 @@ const initPage = () => {
     },
   ]
   historys.value =
-      JSON.parse(sessionStorage.getItem('historys')) || initHistorys
+    JSON.parse(sessionStorage.getItem('historys')) || initHistorys
   if (!window.sessionStorage.getItem('activeValue')) {
     activeValue.value = getFmtString(route)
   } else {
