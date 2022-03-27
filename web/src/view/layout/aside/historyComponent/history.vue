@@ -196,7 +196,7 @@ const setTab = (route) => {
   if (!historys.value.some((item) => isSame(item, route))) {
     const obj = {}
     obj.name = route.name
-    obj.meta = { ...route.name }
+    obj.meta = { ...route.meta }
     delete obj.meta.matched
     obj.query = route.query
     obj.params = route.params
