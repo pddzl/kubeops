@@ -145,9 +145,8 @@ func (userService *UserService) DeleteUser(id int) (err error) {
 //@param: reqUser model.SysUser
 //@return: err error, user model.SysUser
 
-func (userService *UserService) SetUserInfo(reqUser system.SysUser) (err error, user system.SysUser) {
-	err = global.KOP_DB.Updates(&reqUser).Error
-	return err, reqUser
+func (userService *UserService) SetUserInfo(req system.SysUser) error {
+	return global.KOP_DB.Updates(&req).Error
 }
 
 //获取用户信息

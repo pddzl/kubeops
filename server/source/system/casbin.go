@@ -19,7 +19,7 @@ func (c *casbin) TableName() string {
 func (c *casbin) Initialize() error {
 	entities := []adapter.CasbinRule{
 		{PType: "p", V0: "888", V1: "/base/login", V2: "POST"},
-		{PType: "p", V0: "888", V1: "/user/register", V2: "POST"},
+		{PType: "p", V0: "888", V1: "/user/admin_register", V2: "POST"},
 
 		{PType: "p", V0: "888", V1: "/api/createApi", V2: "POST"},
 		{PType: "p", V0: "888", V1: "/api/getApiList", V2: "POST"},
@@ -73,7 +73,7 @@ func (c *casbin) Initialize() error {
 		{PType: "p", V0: "888", V1: "/sysOperationRecord/deleteSysOperationRecordByIds", V2: "DELETE"},
 
 		{PType: "p", V0: "9528", V1: "/base/login", V2: "POST"},
-		{PType: "p", V0: "9528", V1: "/user/register", V2: "POST"},
+		{PType: "p", V0: "9528", V1: "/user/admin_register", V2: "POST"},
 		{PType: "p", V0: "9528", V1: "/api/createApi", V2: "POST"},
 		{PType: "p", V0: "9528", V1: "/api/getApiList", V2: "POST"},
 		{PType: "p", V0: "9528", V1: "/api/getApiById", V2: "POST"},

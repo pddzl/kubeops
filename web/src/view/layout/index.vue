@@ -185,7 +185,7 @@ const backgroundColor = computed(() => {
   }
 })
 
-const matched = computed(() => route.matched)
+const matched = computed(() => route.meta.matched)
 
 const changeUserAuth = async(id) => {
   const res = await setUserAuthority({

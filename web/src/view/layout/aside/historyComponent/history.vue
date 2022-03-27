@@ -177,7 +177,7 @@ const isSame = (route1, route2) => {
   if (route1.name !== route2.name) {
     return false
   }
-  if (Object.keys(route1.query).length != Object.keys(route2.query).length || Object.keys(route1.params).length != Object.keys(route2.params).length) {
+  if (Object.keys(route1.query).length !== Object.keys(route2.query).length || Object.keys(route1.params).length !== Object.keys(route2.params).length) {
     return false
   }
   for (const key in route1.query) {
@@ -196,7 +196,8 @@ const setTab = (route) => {
   if (!historys.value.some((item) => isSame(item, route))) {
     const obj = {}
     obj.name = route.name
-    obj.meta = route.meta
+    obj.meta = { ...route.name }
+    delete obj.meta.matched
     obj.query = route.query
     obj.params = route.params
     historys.value.push(obj)

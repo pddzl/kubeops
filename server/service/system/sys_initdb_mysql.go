@@ -26,7 +26,7 @@ func (initDBService *InitDBService) writeMysqlConfig(mysql config.Mysql) error {
 }
 
 // initMsqlDB 创建数据库并初始化 mysql
-func (initDBService *InitDBService) initMsqlDB(conf request.InitDB) error {
+func (initDBService *InitDBService) initMysqlDB(conf request.InitDB) error {
 	dsn := conf.MysqlEmptyDsn()
 	createSql := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;", conf.DBName)
 	if err := initDBService.createDatabase(dsn, "mysql", createSql); err != nil {

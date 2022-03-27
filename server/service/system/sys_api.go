@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
@@ -86,6 +87,9 @@ func (apiService *ApiService) GetAPIInfoList(api system.SysApi, info request.Pag
 				} else {
 					OrderStr = order
 				}
+			} else { // didn't matched any order key in `orderMap`
+				err = fmt.Errorf("非法的排序字段: %v", order)
+				return err, apiList, total
 			}
 
 			err = db.Order(OrderStr).Find(&apiList).Error
