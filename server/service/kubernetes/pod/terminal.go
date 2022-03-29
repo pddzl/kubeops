@@ -1,8 +1,6 @@
 package pod
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 	"io"
@@ -48,11 +46,11 @@ func (p *PodService) NewTerminalSession(conn *websocket.Conn) (*TerminalSession,
 // stdout  be->fe     Data           Output from the process
 // toast   be->fe     Data           OOB message to be shown to the user
 type TerminalMessage struct {
-	Op        string `json:"op"`
-	Data      string `json:"data"`
-	SessionID string `json:"sessionID"`
-	Rows      uint16 `json:"rows"`
-	Cols      uint16 `json:"cols"`
+	Op   string `json:"op"`
+	Data string `json:"data"`
+	//SessionID string `json:"sessionID"`
+	Rows uint16 `json:"rows"`
+	Cols uint16 `json:"cols"`
 }
 
 // Next TerminalSize handles pty->process resize events
@@ -74,34 +72,37 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 	if err != nil {
 		return copy(p, END_OF_TRANSMISSION), err
 	}
-	var msg TerminalMessage
-	if err := json.Unmarshal([]byte(message), &msg); err != nil {
-		global.KOP_LOG.Error("json", zap.Error(err))
-		return copy(p, END_OF_TRANSMISSION), err
-	}
-	switch msg.Op {
-	case "stdin":
-		global.KOP_LOG.Info("stdin debug")
-		return copy(p, msg.Data), nil
-	case "resize":
-		t.sizeChan <- remotecommand.TerminalSize{Width: msg.Cols, Height: msg.Rows}
-		return 0, nil
-	default:
-		global.KOP_LOG.Error(fmt.Sprintf("unknown message type '%s'", msg.Op))
-		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
-	}
+	return copy(p, message), nil
+	//var msg TerminalMessage
+	//if err := json.Unmarshal([]byte(message), &msg); err != nil {
+	//	global.KOP_LOG.Error("json", zap.Error(err))
+	//	return copy(p, END_OF_TRANSMISSION), err
+	//}
+	//switch msg.Op {
+	//case "stdin":
+	//	global.KOP_LOG.Info("stdin debug")
+	//	return copy(p, msg.Data), nil
+	//case "resize":
+	//	t.sizeChan <- remotecommand.TerminalSize{Width: msg.Cols, Height: msg.Rows}
+	//	return 0, nil
+	//default:
+	//	global.KOP_LOG.Error(fmt.Sprintf("unknown message type '%s'", msg.Op))
+	//	return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
+	//}
 }
 
 // Write called from remotecommand whenever there is any output
 func (t *TerminalSession) Write(p []byte) (int, error) {
-	msg, err := json.Marshal(TerminalMessage{
-		Op:   "stdout",
-		Data: string(p),
-	})
-	if err != nil {
-		return 0, err
-	}
-	global.KOP_LOG.Info(string(msg))
+	//msg, err := json.Marshal(TerminalMessage{
+	//	Op:   "stdout",
+	//	Data: string(p),
+	//})
+	//if err != nil {
+	//	return 0, err
+	//}
+	//if err := t.wsConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+	//	return 0, err
+	//}
 	if err := t.wsConn.WriteMessage(websocket.TextMessage, p); err != nil {
 		return 0, err
 	}

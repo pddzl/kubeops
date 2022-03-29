@@ -12,9 +12,9 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="gva-table-box">
-      <div ref="terminalRef" />
-    </div>
+    <!-- <div class="gva-table-box">
+    </div> -->
+    <div ref="terminalRef" />
   </div>
 </template>
 
@@ -30,8 +30,7 @@ import { FitAddon } from 'xterm-addon-fit'
 // web链接插件
 // import * as webLinks from 'xterm/lib/addons/webLinks/webLinks'
 // websocket插件
-// import { AttachAddon } from 'xterm-addon-attach'
-
+import { AttachAddon } from 'xterm-addon-attach'
 import { ref, reactive, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { getPodDetail } from '@/api/kubernetes/pod'
@@ -67,26 +66,21 @@ export default {
       ws.onopen = () => {
         console.log('初始化terminal')
         initTerminal()
-        terminal.write('\r')
-        const msg = { op: 'stdin', data: 'export TERM=xterm && clear \r' }
-        ws.send(JSON.stringify(msg))
+        // terminal.write('\r')
+        // const msg = { op: 'stdin', data: 'export TERM=xterm && clear \r' }
+        // ws.send(JSON.stringify(msg))
+        // ws.send(msg)
       }
     }
 
     const wsOnMessage = () => {
       ws.onmessage = (event) => {
-        console.log('event', event.data)
-        // let msg = ''
-        // if (typeof (event) === 'string') {
-        //   msg = JSON.parse(event.data)
+        // const msg = JSON.parse(event.data)
+        // if (msg.op === 'stdout') {
+        //   terminal.write(msg.data)
+        // } else {
+        //   console.log('invalid msg op: ' + msg)
         // }
-        terminal.write(event.data)
-        const msg = JSON.parse(event.data)
-        if (msg.op === 'stdout') {
-          terminal.write(msg.data)
-        } else {
-          console.log('invalid msg op: ' + msg)
-        }
       }
     }
 
@@ -124,24 +118,26 @@ export default {
     const initTerminal = () => {
       terminal = new Terminal({
         rendererType: 'canvas',
-        rows: 40,
+        rows: 32,
+        // cols: 40,
         convertEol: true, // 启用时，光标将设置为下一行的开头
         fontSize: 14,
         cursorBlink: true,
         disableStdin: false
       })
-      // const attachAddon = new AttachAddon(ws)
+      const attachAddon = new AttachAddon(ws)
       const fitAddon = new FitAddon()
-      // terminal.loadAddon(attachAddon)
+      terminal.loadAddon(attachAddon)
       terminal.loadAddon(fitAddon)
       terminal.open(terminalRef.value)
       fitAddon.fit()
+      console.log(terminal.cols, terminal.rows)
       terminal.focus()
-      terminal.onData(function(data) {
-        const msg = { op: 'stdin', data: data }
-        ws.send(JSON.stringify(msg))
-      })
-      // term.toggleFullScreen(true);
+      // terminal.onData(function(data) {
+      //   const msg = { op: 'stdin', data: data }
+      //   ws.send(JSON.stringify(msg))
+      // })
+      // terminal.toggleFullScreen(true)
       // terminal.on('data', function(data) {
       //   const msg = { op: 'stdin', data: data }
       //   ws.send(JSON.stringify(msg))
