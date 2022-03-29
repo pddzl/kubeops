@@ -70,59 +70,68 @@
       <div v-if="detail.securityContext" class="row_mine">
         <p>安全性上下文</p>
         <div class="row_context">
-          <div
-            v-if="detail.securityContext.capabilities.add && detail.securityContext.capabilities.add.length > 0"
-          >
-            <p>Added Capabilities</p>
-            <span v-for="(add, indexA) in detail.securityContext.capabilities.add" :key="indexA">
-              <span class="content">{{ add }}</span>
-              <span v-if="detail.securityContext.capabilities.add.length - 1 != indexA">,</span>
-            </span>
-          </div>
-          <div
-            v-if="detail.securityContext.capabilities.drop && detail.securityContext.capabilities.drop.length > 0"
-          >
-            <p>Dropped Capabilities</p>
-            <span v-for="(drop, indexD) in detail.securityContext.capabilities.drop" :key="indexD">
-              <span class="content">{{ drop }}</span>
-              <span v-if="detail.securityContext.capabilities.drop.length - 1 != indexD">,</span>
-            </span>
+          <div v-if="detail.securityContext.capabilities">
+            <div
+              v-if="detail.securityContext.capabilities.add && detail.securityContext.capabilities.add.length > 0"
+            >
+              <p>Added Capabilities</p>
+              <span v-for="(add, indexA) in detail.securityContext.capabilities.add" :key="indexA">
+                <span class="content">{{ add }}</span>
+                <span v-if="detail.securityContext.capabilities.add.length - 1 != indexA">,</span>
+              </span>
+            </div>
+            <div
+              v-if="detail.securityContext.capabilities.drop && detail.securityContext.capabilities.drop.length > 0"
+            >
+              <p>Dropped Capabilities</p>
+              <span
+                v-for="(drop, indexD) in detail.securityContext.capabilities.drop"
+                :key="indexD"
+              >
+                <span class="content">{{ drop }}</span>
+                <span v-if="detail.securityContext.capabilities.drop.length - 1 != indexD">,</span>
+              </span>
+            </div>
           </div>
           <div v-if="detail.securityContext.privileged !== undefined">
             <p>Privileged</p>
             <span class="content">{{ detail.securityContext.privileged }}</span>
           </div>
-          <div v-if="detail.securityContext.seLinuxOptions?.user">
-            <p>SeLinuxOptions User</p>
-            <span class="content">{{ detail.securityContext.seLinuxOptions.user }}</span>
+          <div v-if="detail.securityContext.seLinuxOptions">
+            <div v-if="detail.securityContext.seLinuxOptions.user">
+              <p>SeLinuxOptions User</p>
+              <span class="content">{{ detail.securityContext.seLinuxOptions.user }}</span>
+            </div>
+            <div v-if="detail.securityContext.seLinuxOptions.role">
+              <p>SeLinuxOptions Role</p>
+              <span class="content">{{ detail.securityContext.seLinuxOptions.role }}</span>
+            </div>
+            <div v-if="detail.securityContext.seLinuxOptions.type">
+              <p>SeLinuxOptions Type</p>
+              <span class="content">{{ detail.securityContext.seLinuxOptions.type }}</span>
+            </div>
+            <div v-if="detail.securityContext.seLinuxOptions.level">
+              <p>SeLinuxOptions Level</p>
+              <span class="content">{{ detail.securityContext.seLinuxOptions.level }}</span>
+            </div>
           </div>
-          <div v-if="detail.securityContext.seLinuxOptions?.role">
-            <p>SeLinuxOptions Role</p>
-            <span class="content">{{ detail.securityContext.seLinuxOptions.role }}</span>
-          </div>
-          <div v-if="detail.securityContext.seLinuxOptions?.type">
-            <p>SeLinuxOptions Type</p>
-            <span class="content">{{ detail.securityContext.seLinuxOptions.type }}</span>
-          </div>
-          <div v-if="detail.securityContext.seLinuxOptions?.level">
-            <p>SeLinuxOptions Level</p>
-            <span class="content">{{ detail.securityContext.seLinuxOptions.level }}</span>
-          </div>
-          <div v-if="detail.securityContext.windowsOptions?.gmsaCredentialSpecName">
-            <p>WindowsOptions GMSACredentialSpecName</p>
-            <span class="content">{{ detail.securityContext.windowsOptions.gmsaCredentialSpecName }}</span>
-          </div>
-          <div v-if="detail.securityContext.windowsOptions?.gmsaCredentialSpec">
-            <p>WindowsOptions GMSACredentialSpec</p>
-            <span class="content">{{ detail.securityContext.windowsOptions.gmsaCredentialSpec }}</span>
-          </div>
-          <div v-if="detail.securityContext.windowsOptions?.runAsUserName">
-            <p>WindowsOptions RunAsUserName</p>
-            <span class="content">{{ detail.securityContext.windowsOptions.runAsUserName }}</span>
-          </div>
-          <div v-if="detail.securityContext.windowsOptions?.hostProcess != undefined">
-            <p>WindowsOptions HostProcess</p>
-            <span class="conetnt">{{ detail.securityContext.windowsOptions.hostProcess }}</span>
+          <div v-if="detail.securityContext.windowsOptions">
+            <div v-if="detail.securityContext.windowsOptions.gmsaCredentialSpecName">
+              <p>WindowsOptions GMSACredentialSpecName</p>
+              <span class="content">{{ detail.securityContext.windowsOptions.gmsaCredentialSpecName }}</span>
+            </div>
+            <div v-if="detail.securityContext.windowsOptions.gmsaCredentialSpec">
+              <p>WindowsOptions GMSACredentialSpec</p>
+              <span class="content">{{ detail.securityContext.windowsOptions.gmsaCredentialSpec }}</span>
+            </div>
+            <div v-if="detail.securityContext.windowsOptions.runAsUserName">
+              <p>WindowsOptions RunAsUserName</p>
+              <span class="content">{{ detail.securityContext.windowsOptions.runAsUserName }}</span>
+            </div>
+            <div v-if="detail.securityContext.windowsOptions.hostProcess != undefined">
+              <p>WindowsOptions HostProcess</p>
+              <span class="conetnt">{{ detail.securityContext.windowsOptions.hostProcess }}</span>
+            </div>
           </div>
           <div v-if="detail.securityContext.runAsUser">
             <p>RunAsUser</p>
@@ -148,13 +157,15 @@
             <p>ProcMount</p>
             <span class="content">{{ detail.securityContext.procMount }}</span>
           </div>
-          <div v-if="detail.securityContext.seccompProfile?.type">
-            <p>SeccompProfile Type</p>
-            <span class="content">{{ detail.securityContext.seccompProfile.type }}</span>
-          </div>
-          <div v-if="detail.securityContext.seccompProfile?.localhostProfile">
-            <p>SeccompProfile LocalhostProfile</p>
-            <span class="content">{{ detail.securityContext.seccompProfile.localhostProfile }}</span>
+          <div v-if="detail.securityContext.seccompProfile">
+            <div v-if="detail.securityContext.seccompProfile.type">
+              <p>SeccompProfile Type</p>
+              <span class="content">{{ detail.securityContext.seccompProfile.type }}</span>
+            </div>
+            <div v-if="detail.securityContext.seccompProfile.localhostProfile">
+              <p>SeccompProfile LocalhostProfile</p>
+              <span class="content">{{ detail.securityContext.seccompProfile.localhostProfile }}</span>
+            </div>
           </div>
         </div>
       </div>
