@@ -106,9 +106,12 @@ export default {
 
     const initWs = () => {
       // 打开websocket
+      console.log('初始化websocket')
       ws = new WebSocket(`ws://10.192.104.101:8888/pod/getPodTerminal?namespace=${namespace}&pod=${pod}&container=${searchInfo.container}`)
       wsOnClose()
-      wsOnOpen()
+      if (terminal === null) {
+        wsOnOpen()
+      }
       wsOnMessage()
       wsOnError()
     }
@@ -150,10 +153,12 @@ export default {
     }
 
     const onSubmit = () => {
-      if (Object.prototype.hasOwnProperty.call(ws, 'close')) {
-        ws.close()
+      if (searchInfo.container !== '') {
+        if (Object.prototype.hasOwnProperty.call(ws, 'close')) {
+          ws.close()
+        }
+        initWs()
       }
-      initWs()
     }
 
     onBeforeUnmount(() => {
