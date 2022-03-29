@@ -8,7 +8,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" icon="search" @click="onSubmit">查询</el-button>
+          <el-button size="small" type="primary" icon="ArrowRight" @click="onSubmit">进 入</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -106,7 +106,7 @@ export default {
 
     const initWs = () => {
       // 打开websocket
-      ws = new WebSocket(`ws://10.192.104.101:8888/pod/getPodTerminal?namespace=${namespace}&pod=${pod}`)
+      ws = new WebSocket(`ws://10.192.104.101:8888/pod/getPodTerminal?namespace=${namespace}&pod=${pod}&container=${searchInfo.container}`)
       wsOnClose()
       wsOnOpen()
       wsOnMessage()
@@ -131,7 +131,7 @@ export default {
       terminal.loadAddon(fitAddon)
       terminal.open(terminalRef.value)
       fitAddon.fit()
-      console.log(terminal.cols, terminal.rows)
+      // console.log(terminal.cols, terminal.rows)
       terminal.focus()
       // terminal.onData(function(data) {
       //   const msg = { op: 'stdin', data: data }
@@ -150,6 +150,10 @@ export default {
     }
 
     const onSubmit = () => {
+      if (Object.prototype.hasOwnProperty.call(ws, 'close')) {
+        ws.close()
+      }
+      initWs()
     }
 
     onBeforeUnmount(() => {
