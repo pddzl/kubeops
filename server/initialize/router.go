@@ -67,9 +67,10 @@ func Routers() *gin.Engine {
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
 
 		// kubernetes
-		kubernetesRouter.InitNodeRouter(PrivateGroup)      // node
-		kubernetesRouter.InitPodRouter(PrivateGroup)       // pod
-		kubernetesRouter.InitNamespaceRouter(PrivateGroup) // namespace
+		kubernetesRouter.InitNodeRouter(PrivateGroup)       // node
+		kubernetesRouter.InitPodRouter(PrivateGroup)        // pod
+		kubernetesRouter.InitNamespaceRouter(PrivateGroup)  // namespace
+		kubernetesRouter.InitReplicaSetRouter(PrivateGroup) // replicaSet
 	}
 
 	global.KOP_LOG.Info("router register success")

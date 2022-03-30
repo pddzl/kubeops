@@ -8,10 +8,12 @@ type ApiGroup struct {
 	NodeApi
 	PodApi
 	NamespaceApi
+	ReplicaSetApi
 }
 
 var (
-	nodeService      = service.ServiceGroupApp.KubernetesServiceGroup.NodeService
-	podService       = service.ServiceGroupApp.KubernetesServiceGroup.PodService
-	namespaceService = service.ServiceGroupApp.KubernetesServiceGroup.NamespaceService
+	nodeService       = service.ServiceGroupApp.KubernetesServiceGroup.NodeService
+	podService        = service.ServiceGroupApp.KubernetesServiceGroup.PodService
+	namespaceService  = service.ServiceGroupApp.KubernetesServiceGroup.NamespaceService
+	replicaSetService = service.ServiceGroupApp.KubernetesServiceGroup.ReplicaSetService
 )
