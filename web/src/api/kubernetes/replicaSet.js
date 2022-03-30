@@ -8,3 +8,12 @@ export const getReplicaSetList = (data) => {
     data
   })
 }
+
+// 获取replicaSet in raw
+export const getReplicaSetRaw = (data) => {
+  return service({
+    url: '/replicaSet/getReplicaSetRaw',
+    method: 'post',
+    data
+  })
+}

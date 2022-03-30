@@ -33,3 +33,23 @@ func (r *ReplicaSetApi) GetReplicaSetList(c *gin.Context) {
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
 }
+
+// 获取replicaSet in raw
+
+func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
+	var replicaSetInRaw request.ReplicaSetInRaw
+	_ = c.ShouldBindJSON(&replicaSetInRaw)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&replicaSetInRaw); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	info, err := replicaSetService.GetReplicaSetRaw(replicaSetInRaw.NameSpace, replicaSetInRaw.ReplicaSet)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	}
+	response.OkWithDetailed(info, "获取成功", c)
+}

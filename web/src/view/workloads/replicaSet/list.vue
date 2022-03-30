@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button icon="view" type="text" size="small" @click="editPod(scope.row)">查看</el-button>
+            <el-button icon="view" type="text" size="small" @click="editReplicaSet(scope.row)">查看</el-button>
             <el-button
               icon="tickets"
               type="text"
@@ -67,7 +67,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getReplicaSetList } from '@/api/kubernetes/replicaSet'
+import { getReplicaSetList, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
   name: 'ReplicaSetList',
@@ -111,16 +111,16 @@ export default {
     getTableData()
 
     // 操作
-    const editPod = async (row) => {
-      // const result = await getPodRaw({ pod: row.name, namespace: row.namespace })
-      // if (result.code === 0) {
-      //   podFormat.value = JSON.stringify(result.data)
-      // }
+    const editReplicaSet = async(row) => {
+      const result = await getReplicaSetRaw({ replicaSet: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        podFormat.value = JSON.stringify(result.data)
+      }
       dialogFormVisible.value = true
     }
 
     // 跳转日志页面
-    const routerPod = async (row, dest) => {
+    const routerPod = async(row, dest) => {
       if (dest === 'log') {
         router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace } })
       } else if (dest === 'terminal') {
@@ -169,7 +169,7 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editPod,
+      editReplicaSet,
       routerPod
     }
   }
