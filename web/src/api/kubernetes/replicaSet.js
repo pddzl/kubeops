@@ -17,3 +17,12 @@ export const getReplicaSetRaw = (data) => {
     data
   })
 }
+
+// 获取replicaSet in detail
+export const getReplicaSetDetail = (data) => {
+  return service({
+    url: '/replicaSet/getReplicaSetDetail',
+    method: 'post',
+    data
+  })
+}

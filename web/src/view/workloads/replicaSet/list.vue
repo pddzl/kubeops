@@ -18,7 +18,7 @@
         <el-table-column label="名称" min-width="220">
           <template #default="scope">
             <router-link
-              :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }"
+              :to="{ name: 'replicaSet_detail', query: { replicaSet: scope.row.name, namespace: scope.row.namespace } }"
             >
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>

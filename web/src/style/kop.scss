@@ -38,4 +38,7 @@
     margin-bottom: 5px;
     font-size: 13px;
   }
+  div:not(:last-child) {
+    margin-bottom: 2px;
+  }
 }
