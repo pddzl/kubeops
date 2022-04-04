@@ -32,12 +32,7 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editReplicaSet(scope.row)">查看</el-button>
-            <el-button
-              icon="tickets"
-              type="text"
-              size="small"
-              @click="routerPod(scope.row, 'log')"
-            >日志</el-button>
+            <el-button icon="expand" type="text" size="small">伸缩</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -64,7 +59,6 @@
 
 <script>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getReplicaSetList, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
@@ -86,8 +80,6 @@ export default {
     const tableData = ref([])
     const podFormat = ref({})
     const dialogFormVisible = ref(false)
-
-    const router = useRouter()
 
     // 加载namespace数据
     const getNamespace = async() => {
@@ -117,15 +109,6 @@ export default {
         podFormat.value = JSON.stringify(result.data)
       }
       dialogFormVisible.value = true
-    }
-
-    // 跳转日志页面
-    const routerPod = async(row, dest) => {
-      if (dest === 'log') {
-        router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace } })
-      } else if (dest === 'terminal') {
-        router.push({ name: 'pod_terminal', query: { pod: row.name, namespace: row.namespace } })
-      }
     }
 
     // 分页
@@ -169,8 +152,7 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editReplicaSet,
-      routerPod
+      editReplicaSet
     }
   }
 }

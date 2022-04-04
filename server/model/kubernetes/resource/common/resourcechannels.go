@@ -5,6 +5,7 @@ import (
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	v1 "k8s.io/api/core/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // ResourceChannels struct holds channels to resource lists. Each list channel is paired with
@@ -47,7 +48,7 @@ type ResourceChannels struct {
 	//IngressList IngressListChannel
 
 	// List and error channels to Pods.
-	//PodList PodListChannel
+	PodList PodListChannel
 
 	// List and error channels to Events.
 	//EventList EventListChannel
@@ -149,6 +150,38 @@ func GetSecretListChannel(nsQuery *NamespaceQuery, numReads int) SecretListChann
 	go func() {
 		list, err := global.KOP_KUBERNETES.CoreV1().Secrets(nsQuery.ToRequestParam()).List(context.TODO(), api.ListEverything)
 		var filteredItems []v1.Secret
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// PodListChannel is a list and error channels to Pods.
+type PodListChannel struct {
+	List  chan *v1.PodList
+	Error chan error
+}
+
+// GetPodListChannelWithOptions is GetPodListChannel plus listing options.
+func GetPodListChannelWithOptions(nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) PodListChannel {
+
+	channel := PodListChannel{
+		List:  make(chan *v1.PodList, numReads),
+		Error: make(chan error, numReads),
+	}
+
+	go func() {
+		list, err := global.KOP_KUBERNETES.CoreV1().Pods(nsQuery.ToRequestParam()).List(context.TODO(), options)
+		var filteredItems []v1.Pod
 		for _, item := range list.Items {
 			if nsQuery.Matches(item.ObjectMeta.Namespace) {
 				filteredItems = append(filteredItems, item)

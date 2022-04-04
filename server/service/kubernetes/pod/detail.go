@@ -13,21 +13,21 @@ import (
 	"strconv"
 
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource/common"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
 // 获取pod详情
 
 func (p *PodService) GetPodDetail(namespace string, name string) (info interface{}, err error) {
-	var podDetail resource.PodDetail
+	var podDetail pod.PodDetail
 
 	channels := &common.ResourceChannels{
 		ConfigMapList: common.GetConfigMapListChannel(common.NewSameNamespaceQuery(namespace), 1),
 		SecretList:    common.GetSecretListChannel(common.NewSameNamespaceQuery(namespace), 1),
 	}
 
-	pod, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
+	podDeatil, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
 	if err != nil {
 		return "", nil
 	}
@@ -47,24 +47,24 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 	}
 
 	// metaData
-	podDetail.MetaData.Name = pod.Name
-	podDetail.MetaData.Namespace = pod.Namespace
-	podDetail.MetaData.Uid = string(pod.UID)
-	podDetail.MetaData.CreationTimestamp = pod.CreationTimestamp
-	podDetail.MetaData.Labels = pod.Labels
+	podDetail.MetaData.Name = podDeatil.Name
+	podDetail.MetaData.Namespace = podDeatil.Namespace
+	podDetail.MetaData.Uid = string(podDeatil.UID)
+	podDetail.MetaData.CreationTimestamp = podDeatil.CreationTimestamp
+	podDetail.MetaData.Labels = podDeatil.Labels
 	// resourceInfo
-	podDetail.ResourceInfo.Phase = string(pod.Status.Phase)
-	podDetail.ResourceInfo.Node = pod.Spec.NodeName
-	podDetail.ResourceInfo.IP = pod.Status.HostIP
-	podDetail.ResourceInfo.QosClass = string(pod.Status.QOSClass)
-	podDetail.ResourceInfo.RestartPolicy = string(pod.Spec.RestartPolicy)
-	podDetail.ResourceInfo.Restarts = pod.Status.ContainerStatuses[0].RestartCount
-	podDetail.ResourceInfo.ServiceAccount = pod.Spec.ServiceAccountName
+	podDetail.ResourceInfo.Phase = string(podDeatil.Status.Phase)
+	podDetail.ResourceInfo.Node = podDeatil.Spec.NodeName
+	podDetail.ResourceInfo.IP = podDeatil.Status.HostIP
+	podDetail.ResourceInfo.QosClass = string(podDeatil.Status.QOSClass)
+	podDetail.ResourceInfo.RestartPolicy = string(podDeatil.Spec.RestartPolicy)
+	podDetail.ResourceInfo.Restarts = podDeatil.Status.ContainerStatuses[0].RestartCount
+	podDetail.ResourceInfo.ServiceAccount = podDeatil.Spec.ServiceAccountName
 	// ownerReferences
-	podDetail.OwnerReferences = pod.OwnerReferences
+	podDetail.OwnerReferences = podDeatil.OwnerReferences
 	// Conditions
-	for _, condition := range pod.Status.Conditions {
-		var podCondition resource.Conditions
+	for _, condition := range podDeatil.Status.Conditions {
+		var podCondition pod.Conditions
 		podCondition.Type = string(condition.Type)
 		podCondition.Status = string(condition.Status)
 		podCondition.LastProbeTime = condition.LastProbeTime
@@ -73,35 +73,35 @@ func (p *PodService) GetPodDetail(namespace string, name string) (info interface
 		podDetail.Conditions = append(podDetail.Conditions, podCondition)
 	}
 	// Containers
-	podDetail.Containers = extractContainerInfo(pod.Spec.Containers, pod, configMapList, secretList)
+	podDetail.Containers = extractContainerInfo(podDeatil.Spec.Containers, podDeatil, configMapList, secretList)
 	// initContainers
-	if len(pod.Spec.InitContainers) > 0 {
-		podDetail.InitContainers = extractContainerInfo(pod.Spec.InitContainers, pod, configMapList, secretList)
+	if len(podDeatil.Spec.InitContainers) > 0 {
+		podDetail.InitContainers = extractContainerInfo(podDeatil.Spec.InitContainers, podDeatil, configMapList, secretList)
 	}
 	return podDetail, nil
 }
 
-func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []resource.Container {
-	containers := make([]resource.Container, 0)
+func extractContainerInfo(containerList []v1.Container, podDeatil *v1.Pod, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []pod.Container {
+	containers := make([]pod.Container, 0)
 	for _, container := range containerList {
-		vars := make([]resource.EnvVar, 0)
+		vars := make([]pod.EnvVar, 0)
 		for _, envVar := range container.Env {
-			variable := resource.EnvVar{
+			variable := pod.EnvVar{
 				Name:      envVar.Name,
 				Value:     envVar.Value,
 				ValueFrom: envVar.ValueFrom,
 			}
 			if variable.ValueFrom != nil {
-				variable.Value = evalValueFrom(variable.ValueFrom, &container, pod,
+				variable.Value = evalValueFrom(variable.ValueFrom, &container, podDeatil,
 					configMaps, secrets)
 			}
 			vars = append(vars, variable)
 		}
 		vars = append(vars, evalEnvFrom(container, configMaps, secrets)...)
 
-		volumeMounts := extractContainerMounts(container, pod)
+		volumeMounts := extractContainerMounts(container, podDeatil)
 
-		containers = append(containers, resource.Container{
+		containers = append(containers, pod.Container{
 			Name:            container.Name,
 			Image:           container.Image,
 			Env:             vars,
@@ -109,7 +109,7 @@ func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps 
 			Args:            container.Args,
 			VolumeMounts:    volumeMounts,
 			SecurityContext: container.SecurityContext,
-			Status:          extractContainerStatus(pod, &container),
+			Status:          extractContainerStatus(podDeatil, &container),
 			LivenessProbe:   container.LivenessProbe,
 			ReadinessProbe:  container.ReadinessProbe,
 			StartupProbe:    container.StartupProbe,
@@ -118,15 +118,15 @@ func extractContainerInfo(containerList []v1.Container, pod *v1.Pod, configMaps 
 	return containers
 }
 
-func extractContainerMounts(container v1.Container, pod *v1.Pod) []resource.VolumeMount {
-	volumeMounts := make([]resource.VolumeMount, 0)
+func extractContainerMounts(container v1.Container, podDeatil *v1.Pod) []pod.VolumeMount {
+	volumeMounts := make([]pod.VolumeMount, 0)
 	for _, aVolumeMount := range container.VolumeMounts {
-		volumeMount := resource.VolumeMount{
+		volumeMount := pod.VolumeMount{
 			Name:      aVolumeMount.Name,
 			ReadOnly:  aVolumeMount.ReadOnly,
 			MountPath: aVolumeMount.MountPath,
 			SubPath:   aVolumeMount.SubPath,
-			Volume:    getVolume(pod.Spec.Volumes, aVolumeMount.Name),
+			Volume:    getVolume(podDeatil.Spec.Volumes, aVolumeMount.Name),
 		}
 		volumeMounts = append(volumeMounts, volumeMount)
 	}
@@ -231,8 +231,8 @@ func extractContainerStatus(pod *v1.Pod, container *v1.Container) *v1.ContainerS
 	return nil
 }
 
-func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []resource.EnvVar {
-	vars := make([]resource.EnvVar, 0)
+func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *v1.SecretList) []pod.EnvVar {
+	vars := make([]pod.EnvVar, 0)
 	for _, envFromVar := range container.EnvFrom {
 		switch {
 		case envFromVar.ConfigMapRef != nil:
@@ -248,7 +248,7 @@ func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *
 								Key: key,
 							},
 						}
-						variable := resource.EnvVar{
+						variable := pod.EnvVar{
 							Name:      envFromVar.Prefix + key,
 							Value:     value,
 							ValueFrom: valueFrom,
@@ -271,7 +271,7 @@ func evalEnvFrom(container v1.Container, configMaps *v1.ConfigMapList, secrets *
 								Key: key,
 							},
 						}
-						variable := resource.EnvVar{
+						variable := pod.EnvVar{
 							Name:      envFromVar.Prefix + key,
 							Value:     base64.StdEncoding.EncodeToString(value),
 							ValueFrom: valueFrom,

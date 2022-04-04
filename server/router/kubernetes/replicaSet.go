@@ -13,8 +13,8 @@ func (s *NodeRouter) InitReplicaSetRouter(Router *gin.RouterGroup) {
 	ReplicaSetRouterWithoutRecord := Router.Group("replicaSet")
 	ReplicaSetApi := v1.ApiGroupApp.KubernetesApiGroup.ReplicaSetApi
 	{
-		//	ReplicaSetRouter.POST("getPodDetail", podRouterApi.GetPodDetail) // 获取pod详情
-		ReplicaSetRouter.POST("getReplicaSetRaw", ReplicaSetApi.GetReplicaSetRaw) // 获取replicaSet in raw
+		ReplicaSetRouter.POST("getReplicaSetDetail", ReplicaSetApi.GetReplicaSetDetail) // 获取replicaSet详情
+		ReplicaSetRouter.POST("getReplicaSetRaw", ReplicaSetApi.GetReplicaSetRaw)       // 获取replicaSet in raw
 		//	ReplicaSetRouter.POST("getPodLog", podRouterApi.GetPodLog)       // 获取pod日志
 	}
 	{
