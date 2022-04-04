@@ -26,3 +26,12 @@ export const getReplicaSetDetail = (data) => {
     data
   })
 }
+
+// 获取replicaSet pods
+export const getReplicaSetPods = (data) => {
+  return service({
+    url: '/replicaSet/getReplicaSetPods',
+    method: 'post',
+    data
+  })
+}

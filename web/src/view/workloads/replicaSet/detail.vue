@@ -77,6 +77,37 @@
           </div>
         </div>
       </el-collapse-item>
+      <el-collapse-item title="Pods" name="4">
+        <div style="padding-right: 20px;">
+          <el-table :data="replicaSetPods">
+            <el-table-column label="名称" prop="objectMeta.name" />
+            <el-table-column label="命名空间" prop="objectMeta.namespace" />
+            <el-table-column label="节点" prop="nodeName" />
+            <el-table-column label="状态">
+              <template #default="scope">
+                <el-tag
+                  :type="statusPodFilter(scope.row.status)"
+                  size="small"
+                >{{ scope.row.status }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="创建时间">
+              <template #default="scope">{{ formatDate(scope.row.objectMeta.creationTimestamp) }}</template>
+            </el-table-column>
+          </el-table>
+          <div class="gva-pagination">
+            <el-pagination
+              :current-page="page"
+              :page-size="pageSize"
+              :page-sizes="[10, 30, 50, 100]"
+              :total="total"
+              layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+            />
+          </div>
+        </div>
+      </el-collapse-item>
     </el-collapse>
   </div>
 </template>
@@ -84,20 +115,24 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getReplicaSetDetail } from '@/api/kubernetes/replicaSet'
+import { getReplicaSetDetail, getReplicaSetPods } from '@/api/kubernetes/replicaSet'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 export default {
   name: 'NodeDetail',
   setup() {
-    const activeNames = ref(['1', '2', '3'])
+    const activeNames = ref(['1', '2', '3', '4'])
     const replicaSetDetail = ref({})
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const replicaSetPods = ref([])
 
     const route = useRoute()
     const namespace = route.query.namespace
     const replicaSet = route.query.replicaSet
 
-    // 加载node详情
+    // 加载replicaSet详情
     const getData = async() => {
       await getReplicaSetDetail({ namespace: namespace, replicaSet: replicaSet }).then(response => {
         if (response.code === 0) {
@@ -107,12 +142,43 @@ export default {
     }
     getData()
 
+    // 加载pods
+    const getReplicaSetPodsData = async() => {
+      const table = await getReplicaSetPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, replicaSet: replicaSet })
+      if (table.code === 0) {
+        replicaSetPods.value = table.data.list
+        total.value = table.data.total
+        page.value = table.data.page
+        pageSize.value = table.data.pageSize
+      }
+    }
+    getReplicaSetPodsData()
+
+    // 分页
+    const handleSizeChange = (val) => {
+      pageSize.value = val
+      getReplicaSetPodsData()
+    }
+
+    const handleCurrentChange = (val) => {
+      page.value = val
+      getReplicaSetPodsData()
+    }
+
     return {
+      // 响应式数据
       activeNames,
       replicaSetDetail,
+      replicaSetPods,
       formatDate,
       // filter
-      statusPodFilter
+      statusPodFilter,
+      // 分页
+      page,
+      pageSize,
+      total,
+      handleSizeChange,
+      handleCurrentChange
     }
   }
 }

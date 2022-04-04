@@ -1,4 +1,4 @@
-package resource
+package replicaSet
 
 import (
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"

@@ -73,3 +73,28 @@ func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
 	}
 	response.OkWithDetailed(info, "获取成功", c)
 }
+
+// 获取replicaSet pods
+
+func (r *ReplicaSetApi) GetReplicaSetPods(c *gin.Context) {
+	var replicaSetPods request.ReplicaSetPods
+	_ = c.ShouldBindJSON(&replicaSetPods)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&replicaSetPods); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	pods, total, err := replicaSetService.GetReplicaSetPods(replicaSetPods.NameSpace, replicaSetPods.ReplicaSet, replicaSetPods.PageInfo)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     pods,
+		Total:    int64(total),
+		Page:     replicaSetPods.Page,
+		PageSize: replicaSetPods.PageSize,
+	}, "获取成功", c)
+}

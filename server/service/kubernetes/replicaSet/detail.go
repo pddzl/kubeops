@@ -4,14 +4,14 @@ import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func (r *ReplicaSetService) GetReplicaSetDetail(namespace string, name string) (*resource.ReplicaSetDetail, error) {
-	var replicaSetDetail resource.ReplicaSetDetail
+func (r *ReplicaSetService) GetReplicaSetDetail(namespace string, replicaSetName string) (*replicaSet.ReplicaSetDetail, error) {
+	var replicaSetDetail replicaSet.ReplicaSetDetail
 
-	replicaSet, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	replicaSet, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), replicaSetName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
