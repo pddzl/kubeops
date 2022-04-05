@@ -80,7 +80,15 @@
       <el-collapse-item title="Pods" name="4">
         <div style="padding-right: 20px;">
           <el-table :data="replicaSetPods">
-            <el-table-column label="名称" prop="objectMeta.name" />
+            <el-table-column label="名称" prop="objectMeta.name">
+              <template #default="scope">
+                <router-link
+                  :to="{ name: 'pod_detail', query: { pod: scope.row.objectMeta.name, namespace: scope.row.objectMeta.namespace } }"
+                >
+                  <el-link type="primary" :underline="false">{{ scope.row.objectMeta.name }}</el-link>
+                </router-link>
+              </template>
+            </el-table-column>
             <el-table-column label="命名空间" prop="objectMeta.namespace" />
             <el-table-column label="节点" prop="nodeName" />
             <el-table-column label="状态">

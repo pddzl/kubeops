@@ -204,7 +204,7 @@ export default {
     const nodeName = route.query.name
 
     // 加载node详情
-    const getData = async () => {
+    const getData = async() => {
       await getNodeDetail({ name: nodeName }).then(response => {
         if (response.code === 0) {
           nodeDetail.value = response.data
