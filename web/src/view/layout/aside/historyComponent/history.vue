@@ -36,6 +36,7 @@
             <span
               v-else-if="['pod_detail', 'pod_log', 'pod_terminal'].includes(item.name)"
             >{{ item.query.pod }}</span>
+            <span v-else-if="'replicaSet_detail' === item.name">{{ item.query.replicaSet }}</span>
           </span>
         </template>
       </el-tab-pane>
@@ -216,6 +217,9 @@ const setTab = (route) => {
     }
     if (route.name === 'pod_terminal') {
       historys.value = historys.value.filter(element => element.name !== 'pod_terminal')
+    }
+    if (route.name === 'replicaSet_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'replicaSet_detail')
     }
     const obj = {}
     obj.name = route.name

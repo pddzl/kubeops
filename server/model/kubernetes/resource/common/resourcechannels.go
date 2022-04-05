@@ -39,7 +39,7 @@ type ResourceChannels struct {
 	//CronJobList CronJobListChannel
 
 	// List and error channels to Services.
-	//ServiceList ServiceListChannel
+	ServiceList ServiceListChannel
 
 	// List and error channels to Endpoints.
 	//EndpointList EndpointListChannel
@@ -182,6 +182,38 @@ func GetPodListChannelWithOptions(nsQuery *NamespaceQuery, options metaV1.ListOp
 	go func() {
 		list, err := global.KOP_KUBERNETES.CoreV1().Pods(nsQuery.ToRequestParam()).List(context.TODO(), options)
 		var filteredItems []v1.Pod
+		for _, item := range list.Items {
+			if nsQuery.Matches(item.ObjectMeta.Namespace) {
+				filteredItems = append(filteredItems, item)
+			}
+		}
+		list.Items = filteredItems
+		for i := 0; i < numReads; i++ {
+			channel.List <- list
+			channel.Error <- err
+		}
+	}()
+
+	return channel
+}
+
+// ServiceListChannel is a list and error channels to Services.
+type ServiceListChannel struct {
+	List  chan *v1.ServiceList
+	Error chan error
+}
+
+// GetServiceListChannel returns a pair of channels to a Service list and errors that both
+// must be read numReads times.
+func GetServiceListChannel(nsQuery *NamespaceQuery, numReads int) ServiceListChannel {
+
+	channel := ServiceListChannel{
+		List:  make(chan *v1.ServiceList, numReads),
+		Error: make(chan error, numReads),
+	}
+	go func() {
+		list, err := global.KOP_KUBERNETES.CoreV1().Services(nsQuery.ToRequestParam()).List(context.TODO(), metaV1.ListOptions{})
+		var filteredItems []v1.Service
 		for _, item := range list.Items {
 			if nsQuery.Matches(item.ObjectMeta.Namespace) {
 				filteredItems = append(filteredItems, item)

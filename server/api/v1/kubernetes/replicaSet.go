@@ -37,7 +37,7 @@ func (r *ReplicaSetApi) GetReplicaSetList(c *gin.Context) {
 // get pod detail
 
 func (r *ReplicaSetApi) GetReplicaSetDetail(c *gin.Context) {
-	var replicaSetInRaw request.ReplicaSetInRaw
+	var replicaSetInRaw request.ReplicaSetCommon
 	_ = c.ShouldBindJSON(&replicaSetInRaw)
 	// 校验
 	validate := validator.New()
@@ -57,7 +57,7 @@ func (r *ReplicaSetApi) GetReplicaSetDetail(c *gin.Context) {
 // 获取replicaSet in raw
 
 func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
-	var replicaSetInRaw request.ReplicaSetInRaw
+	var replicaSetInRaw request.ReplicaSetCommon
 	_ = c.ShouldBindJSON(&replicaSetInRaw)
 	// 校验
 	validate := validator.New()
@@ -97,4 +97,24 @@ func (r *ReplicaSetApi) GetReplicaSetPods(c *gin.Context) {
 		Page:     replicaSetPods.Page,
 		PageSize: replicaSetPods.PageSize,
 	}, "获取成功", c)
+}
+
+// 获取replicaSet services
+
+func (r *ReplicaSetApi) GetReplicaSetServices(c *gin.Context) {
+	var replicaSetServices request.ReplicaSetCommon
+	_ = c.ShouldBindJSON(&replicaSetServices)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&replicaSetServices); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	services, err := replicaSetService.GetReplicaSetServices(replicaSetServices.NameSpace, replicaSetServices.ReplicaSet)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	}
+	response.OkWithDetailed(services, "获取成功", c)
 }
