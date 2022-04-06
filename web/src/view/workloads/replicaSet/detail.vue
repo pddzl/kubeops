@@ -1,5 +1,14 @@
 <template>
   <div>
+    <div class="detail-operation">
+      <div class="button">
+        <el-affix :offset="120">
+          <el-button icon="view" size="small" type="primary" plain>查看</el-button>
+          <el-button icon="expand" size="small" type="warning" plain>伸缩</el-button>
+          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+        </el-affix>
+      </div>
+    </div>
     <el-collapse v-model="activeNames">
       <el-collapse-item v-if="replicaSetDetail.objectMeta" title="元数据" name="1">
         <div class="row_mine">
@@ -182,7 +191,6 @@ export default {
       if (table.code === 0) {
         replicaSetServices.value = table.data
       }
-      console.log('replicaSetServices', replicaSetServices.value)
     }
     getReplicaSetServicesData()
 

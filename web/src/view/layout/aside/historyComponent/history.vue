@@ -30,13 +30,13 @@
               }"
             />
             {{ item.meta.title }}
-            <span
+            <!-- <span
               v-if="['namespace_detail', 'node_detail'].includes(item.name)"
             >{{ item.query.name }}</span>
             <span
               v-else-if="['pod_detail', 'pod_log', 'pod_terminal'].includes(item.name)"
             >{{ item.query.pod }}</span>
-            <span v-else-if="'replicaSet_detail' === item.name">{{ item.query.replicaSet }}</span>
+            <span v-else-if="'replicaSet_detail' === item.name">{{ item.query.replicaSet }}</span> -->
           </span>
         </template>
       </el-tab-pane>

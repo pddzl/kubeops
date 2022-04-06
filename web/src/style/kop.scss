@@ -42,3 +42,22 @@
     margin-bottom: 2px;
   }
 }
+
+.detail-operation {
+  margin-bottom: 10px;
+  background-color: #fff;
+  padding: 10px;
+  .button {
+    float: right;
+    // .el-button:not(:last-child) {
+    //   margin-right: 20px;
+    // }
+  }
+}
+.detail-operation:after {
+      content: "020";
+      display: block;
+      height: 0;
+      clear: both;
+      visibility: hidden;
+}
