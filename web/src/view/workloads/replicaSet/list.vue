@@ -51,7 +51,7 @@
 
       <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-        <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+        <vue-code-mirror v-model:modelValue="replicaSetFormat" :readOnly="true" />
       </el-dialog>
     </div>
   </div>
@@ -78,7 +78,7 @@ export default {
     const pageSize = ref(10)
     const total = ref(0)
     const tableData = ref([])
-    const podFormat = ref({})
+    const replicaSetFormat = ref({})
     const dialogFormVisible = ref(false)
 
     // 加载namespace数据
@@ -106,7 +106,7 @@ export default {
     const editReplicaSet = async(row) => {
       const result = await getReplicaSetRaw({ replicaSet: row.name, namespace: row.namespace })
       if (result.code === 0) {
-        podFormat.value = JSON.stringify(result.data)
+        replicaSetFormat.value = JSON.stringify(result.data)
       }
       dialogFormVisible.value = true
     }
@@ -139,7 +139,7 @@ export default {
       namespace,
       searchInfo,
       tableData,
-      podFormat,
+      replicaSetFormat,
       dialogFormVisible,
       // time format
       formatDate,

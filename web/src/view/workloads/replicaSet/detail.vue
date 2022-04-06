@@ -3,7 +3,7 @@
     <div class="detail-operation">
       <div class="button">
         <el-affix :offset="120">
-          <el-button icon="view" size="small" type="primary" plain>查看</el-button>
+          <el-button icon="view" size="small" type="primary" plain @click="editReplicaSet">查看</el-button>
           <el-button icon="expand" size="small" type="warning" plain>伸缩</el-button>
           <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
         </el-affix>
@@ -139,17 +139,25 @@
         </div>
       </el-collapse-item>
     </el-collapse>
+    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+      <vue-code-mirror v-model:modelValue="replicaSetFormat" :readOnly="true" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices } from '@/api/kubernetes/replicaSet'
+import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
+import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 export default {
   name: 'NodeDetail',
+  components: {
+    VueCodeMirror,
+  },
   setup() {
     const activeNames = ref(['1', '2', '3', '4', '5'])
     const replicaSetDetail = ref({})
@@ -158,6 +166,8 @@ export default {
     const total = ref(0)
     const replicaSetPods = ref([])
     const replicaSetServices = ref([])
+    const replicaSetFormat = ref({})
+    const dialogFormVisible = ref(false)
 
     const route = useRoute()
     const namespace = route.query.namespace
@@ -194,6 +204,15 @@ export default {
     }
     getReplicaSetServicesData()
 
+    // 操作
+    const editReplicaSet = async() => {
+      const result = await getReplicaSetRaw({ replicaSet: replicaSet, namespace: namespace })
+      if (result.code === 0) {
+        replicaSetFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
     // 分页
     const handleSizeChange = (val) => {
       pageSize.value = val
@@ -212,8 +231,12 @@ export default {
       replicaSetPods,
       replicaSetServices,
       formatDate,
+      dialogFormVisible,
       // filter
       statusPodFilter,
+      // 操作
+      editReplicaSet,
+      replicaSetFormat,
       // 分页
       page,
       pageSize,
