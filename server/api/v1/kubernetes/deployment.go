@@ -11,7 +11,9 @@ import (
 
 type DeploymentApi struct{}
 
-func (r *DeploymentApi) GetDeploymentList(c *gin.Context) {
+// 获取deployment list
+
+func (d *DeploymentApi) GetDeploymentList(c *gin.Context) {
 	var pageInfo request.ListParams
 	_ = c.ShouldBindJSON(&pageInfo)
 	// 校验字段
@@ -32,4 +34,26 @@ func (r *DeploymentApi) GetDeploymentList(c *gin.Context) {
 		Page:     pageInfo.Page,
 		PageSize: pageInfo.PageSize,
 	}, "获取成功", c)
+}
+
+// 获取deployment in 编排
+
+// 获取replicaSet in raw
+
+func (d *DeploymentApi) GetDeploymentRaw(c *gin.Context) {
+	var deploymentRaw request.DeploymentCommon
+	_ = c.ShouldBindJSON(&deploymentRaw)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&deploymentRaw); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	info, err := deploymentService.GetDeploymentRaw(deploymentRaw.NameSpace, deploymentRaw.Deployment)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	}
+	response.OkWithDetailed(info, "获取成功", c)
 }

@@ -31,7 +31,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button icon="view" type="text" size="small" @click="editReplicaSet(scope.row)">查看</el-button>
+            <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
             <el-button icon="expand" type="text" size="small">伸缩</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
@@ -103,8 +103,8 @@ export default {
     getTableData()
 
     // 操作
-    const editReplicaSet = async(row) => {
-      const result = await getDeploymentRaw({ replicaSet: row.name, namespace: row.namespace })
+    const editDeployment = async(row) => {
+      const result = await getDeploymentRaw({ deployment: row.name, namespace: row.namespace })
       if (result.code === 0) {
         deploymentFormat.value = JSON.stringify(result.data)
       }
@@ -152,7 +152,7 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editReplicaSet
+      editDeployment
     }
   }
 }
