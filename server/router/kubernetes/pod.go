@@ -8,7 +8,7 @@ import (
 
 type PodRouter struct{}
 
-func (s *NodeRouter) InitPodRouter(Router *gin.RouterGroup) {
+func (s *PodRouter) InitPodRouter(Router *gin.RouterGroup) {
 	podRouter := Router.Group("pod").Use(middleware.OperationRecord())
 	podRouterWithoutRecord := Router.Group("pod")
 	podRouterApi := v1.ApiGroupApp.KubernetesApiGroup.PodApi

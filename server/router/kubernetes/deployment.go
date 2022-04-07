@@ -8,15 +8,15 @@ import (
 
 type DeploymentRouter struct{}
 
-func (s *NodeRouter) InitDeploymentRouter(Router *gin.RouterGroup) {
-	DeploymentRouter := Router.Group("deployment").Use(middleware.OperationRecord())
-	DeploymentRouterWithoutRecord := Router.Group("deployment")
-	DeploymentApi := v1.ApiGroupApp.KubernetesApiGroup.DeploymentApi
+func (d *DeploymentRouter) InitDeploymentRouter(Router *gin.RouterGroup) {
+	deploymentRouter := Router.Group("deployment").Use(middleware.OperationRecord())
+	deploymentRouterWithoutRecord := Router.Group("deployment")
+	deploymentApi := v1.ApiGroupApp.KubernetesApiGroup.DeploymentApi
 	{
-		//DeploymentRouter.POST("getReplicaSetDetail", DeploymentApi)     // 获取deployment详情
-		DeploymentRouter.POST("getDeploymentRaw", DeploymentApi.GetDeploymentRaw) // 获取deployment in 编排
+		deploymentRouter.POST("getDeploymentDetail", deploymentApi.GetDeploymentDetail) // 获取deployment详情
+		deploymentRouter.POST("getDeploymentRaw", deploymentApi.GetDeploymentRaw)       // 获取deployment in 编排
 	}
 	{
-		DeploymentRouterWithoutRecord.POST("getDeploymentList", DeploymentApi.GetDeploymentList) // 获取所有deployment
+		deploymentRouterWithoutRecord.POST("getDeploymentList", deploymentApi.GetDeploymentList) // 获取所有deployment
 	}
 }

@@ -1,7 +1,9 @@
 package kubernetes
 
 type RouterGroup struct {
+	NamespaceRouter
 	NodeRouter
 	PodRouter
-	NamespaceRouter
+	ReplicaSetRouter
+	DeploymentRouter
 }
