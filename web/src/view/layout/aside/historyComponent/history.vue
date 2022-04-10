@@ -221,6 +221,9 @@ const setTab = (route) => {
     if (route.name === 'replicaSet_detail') {
       historys.value = historys.value.filter(element => element.name !== 'replicaSet_detail')
     }
+    if (route.name === 'deployment_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'deployment_detail')
+    }
     const obj = {}
     obj.name = route.name
     obj.meta = { ...route.meta }

@@ -154,7 +154,7 @@ import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 export default {
-  name: 'NodeDetail',
+  name: 'ReplicaSetDetail',
   components: {
     VueCodeMirror,
   },
@@ -257,11 +257,6 @@ export default {
   }
   .el-collapse-item:not(:last-child) {
     margin-bottom: 15px;
-  }
-}
-.interval {
-  span:not(:last-child) {
-    margin-right: 5px;
   }
 }
 </style>

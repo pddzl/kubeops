@@ -17,3 +17,12 @@ export const getDeploymentRaw = (data) => {
     data
   })
 }
+
+// 获取deployment in detail
+export const getDeploymentDetail = (data) => {
+  return service({
+    url: '/deployment/getDeploymentDetail',
+    method: 'post',
+    data
+  })
+}
