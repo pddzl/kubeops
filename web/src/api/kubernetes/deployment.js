@@ -26,3 +26,12 @@ export const getDeploymentDetail = (data) => {
     data
   })
 }
+
+// 获取deployment关联的replicaset
+export const getNewReplicaSet = (data) => {
+  return service({
+    url: '/deployment/getNewReplicaSet',
+    method: 'post',
+    data
+  })
+}

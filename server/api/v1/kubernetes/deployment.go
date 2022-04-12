@@ -75,3 +75,23 @@ func (d *DeploymentApi) GetDeploymentDetail(c *gin.Context) {
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
+
+// 获取deployment关联的replicaSet
+
+func (d *DeploymentApi) GetNewReplicaSet(c *gin.Context) {
+	var deploymentCommon request.DeploymentCommon
+	_ = c.ShouldBindJSON(&deploymentCommon)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&deploymentCommon); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	newReplicaSet, err := deploymentService.GetNewReplicaSet(deploymentCommon.NameSpace, deploymentCommon.Deployment)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	}
+	response.OkWithDetailed(newReplicaSet, "获取成功", c)
+}

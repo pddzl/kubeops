@@ -15,6 +15,7 @@ func (d *DeploymentRouter) InitDeploymentRouter(Router *gin.RouterGroup) {
 	{
 		deploymentRouter.POST("getDeploymentDetail", deploymentApi.GetDeploymentDetail) // 获取deployment详情
 		deploymentRouter.POST("getDeploymentRaw", deploymentApi.GetDeploymentRaw)       // 获取deployment in 编排
+		deploymentRouter.POST("getNewReplicaSet", deploymentApi.GetNewReplicaSet)       // 获取deployment关联的replicaSet
 	}
 	{
 		deploymentRouterWithoutRecord.POST("getDeploymentList", deploymentApi.GetDeploymentList) // 获取所有deployment

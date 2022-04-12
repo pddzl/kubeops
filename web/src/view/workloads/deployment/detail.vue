@@ -131,6 +131,43 @@
           </el-table>
         </div>
       </el-collapse-item>
+      <el-collapse-item title="ReplicaSet" name="4">
+        <div class="row_mine">
+          <div class="row_context">
+            <div>
+              <p>名称</p>
+              <router-link
+                :to="{ name: 'replicaSet_detail', query: { replicaSet: newReplicaSet.name, namespace: newReplicaSet.namespace } }"
+              >
+                <el-link type="primary" :underline="false"><span class="content">{{ newReplicaSet.name }}</span>
+                </el-link>
+              </router-link>
+            </div>
+            <div>
+              <p>命名空间</p>
+              <span class="content">{{ newReplicaSet.namespace }}</span>
+            </div>
+            <div>
+              <p>Replicas</p>
+              <span class="content">{{ newReplicaSet.replicas }}</span>
+            </div>
+            <div>
+              <p>创建时间</p>
+              <span class="content">{{ formatDate(newReplicaSet.creationTimestamp) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="common_show">
+          <p>标签:</p>
+          <div v-for="(label, index) in newReplicaSet.labels" :key="index">
+            <span class="span-shadow">
+              {{ index }}
+              <span v-if="label">:</span>
+              {{ label }}
+            </span>
+          </div>
+        </div>
+      </el-collapse-item>
     </el-collapse>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
@@ -142,7 +179,7 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDeploymentDetail, getDeploymentRaw } from '@/api/kubernetes/deployment'
+import { getDeploymentDetail, getDeploymentRaw, getNewReplicaSet } from '@/api/kubernetes/deployment'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
@@ -155,8 +192,9 @@ export default {
     VueJsonPretty
   },
   setup() {
-    const activeNames = ref(['1', '2', '3'])
+    const activeNames = ref(['1', '2', '3', '4'])
     const deploymentDetail = ref({})
+    const newReplicaSet = ref({})
     const deploymentFormat = ref({})
     const annotationsFormat = ref({})
     const dialogFormVisible = ref(false)
@@ -172,11 +210,20 @@ export default {
           deploymentDetail.value = response.data
           // annotationsFormat.value = JSON.stringify(response.data.metadata.annotations, null, 2)
           annotationsFormat.value = JSON.parse(JSON.stringify(response.data.metadata.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
-          // console.log('s1', s1)
         }
       })
     }
     getDeploymentDetailData()
+
+    // 获取deployment关联的replicaset
+    const getNewReplicaSetData = async() => {
+      await getNewReplicaSet({ namespace: namespace, deployment: deployment }).then(response => {
+        if (response.code === 0) {
+          newReplicaSet.value = response.data
+        }
+      })
+    }
+    getNewReplicaSetData()
 
     // 操作
     const editDeployment = async() => {
@@ -194,6 +241,7 @@ export default {
       deploymentFormat,
       annotationsFormat,
       dialogFormVisible,
+      newReplicaSet,
       // status filter
       statusRsFilter,
       // 格式化日期
@@ -208,10 +256,12 @@ export default {
 <style scoped lang="scss">
 .el-collapse {
   --el-collapse-header-font-size: 15px;
+
   .el-collapse-item {
     background-color: #ffffff;
     padding-left: 20px;
   }
+
   .el-collapse-item:not(:last-child) {
     margin-bottom: 15px;
   }
