@@ -40,11 +40,12 @@ export const statusPodFilter = (status) => {
   return statusPodMap[status] || 'info'
 }
 
-// 4. replicaSet
+// 4. deploymentDetail -> replicaSet
 
 const statusRsMap = {
   'True': 'success',
-  'Unknown': 'danger',
+  'False': 'danger',
+  'Unknown': 'info',
 }
 
 export const statusRsFilter = (status) => {

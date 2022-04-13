@@ -10,30 +10,30 @@
       </div>
     </div>
     <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="replicaSetDetail.objectMeta" title="元数据" name="1">
+      <el-collapse-item v-if="replicaSetDetail.metadata" title="元数据" name="1">
         <div class="row_mine">
           <div class="row_context">
             <div>
               <p>名称</p>
-              <span class="content">{{ replicaSetDetail.objectMeta.name }}</span>
+              <span class="content">{{ replicaSetDetail.metadata.name }}</span>
             </div>
             <div>
               <p>命名空间</p>
-              <span class="content">{{ replicaSetDetail.objectMeta.namespace }}</span>
+              <span class="content">{{ replicaSetDetail.metadata.namespace }}</span>
             </div>
             <div>
               <p>UID</p>
-              <span class="content">{{ replicaSetDetail.objectMeta.uid }}</span>
+              <span class="content">{{ replicaSetDetail.metadata.uid }}</span>
             </div>
             <div>
               <p>创建时间</p>
-              <span class="content">{{ formatDate(replicaSetDetail.objectMeta.creationTimestamp) }}</span>
+              <span class="content">{{ formatDate(replicaSetDetail.metadata.creationTimestamp) }}</span>
             </div>
           </div>
         </div>
         <div class="common_show">
           <p>标签:</p>
-          <div v-for="(label, index) in replicaSetDetail.objectMeta.labels" :key="index">
+          <div v-for="(label, index) in replicaSetDetail.metadata.labels" :key="index">
             <span class="span-shadow">
               {{ index }}
               <span v-if="label">:</span>
@@ -43,7 +43,31 @@
         </div>
         <div class="common_show">
           <p>注释:</p>
-          <div v-for="(label, index) in replicaSetDetail.objectMeta.annotations" :key="index">
+          <!-- <div v-for="(label, index) in replicaSetDetail.metadata.annotations" :key="index">
+            <span class="span-shadow">
+              {{ index }}
+              <span v-if="label">:</span>
+              {{ label }}
+            </span>
+          </div> -->
+          <div style="color: lightcoral;">
+            <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+            <vue-json-pretty :data="replicaSetDetail.metadata.annotations" :deep="2" :showLine="true" />
+          </div>
+        </div>
+      </el-collapse-item>
+      <el-collapse-item v-if="replicaSetDetail.spec" title="资源信息" name="2">
+        <div class="row_mine" style="margin-bottom: 10px;">
+          <div class="row_context">
+            <div>
+              <p>replicas</p>
+              <span class="content">{{ replicaSetDetail.spec.replicas }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="common_show">
+          <p>Selector:</p>
+          <div v-for="(label, index) in replicaSetDetail.spec.selector" :key="index">
             <span class="span-shadow">
               {{ index }}
               <span v-if="label">:</span>
@@ -52,53 +76,60 @@
           </div>
         </div>
       </el-collapse-item>
-      <el-collapse-item title="资源信息" name="2">
-        <div v-if="replicaSetDetail.selector" class="common_show">
-          <p>选择器</p>
-          <div v-for="(label, index) in replicaSetDetail.selector.matchLabels" :key="index">
-            <span class="span-shadow">
-              {{ index }}
-              <span v-if="label">:</span>
-              {{ label }}
-            </span>
-          </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="replicaSetDetail.podInfo" title="Pods状态" name="3">
+      <el-collapse-item v-if="replicaSetDetail.status" title="状态" name="3">
         <div class="row_mine">
           <div class="row_context">
             <div>
-              <p>current</p>
-              <span class="content">{{ replicaSetDetail.podInfo.current }}</span>
+              <p>replicas</p>
+              <span class="content">{{ replicaSetDetail.status.replicas }}</span>
             </div>
             <div>
-              <p>desired</p>
-              <span class="content">{{ replicaSetDetail.podInfo.desired }}</span>
+              <p>fullyLabeledReplicas</p>
+              <span class="content">{{ replicaSetDetail.status.fullyLabeledReplicas }}</span>
             </div>
             <div>
-              <p>running</p>
-              <span class="content">{{ replicaSetDetail.podInfo.running }}</span>
+              <p>readyReplicas</p>
+              <span class="content">{{ replicaSetDetail.status.readyReplicas }}</span>
             </div>
             <div>
-              <p>pending</p>
-              <span class="content">{{ replicaSetDetail.podInfo.pending }}</span>
+              <p>availableReplicas</p>
+              <span class="content">{{ replicaSetDetail.status.availableReplicas }}</span>
             </div>
           </div>
+        </div>
+        <div v-if="replicaSetDetail.status.conditions" style="margin-top: 20px; margin-right: 20px;">
+          <el-table :data="replicaSetDetail.status.conditions">
+            <el-table-column label="类别" prop="type" />
+            <el-table-column label="状态" prop="status">
+              <template #default="scope">
+                <el-tag :type="statusRsFilter(scope.row.status)" size="small">
+                  {{ scope.row.status }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="上次迁移时间">
+              <template #default="scope">
+                {{ formatDate(scope.row.lastTransitionTime) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="原因" prop="reason" />
+            <el-table-column label="信息" prop="message" :show-overflow-tooltip="true" />
+          </el-table>
         </div>
       </el-collapse-item>
       <el-collapse-item title="Pods" name="4">
         <div style="padding-right: 20px;">
           <el-table :data="replicaSetPods">
-            <el-table-column label="名称" prop="objectMeta.name" min-width="120">
+            <el-table-column label="名称" prop="metadata.name" min-width="120">
               <template #default="scope">
                 <router-link
-                  :to="{ name: 'pod_detail', query: { pod: scope.row.objectMeta.name, namespace: scope.row.objectMeta.namespace } }"
+                  :to="{ name: 'pod_detail', query: { pod: scope.row.metadata.name, namespace: scope.row.metadata.namespace } }"
                 >
-                  <el-link type="primary" :underline="false">{{ scope.row.objectMeta.name }}</el-link>
+                  <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
                 </router-link>
               </template>
             </el-table-column>
-            <el-table-column label="命名空间" prop="objectMeta.namespace" />
+            <el-table-column label="命名空间" prop="metadata.namespace" />
             <el-table-column label="节点" prop="nodeName" />
             <el-table-column label="状态">
               <template #default="scope">
@@ -109,7 +140,7 @@
               </template>
             </el-table-column>
             <el-table-column label="创建时间">
-              <template #default="scope">{{ formatDate(scope.row.objectMeta.creationTimestamp) }}</template>
+              <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
             </el-table-column>
           </el-table>
           <div class="gva-pagination">
@@ -153,10 +184,13 @@ import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices, getRepli
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
+import VueJsonPretty from 'vue-json-pretty'
+import 'vue-json-pretty/lib/styles.css'
 export default {
   name: 'ReplicaSetDetail',
   components: {
     VueCodeMirror,
+    VueJsonPretty
   },
   setup() {
     const activeNames = ref(['1', '2', '3', '4', '5'])
