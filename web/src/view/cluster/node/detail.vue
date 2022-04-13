@@ -20,22 +20,16 @@
         </div>
         <div class="common_show">
           <p>标签:</p>
-          <div v-for="(label, index) in nodeDetail.objectMeta.labels" :key="index">
-            <span class="span-shadow">
-              {{ index }}
-              <span v-if="label">:</span>
-              {{ label }}
-            </span>
+          <div style="color: lightskyblue;">
+            <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+            <vue-json-pretty :data="nodeDetail.objectMeta.labels" :deep="2" :showLine="true" />
           </div>
         </div>
         <div class="common_show">
           <p>注释:</p>
-          <div v-for="(label, index) in nodeDetail.objectMeta.annotations" :key="index">
-            <span class="span-shadow">
-              {{ index }}
-              <span v-if="label">:</span>
-              {{ label }}
-            </span>
+          <div style="color: lightcoral;">
+            <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+            <vue-json-pretty :data="nodeDetail.objectMeta.annotations" :deep="2" :showLine="true" />
           </div>
         </div>
       </el-collapse-item>
@@ -61,7 +55,7 @@
           >{{ item.key }}={{ item.effect }}</span>
         </div>
       </el-collapse-item>
-      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="4">
+      <el-collapse-item v-if="nodeDetail.nodeInfo" title="系统信息" name="3">
         <div class="row_mine">
           <div class="row_context">
             <div>
@@ -156,7 +150,7 @@
       </el-collapse-item>
       <el-collapse-item v-if="nodeDetail.podList" title="Pods" name="6">
         <el-table :data="nodeDetail.podList">
-          <el-table-column label="名称" min-width="200">
+          <el-table-column label="名称" min-width="140">
             <template #default="scope">
               <router-link
                 :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }"
@@ -165,17 +159,17 @@
               </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="status" label="状态" min-width="90">
+          <el-table-column prop="status" label="状态" min-width="80">
             <template #default="scope">
               <el-tag :type="statusPodFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="namespace" label="命名空间" min-width="100" />
-          <el-table-column prop="image" label="镜像" min-width="340" />
-          <el-table-column label="创建时间" width="180">
+          <!-- <el-table-column prop="image" label="镜像" min-width="340" /> -->
+          <el-table-column label="创建时间" width="200">
             <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
           </el-table-column>
-          <el-table-column fixed="right" label="操作" width="200">
+          <el-table-column fixed="right" label="操作" width="220">
             <template #default>
               <el-button icon="tickets" type="text" size="small">日志</el-button>
               <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
@@ -194,8 +188,13 @@ import { useRoute } from 'vue-router'
 import { getNodeDetail } from '@/api/kubernetes/node'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
+import VueJsonPretty from 'vue-json-pretty'
+import 'vue-json-pretty/lib/styles.css'
 export default {
   name: 'NodeDetail',
+  components: {
+    VueJsonPretty
+  },
   setup() {
     const activeNames = ref(['1', '2', '3', '4', '5', '6'])
     const nodeDetail = ref({})
