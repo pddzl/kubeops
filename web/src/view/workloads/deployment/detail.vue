@@ -33,13 +33,11 @@
         </div>
         <div class="common_show">
           <p>标签:</p>
-          <div v-for="(label, index) in deploymentDetail.metadata.labels" :key="index">
-            <span class="span-shadow">
-              {{ index }}
-              <span v-if="label">:</span>
-              {{ label }}
-            </span>
-          </div>
+          <span v-for="(label, index) in deploymentDetail.metadata.labels" :key="index" class="span-shadow">
+            {{ index }}
+            <span v-if="label">:</span>
+            {{ label }}
+          </span>
         </div>
         <div v-if="annotationsFormat" class="common_show">
           <p>注释:</p>
@@ -58,13 +56,11 @@
             </div>
             <div>
               <p>Selector</p>
-              <div v-for="(label, index) in deploymentDetail.spec.selector" :key="index">
-                <span class="span-shadow">
-                  {{ index }}
-                  <span v-if="label">:</span>
-                  {{ label }}
-                </span>
-              </div>
+              <span v-for="(label, index) in deploymentDetail.spec.selector" :key="index" class="span-shadow">
+                {{ index }}
+                <span v-if="label">:</span>
+                {{ label }}
+              </span>
             </div>
           </div>
         </div>
@@ -159,13 +155,11 @@
         </div>
         <div class="common_show">
           <p>标签:</p>
-          <div v-for="(label, index) in newReplicaSet.labels" :key="index">
-            <span class="span-shadow">
-              {{ index }}
-              <span v-if="label">:</span>
-              {{ label }}
-            </span>
-          </div>
+          <span v-for="(label, index) in newReplicaSet.labels" :key="index" class="span-shadow">
+            {{ index }}
+            <span v-if="label">:</span>
+            {{ label }}
+          </span>
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -265,5 +259,9 @@ export default {
   .el-collapse-item:not(:last-child) {
     margin-bottom: 15px;
   }
+}
+
+.span-shadow:not(:last-child) {
+  margin-right: 10px;
 }
 </style>
