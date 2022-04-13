@@ -2,13 +2,12 @@ package replicaSet
 
 import (
 	"context"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource/common"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 )
 
@@ -17,18 +16,18 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, replicaSetName s
 	offset := info.PageSize * (info.Page - 1)
 	var replicaSetPods []replicaSet.Pod
 
-	rs, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), replicaSetName, metaV1.GetOptions{})
+	rs, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), replicaSetName, metav1.GetOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
 
-	labelSelector := labels.SelectorFromSet(rs.Spec.Selector.MatchLabels)
-	channels := &common.ResourceChannels{
-		PodList: common.GetPodListChannelWithOptions(common.NewSameNamespaceQuery(namespace), metaV1.ListOptions{LabelSelector: labelSelector.String()}, 1),
-	}
+	// 获取replicaSet的selector
+	selector := labels.SelectorFromSet(rs.Spec.Selector.MatchLabels)
+	options := metav1.ListOptions{LabelSelector: selector.String()}
 
-	podList := <-channels.PodList.List
-	if err := <-channels.PodList.Error; err != nil {
+	// 获取pods
+	podList, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).List(context.TODO(), options)
+	if err != nil {
 		return nil, 0, err
 	}
 
@@ -36,7 +35,6 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, replicaSetName s
 	for _, pod := range podList.Items {
 		replicaSetPod := replicaSet.Pod{}
 		replicaSetPod.ObjectMeta = api.NewObjectMeta(pod.ObjectMeta)
-		replicaSetPod.TypeMeta = api.NewTypeMeta(api.ResourceKindPod)
 		replicaSetPod.Status = string(pod.Status.Phase)
 		replicaSetPod.NodeName = pod.Spec.NodeName
 		// append

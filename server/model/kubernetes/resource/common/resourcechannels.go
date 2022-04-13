@@ -171,32 +171,6 @@ type PodListChannel struct {
 	Error chan error
 }
 
-// GetPodListChannelWithOptions is GetPodListChannel plus listing options.
-func GetPodListChannelWithOptions(nsQuery *NamespaceQuery, options metaV1.ListOptions, numReads int) PodListChannel {
-
-	channel := PodListChannel{
-		List:  make(chan *v1.PodList, numReads),
-		Error: make(chan error, numReads),
-	}
-
-	go func() {
-		list, err := global.KOP_KUBERNETES.CoreV1().Pods(nsQuery.ToRequestParam()).List(context.TODO(), options)
-		var filteredItems []v1.Pod
-		for _, item := range list.Items {
-			if nsQuery.Matches(item.ObjectMeta.Namespace) {
-				filteredItems = append(filteredItems, item)
-			}
-		}
-		list.Items = filteredItems
-		for i := 0; i < numReads; i++ {
-			channel.List <- list
-			channel.Error <- err
-		}
-	}()
-
-	return channel
-}
-
 // ServiceListChannel is a list and error channels to Services.
 type ServiceListChannel struct {
 	List  chan *v1.ServiceList
