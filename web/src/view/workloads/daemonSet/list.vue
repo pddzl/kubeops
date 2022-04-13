@@ -104,7 +104,7 @@ export default {
 
     // 操作
     const editDaemonSet = async(row) => {
-      const result = await getDaemonSetRaw({ deployment: row.name, namespace: row.namespace })
+      const result = await getDaemonSetRaw({ daemonSet: row.name, namespace: row.namespace })
       if (result.code === 0) {
         daemonSetFormat.value = JSON.stringify(result.data)
       }

@@ -26,7 +26,9 @@ func (d *DeploymentApi) GetDeploymentList(c *gin.Context) {
 
 	list, total, err := deploymentService.GetDeploymentList(pageInfo.NameSpace, pageInfo.PageInfo)
 	if err != nil {
+		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(response.PageResult{
 		List:     list,
@@ -52,6 +54,7 @@ func (d *DeploymentApi) GetDeploymentRaw(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(info, "获取成功", c)
 }
@@ -72,6 +75,7 @@ func (d *DeploymentApi) GetDeploymentDetail(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
@@ -92,6 +96,7 @@ func (d *DeploymentApi) GetNewReplicaSet(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(newReplicaSet, "获取成功", c)
 }
