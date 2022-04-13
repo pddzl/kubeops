@@ -260,8 +260,7 @@ export default {
     margin-bottom: 15px;
   }
 }
-
 .span-shadow:not(:last-child) {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 </style>
