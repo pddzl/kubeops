@@ -6,13 +6,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-type DeploymentBrief struct {
-	Name              string      `json:"name"`
-	NameSpace         string      `json:"namespace"`
-	Pods              string      `json:"pods"`
-	CreationTimestamp metav1.Time `json:"creationTimestamp,omitempty"`
-}
-
 type DeploymentDetail struct {
 	ObjectMeta api.ObjectMeta   `json:"metadata"`
 	Spec       spec             `json:"spec"`

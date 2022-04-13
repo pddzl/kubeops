@@ -72,6 +72,7 @@ func Routers() *gin.Engine {
 		kubernetesRouter.InitPodRouter(PrivateGroup)        // pod
 		kubernetesRouter.InitReplicaSetRouter(PrivateGroup) // replicaSet
 		kubernetesRouter.InitDeploymentRouter(PrivateGroup) // deployment
+		kubernetesRouter.InitDaemonSetRouter(PrivateGroup)  //  daemonSet
 	}
 
 	global.KOP_LOG.Info("router register success")

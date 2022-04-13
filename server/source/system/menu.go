@@ -35,16 +35,18 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "replicaSet/detail", Name: "replicaSet_detail", Component: "view/workloads/replicaSet/detail.vue", Sort: 6, Meta: system.Meta{Title: "ReplicaSet详情", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "deployment", Name: "deployment", Component: "view/workloads/deployment/list.vue", Sort: 7, Meta: system.Meta{Title: "Deployment", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "deployment/detail", Name: "deployment_detail", Component: "view/workloads/deployment/detail.vue", Sort: 8, Meta: system.Meta{Title: "Deployment详情", Icon: "ship"}},
-		// 16 superAdmin 超级管理员
+		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "daemonSet", Name: "daemonSet", Component: "view/workloads/daemonSet/list.vue", Sort: 9, Meta: system.Meta{Title: "DaemonSet", Icon: "ship"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "daemonSet/detail", Name: "daemonSet_detail", Component: "view/workloads/daemonSet/detail.vue", Sort: 10, Meta: system.Meta{Title: "DaemonSet详情", Icon: "ship"}},
+		// 18 superAdmin 超级管理员
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 4, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "16", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 5, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
-		// 22 example 示例文件
+		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 5, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
+		// 24 example 示例文件
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 5, Meta: system.Meta{Title: "示例文件", Icon: "management"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "22", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 1, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "24", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 1, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
 		// 24 person 个人信息
 		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 6, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
 	}

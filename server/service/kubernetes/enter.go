@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"github.com/pddzl/kubeops/server/service/kubernetes/daemonSet"
 	"github.com/pddzl/kubeops/server/service/kubernetes/deployment"
 	"github.com/pddzl/kubeops/server/service/kubernetes/namespace"
 	"github.com/pddzl/kubeops/server/service/kubernetes/node"
@@ -14,4 +15,5 @@ type ServiceGroup struct {
 	NamespaceService  namespace.NamespaceService
 	ReplicaSetService replicaSet.ReplicaSetService
 	DeploymentService deployment.DeploymentService
+	DaemonSetService  daemonSet.DaemonSetService
 }

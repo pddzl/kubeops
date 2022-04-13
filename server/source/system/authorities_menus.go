@@ -21,6 +21,7 @@ func (a *authoritiesMenus) TableName() string {
 
 func (a *authoritiesMenus) Initialize() error {
 	entities := []AuthorityMenus{
+		// 888
 		{BaseMenuId: 1, AuthorityId: "888"},
 		{BaseMenuId: 2, AuthorityId: "888"},
 		{BaseMenuId: 3, AuthorityId: "888"},
@@ -44,9 +45,12 @@ func (a *authoritiesMenus) Initialize() error {
 		{BaseMenuId: 21, AuthorityId: "888"},
 		{BaseMenuId: 22, AuthorityId: "888"},
 		{BaseMenuId: 23, AuthorityId: "888"},
-
+		{BaseMenuId: 24, AuthorityId: "888"},
+		{BaseMenuId: 25, AuthorityId: "888"},
+		{BaseMenuId: 26, AuthorityId: "888"},
+		// 9528
 		{BaseMenuId: 1, AuthorityId: "9528"},
-		{BaseMenuId: 24, AuthorityId: "9528"},
+		{BaseMenuId: 26, AuthorityId: "9528"},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil {
 		return errors.Wrap(err, a.TableName()+"表数据初始化失败!")

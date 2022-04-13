@@ -33,7 +33,7 @@ func (d *DeploymentService) GetDeploymentList(namespace string, info request.Pag
 		deploymentList.Items = deployments.Items[offset:end]
 	}
 
-	// 处理deployment数据
+	// 处理deployments数据
 	for _, dm := range deployments.Items {
 		var deploymentBrief deployment.DeploymentBrief
 		deploymentBrief.Name = dm.Name
