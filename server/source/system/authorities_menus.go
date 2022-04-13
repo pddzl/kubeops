@@ -43,9 +43,10 @@ func (a *authoritiesMenus) Initialize() error {
 		{BaseMenuId: 20, AuthorityId: "888"},
 		{BaseMenuId: 21, AuthorityId: "888"},
 		{BaseMenuId: 22, AuthorityId: "888"},
+		{BaseMenuId: 23, AuthorityId: "888"},
 
 		{BaseMenuId: 1, AuthorityId: "9528"},
-		{BaseMenuId: 22, AuthorityId: "9528"},
+		{BaseMenuId: 24, AuthorityId: "9528"},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil {
 		return errors.Wrap(err, a.TableName()+"表数据初始化失败!")
