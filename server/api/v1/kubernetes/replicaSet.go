@@ -18,13 +18,14 @@ func (r *ReplicaSetApi) GetReplicaSetList(c *gin.Context) {
 	// 校验字段
 	validate := validator.New()
 	if err := validate.Struct(&pageInfo.PageInfo); err != nil {
-		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 	list, total, err := replicaSetService.GetReplicaSetList(pageInfo.NameSpace, pageInfo.PageInfo)
 	if err != nil {
+		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(response.PageResult{
 		List:     list,
@@ -50,6 +51,7 @@ func (r *ReplicaSetApi) GetReplicaSetDetail(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
@@ -70,6 +72,7 @@ func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(info, "获取成功", c)
 }
@@ -90,6 +93,7 @@ func (r *ReplicaSetApi) GetReplicaSetPods(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(response.PageResult{
 		List:     pods,
@@ -115,6 +119,7 @@ func (r *ReplicaSetApi) GetReplicaSetServices(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
 	}
 	response.OkWithDetailed(services, "获取成功", c)
 }

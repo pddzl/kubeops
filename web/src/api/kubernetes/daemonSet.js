@@ -26,3 +26,12 @@ export const getDaemonSetDetail = (data) => {
     data
   })
 }
+
+// 获取daemonSet关联pods
+export const getDaemonSetPods = (data) => {
+  return service({
+    url: '/daemonSet/getDaemonSetPods',
+    method: 'post',
+    data
+  })
+}

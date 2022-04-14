@@ -79,3 +79,29 @@ func (d *DaemonSetApi) GetDaemonSetDetail(c *gin.Context) {
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
+
+// 获取daemonSet关联的pods
+
+func (d *DaemonSetApi) GetDaemonSetPods(c *gin.Context) {
+	var daemonSetPods request.DaemonSetPods
+	_ = c.ShouldBindJSON(&daemonSetPods)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&daemonSetPods); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	pods, total, err := daemonSetService.GetDaemonSetPods(daemonSetPods.NameSpace, daemonSetPods.DaemonSet, daemonSetPods.PageInfo)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     pods,
+		Total:    int64(total),
+		Page:     daemonSetPods.Page,
+		PageSize: daemonSetPods.PageSize,
+	}, "获取成功", c)
+}

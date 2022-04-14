@@ -117,6 +117,45 @@
           </el-table>
         </div>
       </el-collapse-item>
+      <el-collapse-item title="Pods" name="4">
+        <div style="padding-right: 20px;">
+          <el-table :data="daemonSetPods">
+            <el-table-column label="名称" prop="metadata.name" min-width="120">
+              <template #default="scope">
+                <router-link
+                  :to="{ name: 'pod_detail', query: { pod: scope.row.metadata.name, namespace: scope.row.metadata.namespace } }"
+                >
+                  <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
+                </router-link>
+              </template>
+            </el-table-column>
+            <el-table-column label="命名空间" prop="metadata.namespace" />
+            <el-table-column label="节点" prop="nodeName" />
+            <el-table-column label="状态">
+              <template #default="scope">
+                <el-tag
+                  :type="statusPodFilter(scope.row.status)"
+                  size="small"
+                >{{ scope.row.status }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="创建时间">
+              <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
+            </el-table-column>
+          </el-table>
+          <div class="gva-pagination">
+            <el-pagination
+              :current-page="page"
+              :page-size="pageSize"
+              :page-sizes="[10, 30, 50, 100]"
+              :total="total"
+              layout="total, sizes, prev, pager, next, jumper"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange"
+            />
+          </div>
+        </div>
+      </el-collapse-item>
     </el-collapse>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
@@ -128,12 +167,13 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDaemonSetDetail, getDaemonSetRaw } from '@/api/kubernetes/daemonSet'
+import { getDaemonSetDetail, getDaemonSetRaw, getDaemonSetPods } from '@/api/kubernetes/daemonSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
+import { statusPodFilter } from '@/mixin/filter.js'
 export default {
   name: 'DaemonSetDetail',
   components: {
@@ -141,7 +181,11 @@ export default {
     VueJsonPretty
   },
   setup() {
-    const activeNames = ref(['1', '2', '3'])
+    const activeNames = ref(['1', '2', '3', '4'])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const daemonSetPods = ref([])
     const DaemonSetDetail = ref({})
     const daemonSetFormat = ref({})
     const annotationsFormat = ref({})
@@ -163,6 +207,18 @@ export default {
     }
     getDaemonSetDetailData()
 
+    // 加载关联pods
+    const getDaemonSetPodsData = async() => {
+      const table = await getDaemonSetPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, daemonSet: daemonSet })
+      if (table.code === 0) {
+        daemonSetPods.value = table.data.list
+        total.value = table.data.total
+        page.value = table.data.page
+        pageSize.value = table.data.pageSize
+      }
+    }
+    getDaemonSetPodsData()
+
     // 操作
     const editDaemonSet = async() => {
       const result = await getDaemonSetRaw({ daemonSet: daemonSet, namespace: namespace })
@@ -172,6 +228,17 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 分页
+    const handleSizeChange = (val) => {
+      pageSize.value = val
+      getDaemonSetPodsData()
+    }
+
+    const handleCurrentChange = (val) => {
+      page.value = val
+      getDaemonSetPodsData()
+    }
+
     return {
       // 响应式数据
       activeNames,
@@ -179,12 +246,20 @@ export default {
       daemonSetFormat,
       annotationsFormat,
       dialogFormVisible,
-      // status filter
+      daemonSetPods,
+      // filter
       statusRsFilter,
+      statusPodFilter,
       // 格式化日期
       formatDate,
       // 操作
-      editDaemonSet
+      editDaemonSet,
+      // 分页
+      page,
+      pageSize,
+      total,
+      handleSizeChange,
+      handleCurrentChange
     }
   }
 }
