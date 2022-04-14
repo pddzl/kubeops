@@ -5,7 +5,6 @@ import (
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	v1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // ResourceChannels struct holds channels to resource lists. Each list channel is paired with
@@ -39,7 +38,7 @@ type ResourceChannels struct {
 	//CronJobList CronJobListChannel
 
 	// List and error channels to Services.
-	ServiceList ServiceListChannel
+	//ServiceList ServiceListChannel
 
 	// List and error channels to Endpoints.
 	//EndpointList EndpointListChannel
@@ -169,36 +168,4 @@ func GetSecretListChannel(nsQuery *NamespaceQuery, numReads int) SecretListChann
 type PodListChannel struct {
 	List  chan *v1.PodList
 	Error chan error
-}
-
-// ServiceListChannel is a list and error channels to Services.
-type ServiceListChannel struct {
-	List  chan *v1.ServiceList
-	Error chan error
-}
-
-// GetServiceListChannel returns a pair of channels to a Service list and errors that both
-// must be read numReads times.
-func GetServiceListChannel(nsQuery *NamespaceQuery, numReads int) ServiceListChannel {
-
-	channel := ServiceListChannel{
-		List:  make(chan *v1.ServiceList, numReads),
-		Error: make(chan error, numReads),
-	}
-	go func() {
-		list, err := global.KOP_KUBERNETES.CoreV1().Services(nsQuery.ToRequestParam()).List(context.TODO(), metaV1.ListOptions{})
-		var filteredItems []v1.Service
-		for _, item := range list.Items {
-			if nsQuery.Matches(item.ObjectMeta.Namespace) {
-				filteredItems = append(filteredItems, item)
-			}
-		}
-		list.Items = filteredItems
-		for i := 0; i < numReads; i++ {
-			channel.List <- list
-			channel.Error <- err
-		}
-	}()
-
-	return channel
 }
