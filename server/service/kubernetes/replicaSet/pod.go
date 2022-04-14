@@ -11,12 +11,9 @@ import (
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 )
 
-func (r *ReplicaSetService) GetReplicaSetPods(namespace string, replicaSetName string, info request.PageInfo) ([]replicaSet.Pod, int, error) {
-	end := info.PageSize * info.Page
-	offset := info.PageSize * (info.Page - 1)
-	var replicaSetPods []replicaSet.Pod
-
-	rs, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), replicaSetName, metav1.GetOptions{})
+func (r *ReplicaSetService) GetReplicaSetPods(namespace string, name string, info request.PageInfo) ([]replicaSet.Pod, int, error) {
+	// 获取replicaSet原始数据
+	rs, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -26,6 +23,7 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, replicaSetName s
 	options := metav1.ListOptions{LabelSelector: selector.String()}
 
 	// 获取pods
+	var replicaSetPods []replicaSet.Pod
 	podList, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).List(context.TODO(), options)
 	if err != nil {
 		return nil, 0, err
@@ -42,6 +40,8 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, replicaSetName s
 	}
 
 	// 分页
+	end := info.PageSize * info.Page
+	offset := info.PageSize * (info.Page - 1)
 	total := len(podList.Items)
 	if total <= offset {
 		return nil, total, nil
