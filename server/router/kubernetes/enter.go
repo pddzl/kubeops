@@ -7,4 +7,5 @@ type RouterGroup struct {
 	ReplicaSetRouter
 	DeploymentRouter
 	DaemonSetRouter
+	ServicesRouter
 }

@@ -11,7 +11,7 @@ import (
 	"github.com/pddzl/kubeops/server/model/common/request"
 )
 
-func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.PageInfo) (list interface{}, total int, err error) {
+func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.PageInfo) ([]replicaSet.ReplicaSetBrief, int, error) {
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
 	var replicaSetBriefList []replicaSet.ReplicaSetBrief
@@ -23,7 +23,7 @@ func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.Pag
 	}
 
 	// 分页
-	total = len(replicaSets.Items)
+	total := len(replicaSets.Items)
 	if total <= offset {
 		return nil, total, nil
 	}
