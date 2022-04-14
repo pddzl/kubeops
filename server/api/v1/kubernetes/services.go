@@ -40,7 +40,24 @@ func (s *ServicesApi) GetServicesList(c *gin.Context) {
 
 // 获取services in 编排
 
-func (s *ServicesApi) GetServicesRaw(c *gin.Context) {}
+func (s *ServicesApi) GetServicesRaw(c *gin.Context) {
+	var servicesRaw request.ServicesCommon
+	_ = c.ShouldBindJSON(&servicesRaw)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&servicesRaw); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	info, err := servicesService.GetServicesRaw(servicesRaw.NameSpace, servicesRaw.Service)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
+	}
+	response.OkWithDetailed(info, "获取成功", c)
+}
 
 // 获取services详情
 

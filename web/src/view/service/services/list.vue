@@ -104,7 +104,7 @@ export default {
 
     // 操作
     const editServices = async(row) => {
-      const result = await getServicesRaw({ services: row.name, namespace: row.namespace })
+      const result = await getServicesRaw({ service: row.name, namespace: row.namespace })
       if (result.code === 0) {
         servicesFormat.value = JSON.stringify(result.data)
       }
