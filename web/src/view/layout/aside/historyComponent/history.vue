@@ -227,6 +227,9 @@ const setTab = (route) => {
     if (route.name === 'daemonSet_detail') {
       historys.value = historys.value.filter(element => element.name !== 'daemonSet_detail')
     }
+    if (route.name === 'services_detail') {
+      historys.value = historys.value.filter(element => element.name !== 'services_detail')
+    }
     const obj = {}
     obj.name = route.name
     obj.meta = { ...route.meta }

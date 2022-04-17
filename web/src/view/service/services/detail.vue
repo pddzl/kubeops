@@ -73,8 +73,19 @@
           </div>
         </div>
       </el-collapse-item>
+      <el-collapse-item v-if="servicesDetail.spec" title="端口映射" name="ports">
+        <div class="detail-table">
+          <el-table :data="servicesDetail.spec.ports">
+            <el-table-column label="名称" prop="name" />
+            <el-table-column label="协议" prop="protocol" />
+            <el-table-column label="port" prop="port" />
+            <el-table-column label="targetPort" prop="targetPort" />
+            <el-table-column v-if="servicesDetail.spec.type === 'NodePort'" label="nodePort" prop="nodePort" />
+          </el-table>
+        </div>
+      </el-collapse-item>
       <el-collapse-item title="Pods" name="pods">
-        <div style="padding-right: 20px;">
+        <div class="detail-table">
           <el-table :data="servicesPods">
             <el-table-column label="名称" prop="metadata.name" min-width="120">
               <template #default="scope">
@@ -136,7 +147,7 @@ export default {
     VueJsonPretty
   },
   setup() {
-    const activeNames = ref(['metadata', 'spec', 'pods'])
+    const activeNames = ref(['metadata', 'spec', 'ports', 'pods'])
     const page = ref(1)
     const pageSize = ref(10)
     const total = ref(0)
@@ -237,5 +248,8 @@ export default {
 }
 .span-shadow:not(:last-child) {
   margin-right: 5px;
+}
+.detail-table {
+  padding-right: 20px;
 }
 </style>
