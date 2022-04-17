@@ -12,25 +12,25 @@
       <el-collapse-item v-if="servicesDetail.metadata" title="元数据" name="metadata">
         <div class="row_mine">
           <div class="row_context">
-            <div>
+            <div v-if="servicesDetail.metadata.name">
               <p>名称</p>
               <span class="content">{{ servicesDetail.metadata.name }}</span>
             </div>
-            <div>
+            <div v-if="servicesDetail.metadata.namespace">
               <p>命名空间</p>
               <span class="content">{{ servicesDetail.metadata.namespace }}</span>
             </div>
-            <div>
+            <div v-if="servicesDetail.metadata.uid">
               <p>UID</p>
               <span class="content">{{ servicesDetail.metadata.uid }}</span>
             </div>
-            <div>
+            <div v-if="servicesDetail.metadata.creationTimestamp">
               <p>创建时间</p>
               <span class="content">{{ formatDate(servicesDetail.metadata.creationTimestamp) }}</span>
             </div>
           </div>
         </div>
-        <div class="common_show">
+        <div v-if="servicesDetail.metadata.labels" class="common_show">
           <p>标签:</p>
           <span v-for="(label, index) in servicesDetail.metadata.labels" :key="index" class="span-shadow">
             {{ index }}
@@ -38,32 +38,29 @@
             {{ label }}
           </span>
         </div>
-        <div v-if="annotationsFormat" class="common_show">
+        <div v-if="JSON.stringify(annotationsFormat) !== '{}'" class="common_show">
           <p>注释:</p>
-          <div style="color: lightcoral;">
-            <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-            <vue-json-pretty :data="annotationsFormat" :deep="2" :showLine="true" />
-          </div>
+          <vue-json-pretty :data="annotationsFormat" :color="'lightcoral'" />
         </div>
       </el-collapse-item>
       <el-collapse-item v-if="servicesDetail.spec" title="资源信息" name="spec">
         <div class="row_mine" style="margin-bottom: 10px;">
           <div class="row_context">
-            <div>
+            <div v-if="servicesDetail.spec.type">
               <p>类别</p>
               <span class="content">{{ servicesDetail.spec.type }}</span>
             </div>
-            <div>
+            <div v-if="servicesDetail.spec.clusterIP">
               <p>集群IP</p>
               <span class="content">{{ servicesDetail.spec.clusterIP }}</span>
             </div>
-            <div>
+            <div v-if="servicesDetail.spec.sessionAffinity">
               <p>sessionAffinity</p>
               <span class="content">{{ servicesDetail.spec.sessionAffinity }}</span>
             </div>
           </div>
         </div>
-        <div class="row_mine">
+        <div v-if="servicesDetail.spec.selector" class="row_mine">
           <div class="row_context">
             <div>
               <p>Selector</p>
@@ -128,8 +125,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getServicesDetail, getServicesRaw, getServicesPods } from '@/api/kubernetes/services'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
-import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/lib/styles.css'
+import VueJsonPretty from '@/components/vueJsonPretty/index.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
 import { statusPodFilter } from '@/mixin/filter.js'
@@ -160,7 +156,9 @@ export default {
         if (response.code === 0) {
           servicesDetail.value = response.data
           // annotationsFormat.value = JSON.stringify(response.data.metadata.annotations, null, 2)
-          annotationsFormat.value = JSON.parse(JSON.stringify(response.data.metadata.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
+          if (response.data.metadata.annotations) {
+            annotationsFormat.value = JSON.parse(JSON.stringify(response.data.metadata.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
+          }
         }
       })
     }
