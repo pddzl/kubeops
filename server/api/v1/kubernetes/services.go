@@ -12,8 +12,7 @@ import (
 
 type ServicesApi struct{}
 
-// 获取services列表
-
+// GetServicesList 获取services列表
 func (s *ServicesApi) GetServicesList(c *gin.Context) {
 	var pageInfo request.ListParams
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -38,8 +37,7 @@ func (s *ServicesApi) GetServicesList(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// 获取services in 编排
-
+// GetServicesRaw 获取services in 编排
 func (s *ServicesApi) GetServicesRaw(c *gin.Context) {
 	var servicesRaw request.ServicesCommon
 	_ = c.ShouldBindJSON(&servicesRaw)
@@ -59,8 +57,7 @@ func (s *ServicesApi) GetServicesRaw(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取services详情
-
+// GetServicesDetail 获取services详情
 func (s *ServicesApi) GetServicesDetail(c *gin.Context) {
 	var services request.ServicesCommon
 	_ = c.ShouldBindJSON(&services)
@@ -80,6 +77,27 @@ func (s *ServicesApi) GetServicesDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
-// 获取services关联的pods
+// GetServicesPods 获取services关联的pods
+func (s *ServicesApi) GetServicesPods(c *gin.Context) {
+	var servicesPods request.ServicesPods
+	_ = c.ShouldBindJSON(&servicesPods)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&servicesPods); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
 
-func (s *ServicesApi) GetServicesPods(c *gin.Context) {}
+	pods, total, err := servicesService.GetServicesPods(servicesPods.NameSpace, servicesPods.Service, servicesPods.PageInfo)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
+	}
+	response.OkWithDetailed(response.PageResult{
+		List:     pods,
+		Total:    int64(total),
+		Page:     servicesPods.Page,
+		PageSize: servicesPods.PageSize,
+	}, "获取成功", c)
+}

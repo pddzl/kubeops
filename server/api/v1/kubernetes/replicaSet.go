@@ -35,8 +35,7 @@ func (r *ReplicaSetApi) GetReplicaSetList(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// get pod detail
-
+// GetReplicaSetDetail get pod detail
 func (r *ReplicaSetApi) GetReplicaSetDetail(c *gin.Context) {
 	var replicaSetInRaw request.ReplicaSetCommon
 	_ = c.ShouldBindJSON(&replicaSetInRaw)
@@ -56,8 +55,7 @@ func (r *ReplicaSetApi) GetReplicaSetDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
-// 获取replicaSet in raw
-
+// GetReplicaSetRaw 获取replicaSet in raw
 func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
 	var replicaSetInRaw request.ReplicaSetCommon
 	_ = c.ShouldBindJSON(&replicaSetInRaw)
@@ -77,8 +75,7 @@ func (r *ReplicaSetApi) GetReplicaSetRaw(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取replicaSet pods
-
+// GetReplicaSetPods 获取replicaSet pods
 func (r *ReplicaSetApi) GetReplicaSetPods(c *gin.Context) {
 	var replicaSetPods request.ReplicaSetPods
 	_ = c.ShouldBindJSON(&replicaSetPods)
@@ -103,8 +100,7 @@ func (r *ReplicaSetApi) GetReplicaSetPods(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// 获取replicaSet services
-
+// GetReplicaSetServices 获取replicaSet services
 func (r *ReplicaSetApi) GetReplicaSetServices(c *gin.Context) {
 	var replicaSetServices request.ReplicaSetCommon
 	_ = c.ShouldBindJSON(&replicaSetServices)

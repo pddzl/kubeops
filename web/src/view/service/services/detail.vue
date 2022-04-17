@@ -138,8 +138,7 @@ import { getServicesDetail, getServicesRaw, getServicesPods } from '@/api/kubern
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import VueJsonPretty from '@/components/vueJsonPretty/index.vue'
 import { formatDate } from '@/utils/format'
-import { statusRsFilter } from '@/mixin/filter.js'
-import { statusPodFilter } from '@/mixin/filter.js'
+import { statusRsFilter, statusPodFilter } from '@/mixin/filter.js'
 export default {
   name: 'ServicesDetail',
   components: {
