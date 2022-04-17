@@ -61,7 +61,24 @@ func (s *ServicesApi) GetServicesRaw(c *gin.Context) {
 
 // 获取services详情
 
-func (s *ServicesApi) GetServicesDetail(c *gin.Context) {}
+func (s *ServicesApi) GetServicesDetail(c *gin.Context) {
+	var services request.ServicesCommon
+	_ = c.ShouldBindJSON(&services)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&services); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	detail, err := servicesService.GetServiceDetail(services.NameSpace, services.Service)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
+	}
+	response.OkWithDetailed(detail, "获取成功", c)
+}
 
 // 获取services关联的pods
 

@@ -18,7 +18,7 @@
         <el-table-column label="名称" min-width="220">
           <template #default="scope">
             <router-link
-              :to="{ name: 'services_detail', query: { services: scope.row.name, namespace: scope.row.namespace } }"
+              :to="{ name: 'services_detail', query: { service: scope.row.name, namespace: scope.row.namespace } }"
             >
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
