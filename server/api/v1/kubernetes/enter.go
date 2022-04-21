@@ -12,6 +12,7 @@ type ApiGroup struct {
 	DeploymentApi
 	DaemonSetApi
 	ServicesApi
+	IngressApi
 }
 
 var (
@@ -22,4 +23,5 @@ var (
 	deploymentService = service.ServiceGroupApp.KubernetesServiceGroup.DeploymentService
 	daemonSetService  = service.ServiceGroupApp.KubernetesServiceGroup.DaemonSetService
 	servicesService   = service.ServiceGroupApp.KubernetesServiceGroup.ServicesService
+	ingressService    = service.ServiceGroupApp.KubernetesServiceGroup.IngressService
 )
