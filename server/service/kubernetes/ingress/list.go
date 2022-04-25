@@ -48,12 +48,14 @@ func (s *IngressService) GetIngressList(namespace string, info request.PageInfo)
 		}
 		// hosts
 		set := make(map[string]struct{})
+		hosts := make([]string, 0)
 		for _, rule := range ingress.Spec.Rules {
 			if _, exists := set[rule.Host]; !exists && len(rule.Host) > 0 {
-				ingressBrief.Hosts = append(ingressBrief.Hosts, rule.Host)
+				hosts = append(hosts, rule.Host)
 			}
 			set[rule.Host] = struct{}{}
 		}
+		ingressBrief.Hosts = hosts
 		// append
 		IngressBriefList = append(IngressBriefList, ingressBrief)
 	}
