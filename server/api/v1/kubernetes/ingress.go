@@ -57,4 +57,21 @@ func (i *IngressApi) GetIngressRaw(c *gin.Context) {
 }
 
 // GetIngressDetail 获取Ingress detail
-func (i *IngressApi) GetIngressDetail(c *gin.Context) {}
+func (i *IngressApi) GetIngressDetail(c *gin.Context) {
+	var ingress request.IngressCommon
+	_ = c.ShouldBindJSON(&ingress)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&ingress); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	detail, err := ingressService.GetIngressDetail(ingress.NameSpace, ingress.Ingress)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		return
+	}
+	response.OkWithDetailed(detail, "获取成功", c)
+}
