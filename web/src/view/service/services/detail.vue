@@ -10,38 +10,7 @@
     </div>
     <el-collapse v-model="activeNames">
       <el-collapse-item v-if="servicesDetail.metadata" title="元数据" name="metadata">
-        <div class="row_mine">
-          <div class="row_context">
-            <div v-if="servicesDetail.metadata.name">
-              <p>名称</p>
-              <span class="content">{{ servicesDetail.metadata.name }}</span>
-            </div>
-            <div v-if="servicesDetail.metadata.namespace">
-              <p>命名空间</p>
-              <span class="content">{{ servicesDetail.metadata.namespace }}</span>
-            </div>
-            <div v-if="servicesDetail.metadata.uid">
-              <p>UID</p>
-              <span class="content">{{ servicesDetail.metadata.uid }}</span>
-            </div>
-            <div v-if="servicesDetail.metadata.creationTimestamp">
-              <p>创建时间</p>
-              <span class="content">{{ formatDate(servicesDetail.metadata.creationTimestamp) }}</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="servicesDetail.metadata.labels" class="common_show">
-          <p>标签:</p>
-          <span v-for="(label, index) in servicesDetail.metadata.labels" :key="index" class="span-shadow">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </span>
-        </div>
-        <div v-if="JSON.stringify(annotationsFormat) !== '{}'" class="common_show">
-          <p>注释:</p>
-          <vue-json-pretty :data="annotationsFormat" :color="'lightcoral'" />
-        </div>
+        <meta-data :metadata="servicesDetail.metadata" />
       </el-collapse-item>
       <el-collapse-item v-if="servicesDetail.spec" title="资源信息" name="spec">
         <div class="row_mine" style="margin-bottom: 10px;">
@@ -136,14 +105,14 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getServicesDetail, getServicesRaw, getServicesPods } from '@/api/kubernetes/services'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
-import VueJsonPretty from '@/components/vueJsonPretty/index.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter, statusPodFilter } from '@/mixin/filter.js'
+import MetaData from '@/components/kubernetes/detail/metadata.vue'
 export default {
   name: 'ServicesDetail',
   components: {
     VueCodeMirror,
-    VueJsonPretty
+    MetaData
   },
   setup() {
     const activeNames = ref(['metadata', 'spec', 'ports', 'pods'])
@@ -153,7 +122,6 @@ export default {
     const servicesPods = ref([])
     const servicesDetail = ref({})
     const servicesFormat = ref({})
-    const annotationsFormat = ref({})
     const dialogFormVisible = ref(false)
 
     const route = useRoute()
@@ -165,10 +133,6 @@ export default {
       await getServicesDetail({ namespace: namespace, service: service }).then(response => {
         if (response.code === 0) {
           servicesDetail.value = response.data
-          // annotationsFormat.value = JSON.stringify(response.data.metadata.annotations, null, 2)
-          if (response.data.metadata.annotations) {
-            annotationsFormat.value = JSON.parse(JSON.stringify(response.data.metadata.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
-          }
         }
       })
     }
@@ -211,7 +175,6 @@ export default {
       activeNames,
       servicesDetail,
       servicesFormat,
-      annotationsFormat,
       dialogFormVisible,
       servicesPods,
       // filter
