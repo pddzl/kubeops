@@ -2,14 +2,15 @@ package ingress
 
 import (
 	"context"
+	"k8s.io/api/networking/v1"
+
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	resourceIngress "github.com/pddzl/kubeops/server/model/kubernetes/resource/ingress"
-	"k8s.io/api/networking/v1"
 )
 
-func (s *IngressService) GetIngressList(namespace string, info request.PageInfo) ([]resourceIngress.IngressBrief, int, error) {
+func (i *IngressService) GetIngressList(namespace string, info request.PageInfo) ([]resourceIngress.IngressBrief, int, error) {
 	// 获取ingress原生数据
 	ingressListRaw, err := global.KOP_KUBERNETES.NetworkingV1().Ingresses(namespace).List(context.TODO(), api.ListEverything)
 	if err != nil {

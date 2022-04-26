@@ -14,6 +14,7 @@ func (i *IngressRouter) InitIngressRouter(Router *gin.RouterGroup) {
 	ingressApi := v1.ApiGroupApp.KubernetesApiGroup.IngressApi
 	{
 		ingressRouter.POST("getIngressDetail", ingressApi.GetIngressDetail) // 获取Ingress详情
+		ingressRouter.POST("getIngressRaw", ingressApi.GetIngressRaw)       // 获取Ingress编排
 	}
 	{
 		ingressRouterWithoutRecord.POST("getIngressList", ingressApi.GetIngressList) // 获取所有Ingress
