@@ -19,9 +19,13 @@
             <p>Started</p>
             {{ detail.status.started }}
           </div>
-          <div>
+          <div v-if="detail.status.state.running">
             <p>创建时间</p>
             {{ formatDate(detail.status.state.running.startedAt) }}
+          </div>
+          <div v-if="detail.status.state.terminated">
+            <p>原因</p>
+            {{ detail.status.state.terminated.reason }}
           </div>
         </div>
       </div>
