@@ -24,7 +24,7 @@ type ServicePort struct {
 	Name        string             `json:"name,omitempty"`
 	Protocol    string             `json:"protocol,omitempty"`
 	AppProtocol *string            `json:"appProtocol,omitempty"`
-	Port        int32              `json:"port" protobuf:"varint,3,opt,name=port"`
+	Port        int32              `json:"port"`
 	TargetPort  intstr.IntOrString `json:"targetPort,omitempty"`
 	NodePort    int32              `json:"nodePort,omitempty"`
 }

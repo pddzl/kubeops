@@ -3,166 +3,140 @@
     <div class="detail-operation">
       <div class="button">
         <el-affix :offset="120">
-          <el-button icon="view" size="small" type="primary" plain @click="editDeployment">查看</el-button>
+          <el-button icon="view" size="small" type="primary" plain @click="viewDeployment">查看</el-button>
           <el-button icon="expand" size="small" type="warning" plain>伸缩</el-button>
           <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
         </el-affix>
       </div>
     </div>
-    <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="deploymentDetail.metadata" title="元数据" name="1">
-        <div class="row_mine">
-          <div class="row_context">
-            <div>
-              <p>名称</p>
-              <span class="content">{{ deploymentDetail.metadata.name }}</span>
+    <div class="kop-collapse">
+      <el-collapse v-model="activeNames">
+        <el-collapse-item v-if="deploymentDetail.metadata" title="元数据" name="metadata">
+          <meta-data :metadata="deploymentDetail.metadata" />
+        </el-collapse-item>
+        <el-collapse-item v-if="deploymentDetail.spec" title="资源信息" name="spec">
+          <div class="info-box">
+            <div class="row">
+              <div class="item">
+                <p>replicas</p>
+                <span class="content">{{ deploymentDetail.spec.replicas }}</span>
+              </div>
+              <div class="item">
+                <p>Selector</p>
+                <div class="content">
+                  <span v-for="(label, index) in deploymentDetail.spec.selector" :key="index" class="shadow">
+                    {{ index }}
+                    <span v-if="label">:</span>
+                    {{ label }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p>命名空间</p>
-              <span class="content">{{ deploymentDetail.metadata.namespace }}</span>
-            </div>
-            <div>
-              <p>UID</p>
-              <span class="content">{{ deploymentDetail.metadata.uid }}</span>
-            </div>
-            <div>
-              <p>创建时间</p>
-              <span class="content">{{ formatDate(deploymentDetail.metadata.creationTimestamp) }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="common_show">
-          <p>标签:</p>
-          <span v-for="(label, index) in deploymentDetail.metadata.labels" :key="index" class="span-shadow">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </span>
-        </div>
-        <div v-if="annotationsFormat" class="common_show">
-          <p>注释:</p>
-          <div style="color: lightcoral;">
-            <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-            <vue-json-pretty :data="annotationsFormat" :deep="2" :showLine="true" />
-          </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="deploymentDetail.spec" title="资源信息" name="2">
-        <div class="row_mine" style="margin-bottom: 10px;">
-          <div class="row_context">
-            <div>
-              <p>replicas</p>
-              <span class="content">{{ deploymentDetail.spec.replicas }}</span>
-            </div>
-            <div>
-              <p>Selector</p>
-              <span v-for="(label, index) in deploymentDetail.spec.selector" :key="index" class="span-shadow">
-                {{ index }}
-                <span v-if="label">:</span>
-                {{ label }}
-              </span>
+            <div class="row">
+              <div class="item">
+                <p>Strategy</p>
+                <span class="content">{{ deploymentDetail.spec.strategy.type }}</span>
+              </div>
+              <div v-if="deploymentDetail.spec.strategy.type === 'RollingUpdate'" class="item">
+                <p>maxUnavailable</p>
+                <span class="content">{{ deploymentDetail.spec.strategy.rollingUpdate.maxUnavailable }}</span>
+              </div>
+              <div v-if="deploymentDetail.spec.strategy.type === 'RollingUpdate'" class="item">
+                <p>maxSurge</p>
+                <span class="content">{{ deploymentDetail.spec.strategy.rollingUpdate.maxUnavailable }}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="row_mine">
-          <div class="row_context">
-            <div>
-              <p>Strategy</p>
-              <span class="content">{{ deploymentDetail.spec.strategy.type }}</span>
+        </el-collapse-item>
+        <el-collapse-item v-if="deploymentDetail.status" title="状态" name="status">
+          <div class="info-box">
+            <div class="row">
+              <div class="item">
+                <p>replicas</p>
+                <span class="content">{{ deploymentDetail.status.replicas }}</span>
+              </div>
+              <div class="item">
+                <p>updatedReplicas</p>
+                <span class="content">{{ deploymentDetail.status.updatedReplicas }}</span>
+              </div>
+              <div class="item">
+                <p>readyReplicas</p>
+                <span class="content">{{ deploymentDetail.status.readyReplicas }}</span>
+              </div>
+              <div class="item">
+                <p>availableReplicas</p>
+                <span class="content">{{ deploymentDetail.status.availableReplicas }}</span>
+              </div>
             </div>
-            <div v-if="deploymentDetail.spec.strategy.type === 'RollingUpdate'">
-              <p>maxUnavailable</p>
-              <span class="content">{{ deploymentDetail.spec.strategy.rollingUpdate.maxUnavailable }}</span>
-            </div>
-            <div v-if="deploymentDetail.spec.strategy.type === 'RollingUpdate'">
-              <p>maxSurge</p>
-              <span class="content">{{ deploymentDetail.spec.strategy.rollingUpdate.maxUnavailable }}</span>
-            </div>
-          </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="deploymentDetail.status" title="状态" name="3">
-        <div class="row_mine">
-          <div class="row_context">
-            <div>
-              <p>replicas</p>
-              <span class="content">{{ deploymentDetail.status.replicas }}</span>
-            </div>
-            <div>
-              <p>updatedReplicas</p>
-              <span class="content">{{ deploymentDetail.status.updatedReplicas }}</span>
-            </div>
-            <div>
-              <p>readyReplicas</p>
-              <span class="content">{{ deploymentDetail.status.readyReplicas }}</span>
-            </div>
-            <div>
-              <p>availableReplicas</p>
-              <span class="content">{{ deploymentDetail.status.availableReplicas }}</span>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top: 20px; margin-right: 20px;">
-          <el-table :data="deploymentDetail.status.conditions">
-            <el-table-column label="类别" prop="type" />
-            <el-table-column label="状态" prop="status">
-              <template #default="scope">
-                <el-tag :type="statusRsFilter(scope.row.status)" size="small">
-                  {{ scope.row.status }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="上次检测时间">
-              <template #default="scope">
-                {{ formatDate(scope.row.lastUpdateTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="上次迁移时间">
-              <template #default="scope">
-                {{ formatDate(scope.row.lastTransitionTime) }}
-              </template>
-            </el-table-column>
-            <el-table-column label="原因" prop="reason" />
-            <el-table-column label="信息" prop="message" :show-overflow-tooltip="true" />
-          </el-table>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="ReplicaSet" name="4">
-        <div class="row_mine">
-          <div class="row_context">
-            <div>
-              <p>名称</p>
-              <router-link
-                :to="{ name: 'replicaSet_detail', query: { replicaSet: newReplicaSet.name, namespace: newReplicaSet.namespace } }"
-              >
-                <el-link type="primary" :underline="false"><span class="content">{{ newReplicaSet.name }}</span>
-                </el-link>
-              </router-link>
-            </div>
-            <div>
-              <p>命名空间</p>
-              <span class="content">{{ newReplicaSet.namespace }}</span>
-            </div>
-            <div>
-              <p>Replicas</p>
-              <span class="content">{{ newReplicaSet.replicas }}</span>
-            </div>
-            <div>
-              <p>创建时间</p>
-              <span class="content">{{ formatDate(newReplicaSet.creationTimestamp) }}</span>
+            <div style="margin: 20px 20px 0px 0px">
+              <el-table :data="deploymentDetail.status.conditions">
+                <el-table-column label="类别" prop="type" />
+                <el-table-column label="状态" prop="status">
+                  <template #default="scope">
+                    <el-tag :type="statusRsFilter(scope.row.status)" size="small">
+                      {{ scope.row.status }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column label="上次检测时间">
+                  <template #default="scope">
+                    {{ formatDate(scope.row.lastUpdateTime) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="上次迁移时间">
+                  <template #default="scope">
+                    {{ formatDate(scope.row.lastTransitionTime) }}
+                  </template>
+                </el-table-column>
+                <el-table-column label="原因" prop="reason" />
+                <el-table-column label="信息" prop="message" :show-overflow-tooltip="true" />
+              </el-table>
             </div>
           </div>
-        </div>
-        <div class="common_show">
-          <p>标签:</p>
-          <span v-for="(label, index) in newReplicaSet.labels" :key="index" class="span-shadow">
-            {{ index }}
-            <span v-if="label">:</span>
-            {{ label }}
-          </span>
-        </div>
-      </el-collapse-item>
-    </el-collapse>
+        </el-collapse-item>
+        <el-collapse-item title="ReplicaSet" name="replicaSet">
+          <div class="info-box">
+            <div class="row">
+              <div class="item">
+                <p>名称</p>
+                <div class="content">
+                  <router-link
+                    :to="{ name: 'replicaSet_detail', query: { replicaSet: newReplicaSet.name, namespace: newReplicaSet.namespace } }"
+                  >
+                    <el-link type="primary" :underline="false">{{ newReplicaSet.name }}
+                    </el-link>
+                  </router-link>
+                </div>
+              </div>
+              <div class="item">
+                <p>命名空间</p>
+                <span class="content">{{ newReplicaSet.namespace }}</span>
+              </div>
+              <div class="item">
+                <p>Replicas</p>
+                <span class="content">{{ newReplicaSet.replicas }}</span>
+              </div>
+              <div class="item">
+                <p>创建时间</p>
+                <span class="content">{{ formatDate(newReplicaSet.creationTimestamp) }}</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="item">
+                <p>标签:</p>
+                <div class="content">
+                  <span v-for="(label, index) in newReplicaSet.labels" :key="index" class="shadow">
+                    {{ index }}
+                    <span v-if="label">:</span>
+                    {{ label }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="deploymentFormat" :readOnly="true" />
@@ -175,22 +149,20 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDeploymentDetail, getDeploymentRaw, getNewReplicaSet } from '@/api/kubernetes/deployment'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
-import VueJsonPretty from 'vue-json-pretty'
-import 'vue-json-pretty/lib/styles.css'
+import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
 export default {
   name: 'DeploymentDetail',
   components: {
     VueCodeMirror,
-    VueJsonPretty
+    MetaData
   },
   setup() {
-    const activeNames = ref(['1', '2', '3', '4'])
+    const activeNames = ref(['metadata', 'spec', 'status', 'replicaSet'])
     const deploymentDetail = ref({})
     const newReplicaSet = ref({})
     const deploymentFormat = ref({})
-    const annotationsFormat = ref({})
     const dialogFormVisible = ref(false)
 
     const route = useRoute()
@@ -202,8 +174,6 @@ export default {
       await getDeploymentDetail({ namespace: namespace, deployment: deployment }).then(response => {
         if (response.code === 0) {
           deploymentDetail.value = response.data
-          // annotationsFormat.value = JSON.stringify(response.data.metadata.annotations, null, 2)
-          annotationsFormat.value = JSON.parse(JSON.stringify(response.data.metadata.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
         }
       })
     }
@@ -220,7 +190,7 @@ export default {
     getNewReplicaSetData()
 
     // 操作
-    const editDeployment = async() => {
+    const viewDeployment = async() => {
       const result = await getDeploymentRaw({ deployment: deployment, namespace: namespace })
       if (result.code === 0) {
         deploymentFormat.value = JSON.stringify(result.data)
@@ -233,7 +203,6 @@ export default {
       activeNames,
       deploymentDetail,
       deploymentFormat,
-      annotationsFormat,
       dialogFormVisible,
       newReplicaSet,
       // status filter
@@ -241,26 +210,8 @@ export default {
       // 格式化日期
       formatDate,
       // 操作
-      editDeployment
+      viewDeployment
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.el-collapse {
-  --el-collapse-header-font-size: 15px;
-
-  .el-collapse-item {
-    background-color: #ffffff;
-    padding-left: 20px;
-  }
-
-  .el-collapse-item:not(:last-child) {
-    margin-bottom: 15px;
-  }
-}
-.span-shadow:not(:last-child) {
-  margin-right: 5px;
-}
-</style>
