@@ -8,91 +8,90 @@
         </el-affix>
       </div>
     </div>
-    <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="servicesDetail.metadata" title="元数据" name="metadata">
-        <meta-data :metadata="servicesDetail.metadata" />
-      </el-collapse-item>
-      <el-collapse-item v-if="servicesDetail.spec" title="资源信息" name="spec">
-        <div class="row_mine" style="margin-bottom: 10px;">
-          <div class="row_context">
-            <div v-if="servicesDetail.spec.type">
-              <p>类别</p>
-              <span class="content">{{ servicesDetail.spec.type }}</span>
+    <div class="kop-collapse">
+      <el-collapse v-model="activeNames">
+        <el-collapse-item v-if="servicesDetail.metadata" title="元数据" name="metadata">
+          <meta-data :metadata="servicesDetail.metadata" />
+        </el-collapse-item>
+        <el-collapse-item v-if="servicesDetail.spec" title="资源信息" name="spec">
+          <div class="info-box">
+            <div class="row">
+              <div v-if="servicesDetail.spec.type" class="item">
+                <p>类别</p>
+                <span class="content">{{ servicesDetail.spec.type }}</span>
+              </div>
+              <div v-if="servicesDetail.spec.clusterIP" class="item">
+                <p>集群IP</p>
+                <span class="content">{{ servicesDetail.spec.clusterIP }}</span>
+              </div>
+              <div v-if="servicesDetail.spec.sessionAffinity" class="item">
+                <p>sessionAffinity</p>
+                <span class="content">{{ servicesDetail.spec.sessionAffinity }}</span>
+              </div>
             </div>
-            <div v-if="servicesDetail.spec.clusterIP">
-              <p>集群IP</p>
-              <span class="content">{{ servicesDetail.spec.clusterIP }}</span>
-            </div>
-            <div v-if="servicesDetail.spec.sessionAffinity">
-              <p>sessionAffinity</p>
-              <span class="content">{{ servicesDetail.spec.sessionAffinity }}</span>
+            <div class="row">
+              <div v-if="servicesDetail.spec.selector" class="item">
+                <p>Selector</p>
+                <div class="content">
+                  <span v-for="(label, index) in servicesDetail.spec.selector" :key="index" class="shadow">
+                    {{ index }}
+                    <span v-if="label">:</span>
+                    {{ label }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="servicesDetail.spec.selector" class="row_mine">
-          <div class="row_context">
-            <div>
-              <p>Selector</p>
-              <span v-for="(label, index) in servicesDetail.spec.selector" :key="index" class="span-shadow">
-                {{ index }}
-                <span v-if="label">:</span>
-                {{ label }}
-              </span>
+        </el-collapse-item>
+        <el-collapse-item v-if="servicesDetail.spec" title="端口映射" name="ports">
+          <div class="detail-table">
+            <el-table :data="servicesDetail.spec.ports">
+              <el-table-column label="名称" prop="name" />
+              <el-table-column label="协议" prop="protocol" />
+              <el-table-column label="port" prop="port" />
+              <el-table-column label="targetPort" prop="targetPort" />
+              <el-table-column v-if="servicesDetail.spec.type === 'NodePort'" label="nodePort" prop="nodePort" />
+            </el-table>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item title="Pods" name="pods">
+          <div class="detail-table">
+            <el-table :data="servicesPods">
+              <el-table-column label="名称" prop="metadata.name" min-width="120">
+                <template #default="scope">
+                  <router-link
+                    :to="{ name: 'pod_detail', query: { pod: scope.row.metadata.name, namespace: scope.row.metadata.namespace } }"
+                  >
+                    <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
+                  </router-link>
+                </template>
+              </el-table-column>
+              <el-table-column label="命名空间" prop="metadata.namespace" />
+              <el-table-column label="节点" prop="nodeName" />
+              <el-table-column label="状态">
+                <template #default="scope">
+                  <el-tag :type="statusPodFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="创建时间">
+                <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
+              </el-table-column>
+            </el-table>
+            <div class="gva-pagination">
+              <el-pagination
+                :current-page="page"
+                :page-size="pageSize"
+                :page-sizes="[10, 30, 50, 100]"
+                :total="total"
+                layout="total, sizes, prev, pager, next, jumper"
+                @current-change="handleCurrentChange"
+                @size-change="handleSizeChange"
+              />
             </div>
           </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="servicesDetail.spec" title="端口映射" name="ports">
-        <div class="detail-table">
-          <el-table :data="servicesDetail.spec.ports">
-            <el-table-column label="名称" prop="name" />
-            <el-table-column label="协议" prop="protocol" />
-            <el-table-column label="port" prop="port" />
-            <el-table-column label="targetPort" prop="targetPort" />
-            <el-table-column v-if="servicesDetail.spec.type === 'NodePort'" label="nodePort" prop="nodePort" />
-          </el-table>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Pods" name="pods">
-        <div class="detail-table">
-          <el-table :data="servicesPods">
-            <el-table-column label="名称" prop="metadata.name" min-width="120">
-              <template #default="scope">
-                <router-link
-                  :to="{ name: 'pod_detail', query: { pod: scope.row.metadata.name, namespace: scope.row.metadata.namespace } }"
-                >
-                  <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
-                </router-link>
-              </template>
-            </el-table-column>
-            <el-table-column label="命名空间" prop="metadata.namespace" />
-            <el-table-column label="节点" prop="nodeName" />
-            <el-table-column label="状态">
-              <template #default="scope">
-                <el-tag
-                  :type="statusPodFilter(scope.row.status)"
-                  size="small"
-                >{{ scope.row.status }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="创建时间">
-              <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
-            </el-table-column>
-          </el-table>
-          <div class="gva-pagination">
-            <el-pagination
-              :current-page="page"
-              :page-size="pageSize"
-              :page-sizes="[10, 30, 50, 100]"
-              :total="total"
-              layout="total, sizes, prev, pager, next, jumper"
-              @current-change="handleCurrentChange"
-              @size-change="handleSizeChange"
-            />
-          </div>
-        </div>
-      </el-collapse-item>
-    </el-collapse>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="servicesFormat" :readOnly="true" />
@@ -196,21 +195,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.el-collapse {
-  --el-collapse-header-font-size: 15px;
-
-  .el-collapse-item {
-    background-color: #ffffff;
-    padding-left: 20px;
-  }
-
-  .el-collapse-item:not(:last-child) {
-    margin-bottom: 15px;
-  }
-}
-.span-shadow:not(:last-child) {
-  margin-right: 5px;
-}
 .detail-table {
   padding-right: 20px;
 }

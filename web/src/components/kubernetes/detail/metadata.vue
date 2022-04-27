@@ -1,30 +1,28 @@
 <template>
-  <div>
-    <div class="row_mine">
-      <div class="row_context">
-        <div v-if="metadata.name">
-          <p>名称</p>
-          <span class="content">{{ metadata.name }}</span>
-        </div>
-        <div v-if="metadata.namespace">
-          <p>命名空间</p>
-          <span class="content">{{ metadata.namespace }}</span>
-        </div>
-        <div v-if="metadata.uid">
-          <p>UID</p>
-          <span class="content">{{ metadata.uid }}</span>
-        </div>
-        <div v-if="metadata.creationTimestamp">
-          <p>创建时间</p>
-          <span class="content">{{ formatDate(metadata.creationTimestamp) }}</span>
-        </div>
+  <div class="info-box">
+    <div class="row">
+      <div v-if="metadata.name" class="item">
+        <p>名称</p>
+        <span class="content">{{ metadata.name }}</span>
+      </div>
+      <div v-if="metadata.namespace" class="item">
+        <p>命名空间</p>
+        <span class="content">{{ metadata.namespace }}</span>
+      </div>
+      <div v-if="metadata.uid" class="item">
+        <p>UID</p>
+        <span class="content">{{ metadata.uid }}</span>
+      </div>
+      <div v-if="metadata.creationTimestamp">
+        <p>创建时间</p>
+        <span class="content">{{ formatDate(metadata.creationTimestamp) }}</span>
       </div>
     </div>
-    <div v-if="metadata.labels" class="metadata-label">
-      <p>标签:</p>
-      <div class="label-flex">
-        <div v-for="(label, index) in metadata.labels" :key="index" class="label">
-          <span>
+    <div v-if="metadata.labels" class="row">
+      <div class="item">
+        <p>标签:</p>
+        <div class="content">
+          <span v-for="(label, index) in metadata.labels" :key="index" class="shadow">
             {{ index }}
             <span v-if="label">:</span>
             {{ label }}
@@ -32,7 +30,7 @@
         </div>
       </div>
     </div>
-    <div v-if="JSON.stringify(annotationsFormat) !== '{}'" style="margin-top: 10px;">
+    <div v-if="JSON.stringify(annotationsFormat) !== '{}'">
       <p style="font-size: 13px;">注释:</p>
       <vue-json-pretty :data="annotationsFormat" :color="'lightcoral'" />
     </div>
@@ -74,29 +72,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.metadata-label {
-  margin-top: 10px;
-  p {
-    margin-bottom: 5px;
-    font-size: 13px;
-  }
-  .label-flex {
-    display: flex;
-    flex-wrap: wrap;
-    div:not(:last-child) {
-      margin-right: 8px;
-    }
-    div {
-      padding: 2px;
-      >span {
-        background-color: rgba(128, 128, 128, 0.159);
-        font-size: 13px;
-        border-radius: 8px;
-        padding: 5px;
-      }
-    }
-  }
-}
-</style>
