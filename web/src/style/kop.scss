@@ -84,25 +84,6 @@
 }
 
 // 详情页
-.spec-layout {
-  .resource {
-    p {
-      margin-bottom: 5px;
-      font-size: 13px;
-    }
-  }
-  .item {
-    display: flex;
-    flex-wrap: wrap;
-    font-size: 16px;
-    .shadow {
-      @include shadow;
-    }
-  }
-  div:not(:last-child) {
-    margin-bottom: 10px;
-  }
-}
 .info-box {
   .row {
     display: flex;
