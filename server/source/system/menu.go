@@ -42,7 +42,7 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "services", Name: "services", Component: "view/service/services/list.vue", Sort: 1, Meta: system.Meta{Title: "Services", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "18", Path: "services/detail", Name: "services_detail", Component: "view/service/services/detail.vue", Sort: 2, Meta: system.Meta{Title: "Services详情", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "18", Path: "ingress", Name: "ingress", Component: "view/service/ingress/list.vue", Sort: 3, Meta: system.Meta{Title: "Ingress", Icon: "ship"}},
-		{MenuLevel: 0, Hidden: true, ParentId: "18", Path: "ingress/detail", Name: "ingress_detail", Component: "view/service/ingress/detail.vue", Sort: 4, Meta: system.Meta{Title: "Ingress", Icon: "ship"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "18", Path: "ingress/detail", Name: "ingress_detail", Component: "view/service/ingress/detail.vue", Sort: 4, Meta: system.Meta{Title: "Ingress详情", Icon: "ship"}},
 		// 23 superAdmin 超级管理员
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 5, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "23", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},

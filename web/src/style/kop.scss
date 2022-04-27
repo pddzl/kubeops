@@ -6,18 +6,18 @@
   padding: 5px;
 }
 
-// .kop-collapse {
-//   .el-collapse {
-//     --el-collapse-header-font-size: 15px;
-//     .el-collapse-item {
-//       background-color: #ffffff;
-//       padding-left: 20px;
-//     }
-//     .el-collapse-item:not(:last-child) {
-//       margin-bottom: 15px;
-//     }
-//   }
-// }
+.kop-collapse {
+  .el-collapse {
+    --el-collapse-header-font-size: 15px;
+    .el-collapse-item {
+      background-color: #ffffff;
+      padding-left: 20px;
+    }
+    .el-collapse-item:not(:last-child) {
+      margin-bottom: 15px;
+    }
+  }
+}
 
 .span-shadow {
   background-color: rgba(128, 128, 128, 0.149);
