@@ -14,19 +14,21 @@
           <meta-data :metadata="ingressDetail.metadata" />
         </el-collapse-item>
         <el-collapse-item v-if="ingressDetail.spec" title="资源信息" name="spec">
-          <div class="spec-layout">
-            <div v-if="ingressDetail.spec.ingressClassName" class="resource">
-              <p>Ingress Class Name</p>
+          <div class="info-box">
+            <div v-if="ingressDetail.spec.ingressClassName" class="row">
               <div class="item">
+                <p>Ingress Class Name</p>
                 <span class="content">{{ ingressDetail.spec.ingressClassName }}</span>
               </div>
             </div>
-            <div v-if="ingressDetail.status.endPoints" class="resource">
-              <p>EndPoints</p>
+            <div v-if="ingressDetail.status.endPoints" class="row">
               <div class="item">
-                <span v-for="endPoint in ingressDetail.status.endPoints" :key="endPoint">
-                  {{ endPoint }}
-                </span>
+                <p>EndPoints</p>
+                <div class="content">
+                  <span v-for="endPoint in ingressDetail.status.endPoints" :key="endPoint" class="shadow">
+                    {{ endPoint }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -130,7 +132,6 @@ export default {
   div {
     margin-right: 20px;
   }
-
   div:not(:last-child) {
     margin-bottom: 20px;
   }
