@@ -1,3 +1,24 @@
+// mixin
+@mixin shadow {
+  background-color: rgba(128, 128, 128, 0.159);
+  font-size: 13px;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+// .kop-collapse {
+//   .el-collapse {
+//     --el-collapse-header-font-size: 15px;
+//     .el-collapse-item {
+//       background-color: #ffffff;
+//       padding-left: 20px;
+//     }
+//     .el-collapse-item:not(:last-child) {
+//       margin-bottom: 15px;
+//     }
+//   }
+// }
+
 .span-shadow {
   background-color: rgba(128, 128, 128, 0.149);
   font-size: 13px;
@@ -60,4 +81,25 @@
       height: 0;
       clear: both;
       visibility: hidden;
+}
+
+// 详情页
+.spec-layout {
+  .resource {
+    p {
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+  }
+  .item {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16px;
+    .shadow {
+      @include shadow;
+    }
+  }
+  div:not(:last-child) {
+    margin-bottom: 10px;
+  }
 }

@@ -32,8 +32,8 @@
         </div>
       </div>
     </div>
-    <div v-if="JSON.stringify(annotationsFormat) !== '{}'" class="common_show">
-      <p>注释:</p>
+    <div v-if="JSON.stringify(annotationsFormat) !== '{}'" style="margin-top: 10px;">
+      <p style="font-size: 13px;">注释:</p>
       <vue-json-pretty :data="annotationsFormat" :color="'lightcoral'" />
     </div>
   </div>

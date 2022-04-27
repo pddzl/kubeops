@@ -12,7 +12,7 @@ type IngressDetail struct {
 
 type ingressSpec struct {
 	IngressClassName string        `json:"ingressClassName,omitempty"`
-	Rules            []IngressRule `json:"rules,omitempty" protobuf:"bytes,3,rep,name=rules"`
+	Rules            []IngressRule `json:"rules,omitempty"`
 }
 
 type IngressRule struct {

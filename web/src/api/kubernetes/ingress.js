@@ -17,3 +17,12 @@ export const getIngressRaw = (data) => {
     data
   })
 }
+
+// 获取ingress detail
+export const getIngressDetail = (data) => {
+  return service({
+    url: '/ingress/getIngressDetail',
+    method: 'post',
+    data
+  })
+}
