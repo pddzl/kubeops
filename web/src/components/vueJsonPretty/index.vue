@@ -1,7 +1,7 @@
 <template>
   <div class="format">
     <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-    <vue-json-pretty :data="data" :deep="2" :showLine="true" />
+    <vue-json-pretty :data="data" :deep="1" :showLine="true" />
   </div>
 </template>
 
