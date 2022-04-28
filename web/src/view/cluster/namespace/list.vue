@@ -2,31 +2,22 @@
   <div>
     <div class="gva-table-box">
       <el-table :data="tableData">
-        <el-table-column label="名称" min-width="180">
+        <el-table-column label="名称">
           <template #default="scope">
             <router-link :to="{ name: 'namespace_detail', query: { name: scope.row.name } }">
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="120" prop="status">
+        <el-table-column label="状态">
           <template #default="scope">
             <el-tag :type="statusNsFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="标签" min-width="400">
-          <template #default="scope">
-            <span
-              v-for="(value, key) in scope.row.labels"
-              :key="key"
-              class="span-shadow"
-            >{{ key }}: {{ value }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" min-width="200">
+        <el-table-column label="创建时间">
           <template #default="scope">{{ scope.row.creationTimestamp }}</template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" min-width="160">
+        <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button icon="view" size="small" type="text" @click="editNamespace(scope.row)">查看</el-button>
             <el-button icon="delete" size="small" type="text" @click="deleteNamespace(scope.row)">删除</el-button>
