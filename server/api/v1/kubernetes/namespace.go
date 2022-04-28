@@ -11,8 +11,7 @@ import (
 
 type NamespaceApi struct{}
 
-// 获取集群所有namespace
-
+// GetNamespaceList 获取集群所有namespace
 func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -22,6 +21,7 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
 	list, total, err := namespaceService.GetNamespaceList(pageInfo)
 	if err != nil {
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
@@ -36,8 +36,7 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 	}, "获取成功", c)
 }
 
-// 获取集群所以namespace（只包括name）
-
+// GetNamespaceOnlyName 获取集群所以namespace（只包括name）
 func (n *NamespaceApi) GetNamespaceOnlyName(c *gin.Context) {
 	list, err := namespaceService.GetNamespaceOnlyName()
 	if err != nil {
@@ -48,8 +47,7 @@ func (n *NamespaceApi) GetNamespaceOnlyName(c *gin.Context) {
 	response.OkWithDetailed(list, "获取成功", c)
 }
 
-// 获取namespace详情
-
+// GetNamespaceDetail 获取namespace详情
 func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
 	var nameInfo request.GetByName
 	_ = c.ShouldBindJSON(&nameInfo)
@@ -59,6 +57,7 @@ func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
 	detail, err := namespaceService.GetNamespaceDetail(nameInfo.Name)
 	if err != nil {
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
@@ -68,8 +67,7 @@ func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
-// 获取namespace in raw
-
+// GetNamespaceRaw 获取namespace in raw
 func (n *NamespaceApi) GetNamespaceRaw(c *gin.Context) {
 	var nameInfo request.GetByName
 	_ = c.ShouldBindJSON(&nameInfo)
@@ -79,11 +77,12 @@ func (n *NamespaceApi) GetNamespaceRaw(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	detail, err := namespaceService.GetNamespaceRaw(nameInfo.Name)
+
+	raw, err := namespaceService.GetNamespaceRaw(nameInfo.Name)
 	if err != nil {
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
 		return
 	}
-	response.OkWithDetailed(detail, "获取成功", c)
+	response.OkWithDetailed(raw, "获取成功", c)
 }

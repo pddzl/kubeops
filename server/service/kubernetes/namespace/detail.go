@@ -2,28 +2,26 @@ package namespace
 
 import (
 	"context"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
-	v1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	resourceNamespace "github.com/pddzl/kubeops/server/model/kubernetes/resource/namespace"
 )
 
-func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, err error) {
-	var namespaceDetail resource.NameSpaceDetail
-	namespace, err := global.KOP_KUBERNETES.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{TypeMeta: metaV1.TypeMeta{}})
-	//req, err := global.KOP_KUBERNETES.RESTClient().Get().AbsPath("/api/v1/namespaces/kubeops").DoRaw(context.TODO())
-	//req, err := global.KOP_KUBERNETES.RESTClient().Get().Resource("namespaces").Namespace("kube-system").DoRaw(context.TODO())
-
+func (n *NamespaceService) GetNamespaceDetail(name string) (*resourceNamespace.NameSpaceDetail, error) {
+	// 获取namespace原生数据
+	namespace, err := global.KOP_KUBERNETES.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
-	// metadata
-	namespaceDetail.Metadata.Name = namespace.Name
-	namespaceDetail.Metadata.Labels = namespace.Labels
-	namespaceDetail.Metadata.CreationTimestamp = namespace.CreationTimestamp
-	namespaceDetail.Metadata.Uid = string(namespace.UID)
 
+	// 处理namespace数据
+	var namespaceDetail resourceNamespace.NameSpaceDetail
+	// metadata
+	namespaceDetail.Metadata = api.NewObjectMeta(namespace.ObjectMeta)
 	// status
 	namespaceDetail.Status = string(namespace.Status.Phase)
 
@@ -40,7 +38,8 @@ func (n *NamespaceService) GetNamespaceDetail(name string) (detail interface{}, 
 		return nil, err
 	}
 	namespaceDetail.ResourceLimits = resourceLimits
-	return namespaceDetail, nil
+
+	return &namespaceDetail, nil
 }
 
 func getResourceQuotas(namespace string) ([]resource.ResourceQuotaDetail, error) {
@@ -56,7 +55,7 @@ func getResourceQuotas(namespace string) ([]resource.ResourceQuotaDetail, error)
 	return result, err
 }
 
-func getLimitRanges(namespace v1.Namespace) ([]resource.LimitRangeDetail, error) {
+func getLimitRanges(namespace corev1.Namespace) ([]resource.LimitRangeDetail, error) {
 	list, err := global.KOP_KUBERNETES.CoreV1().LimitRanges(namespace.Name).List(context.TODO(), api.ListEverything)
 	if err != nil {
 		return nil, err
