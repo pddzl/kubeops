@@ -10,8 +10,9 @@ import (
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/response"
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	"github.com/pddzl/kubeops/server/model/kubernetes/request"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
+	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
 type PodApi struct{}
@@ -20,7 +21,6 @@ type PodApi struct{}
 
 func (p *PodApi) GetPodList(c *gin.Context) {
 	var pageInfo request.SearchPodParams
-	var list []resource.Pod
 	_ = c.ShouldBindJSON(&pageInfo)
 	// 校验字段
 	validate := validator.New()
@@ -29,28 +29,30 @@ func (p *PodApi) GetPodList(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
+	var list []resourcePod.PodBrief
 	podList, total, err := podService.GetPodList(pageInfo.NameSpace, pageInfo.PageInfo)
 	if err != nil {
+		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取pod列表失败", zap.Error(err))
+	} else {
+		// 处理pod原始数据
+		for _, podRaw := range podList {
+			var pod resourcePod.PodBrief
+			pod.ObjectMeta = api.NewObjectMeta(podRaw.ObjectMeta)
+			pod.Node = podRaw.Spec.NodeName
+			pod.Status = string(podRaw.Status.Phase)
+			// append
+			list = append(list, pod)
+		}
+
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    int64(total),
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
 	}
-	// 处理pod原始数据
-	for _, podRaw := range podList {
-		var pod resource.Pod
-		pod.Name = podRaw.Name
-		pod.Namespace = podRaw.Namespace
-		pod.Image = podRaw.Spec.Containers[0].Image
-		pod.Node = podRaw.Spec.NodeName
-		pod.Status = string(podRaw.Status.Phase)
-		pod.CreationTimestamp = podRaw.CreationTimestamp
-		// append
-		list = append(list, pod)
-	}
-	response.OkWithDetailed(response.PageResult{
-		List:     list,
-		Total:    int64(total),
-		Page:     pageInfo.Page,
-		PageSize: pageInfo.PageSize,
-	}, "获取成功", c)
 }
 
 // 获取pod详情
