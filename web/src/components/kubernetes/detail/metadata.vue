@@ -59,7 +59,11 @@ export default {
     // 去掉双引号、反斜杠、换行符
     const format = () => {
       if (metadata.value.annotations) {
-        annotationsFormat.value = JSON.parse(JSON.stringify(metadata.value.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
+        try {
+          annotationsFormat.value = JSON.parse(JSON.stringify(metadata.value.annotations).replace(/\\"/g, '"').replace(/"\{/g, '{').replace(/\\n"/g, ''))
+        } catch (err) {
+          annotationsFormat.value = metadata.value.annotations
+        }
       }
     }
     format()

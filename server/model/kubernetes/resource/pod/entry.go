@@ -1,9 +1,16 @@
 package pod
 
 import (
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+type PodBrief struct {
+	ObjectMeta api.ObjectMeta `json:"metadata"`
+	Status     string         `json:"status"`
+	Node       string         `json:"node"`
+}
 
 type PodDetail struct {
 	MetaData        metadata                `json:"metadata"`

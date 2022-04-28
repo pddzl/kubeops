@@ -2,115 +2,82 @@ package node
 
 import (
 	"context"
-	"github.com/pddzl/kubeops/server/global"
-	resource2 "github.com/pddzl/kubeops/server/model/kubernetes/resource"
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
+
+	"github.com/pddzl/kubeops/server/global"
+	"github.com/pddzl/kubeops/server/model/kubernetes/api"
+	resourceNode "github.com/pddzl/kubeops/server/model/kubernetes/resource/node"
+	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
-func (n *NodeService) GetNodeDetail(nodeName string) (*resource2.NodeDetail, error) {
-	var nodeDetail resource2.NodeDetail
-	node, err := global.KOP_KUBERNETES.CoreV1().Nodes().Get(context.TODO(), nodeName, metaV1.GetOptions{})
+func (n *NodeService) GetNodeDetail(name string) (*resourceNode.NodeDetail, error) {
+	// 获取原生node数据
+	node, err := global.KOP_KUBERNETES.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	// ObjectMeta
-	nodeDetail.ObjectMeta.Name = node.ObjectMeta.Name
-	nodeDetail.ObjectMeta.Labels = node.ObjectMeta.Labels
-	nodeDetail.ObjectMeta.Annotations = node.ObjectMeta.Annotations
-	nodeDetail.ObjectMeta.CreationTimestamp = node.ObjectMeta.CreationTimestamp
-	nodeDetail.ObjectMeta.UID = string(node.ObjectMeta.UID)
+	// 处理node数据
+	var nodeDetail resourceNode.NodeDetail
+	// metadata
+	nodeDetail.Metadata = api.NewObjectMeta(node.ObjectMeta)
+	// spec
+	nodeDetail.Spec.PodCIDR = node.Spec.PodCIDR
+	nodeDetail.Spec.Unschedulable = node.Spec.Unschedulable
+	nodeDetail.Spec.Taints = node.Spec.Taints
+	// status
+	nodeDetail.Status.Phase = string(node.Status.Phase)
+	nodeDetail.Status.Conditions = node.Status.Conditions
+	nodeDetail.Status.Addresses = node.Status.Addresses
+	nodeDetail.Status.DaemonEndpoints = node.Status.DaemonEndpoints
+	nodeDetail.Status.NodeInfo = node.Status.NodeInfo
+	nodeDetail.Status.Images = node.Status.Images
 
 	// PodList
-	podList, err := getNodePods(nodeName)
+	podList, err := getNodePods(name)
 	if err != nil {
 		return nil, err
 	}
 	for _, podRaw := range podList.Items {
-		var pod resource2.Pod
-		pod.Name = podRaw.Name
-		pod.Namespace = podRaw.Namespace
-		pod.Image = podRaw.Spec.Containers[0].Image
+		var pod resourcePod.PodBrief
+		pod.ObjectMeta = api.NewObjectMeta(podRaw.ObjectMeta)
 		pod.Node = podRaw.Spec.NodeName
 		pod.Status = string(podRaw.Status.Phase)
-		pod.CreationTimestamp = podRaw.CreationTimestamp
 		// append
-		nodeDetail.PodList = append(nodeDetail.PodList, pod)
+		nodeDetail.Pods = append(nodeDetail.Pods, pod)
 	}
 
 	// NodeAllocatedResources
 	allocatedResources, err := getNodeAllocatedResources(node, podList)
 	nodeDetail.NodeAllocatedResources = allocatedResources
 
-	// PodCIDR
-	nodeDetail.PodCIDR = node.Spec.PodCIDR
-
-	// Unschedulable
-	nodeDetail.Unschedulable = node.Spec.Unschedulable
-
-	// NodeInfo
-	nodeDetail.NodeInfo = node.Status.NodeInfo
-
-	// Conditions
-	for _, conditionRaw := range node.Status.Conditions {
-		var condition resource2.Condition
-		condition.Type = string(conditionRaw.Type)
-		condition.Status = string(conditionRaw.Status)
-		condition.LastProbeTime = conditionRaw.LastHeartbeatTime
-		condition.LastTransitionTime = conditionRaw.LastTransitionTime
-		condition.Reason = conditionRaw.Reason
-		condition.Message = conditionRaw.Message
-		// append
-		nodeDetail.Conditions = append(nodeDetail.Conditions, condition)
-	}
-
-	// ContainerImages
-	for _, image := range node.Status.Images {
-		for _, name := range image.Names {
-			// append
-			nodeDetail.ContainerImages = append(nodeDetail.ContainerImages, name)
-		}
-	}
-
-	// Addresses
-	for _, addr := range node.Status.Addresses {
-		var address resource2.Addresses
-		address.Type = string(addr.Type)
-		address.Address = addr.Address
-		// append
-		nodeDetail.Addresses = append(nodeDetail.Addresses, address)
-	}
-
-	// Taints
-	nodeDetail.Taints = node.Spec.Taints
-
 	return &nodeDetail, err
 }
 
-func getNodePods(nodeName string) (*v1.PodList, error) {
+func getNodePods(nodeName string) (*corev1.PodList, error) {
 	fieldSelector, err := fields.ParseSelector("spec.nodeName=" + nodeName +
-		",status.phase!=" + string(v1.PodSucceeded) +
-		",status.phase!=" + string(v1.PodFailed))
+		",status.phase!=" + string(corev1.PodSucceeded) +
+		",status.phase!=" + string(corev1.PodFailed))
 
 	if err != nil {
 		return nil, err
 	}
 
-	return global.KOP_KUBERNETES.CoreV1().Pods(v1.NamespaceAll).List(context.TODO(), metaV1.ListOptions{
+	return global.KOP_KUBERNETES.CoreV1().Pods(corev1.NamespaceAll).List(context.TODO(), metav1.ListOptions{
 		FieldSelector: fieldSelector.String(),
 	})
 }
 
-func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (resource2.NodeAllocatedResources, error) {
-	reqs, limits := map[v1.ResourceName]resource.Quantity{}, map[v1.ResourceName]resource.Quantity{}
+func getNodeAllocatedResources(node *corev1.Node, podList *corev1.PodList) (resourceNode.NodeAllocatedResources, error) {
+	reqs, limits := map[corev1.ResourceName]resource.Quantity{}, map[corev1.ResourceName]resource.Quantity{}
 
 	for _, pod := range podList.Items {
 		podReqs, podLimits, err := PodRequestsAndLimits(&pod)
 		if err != nil {
-			return resource2.NodeAllocatedResources{}, err
+			return resourceNode.NodeAllocatedResources{}, err
 		}
 		for podReqName, podReqValue := range podReqs {
 			if value, ok := reqs[podReqName]; !ok {
@@ -130,8 +97,8 @@ func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (resource2.No
 		}
 	}
 
-	cpuRequests, cpuLimits, memoryRequests, memoryLimits := reqs[v1.ResourceCPU],
-		limits[v1.ResourceCPU], reqs[v1.ResourceMemory], limits[v1.ResourceMemory]
+	cpuRequests, cpuLimits, memoryRequests, memoryLimits := reqs[corev1.ResourceCPU],
+		limits[corev1.ResourceCPU], reqs[corev1.ResourceMemory], limits[corev1.ResourceMemory]
 
 	var cpuRequestsFraction, cpuLimitsFraction float64 = 0, 0
 	if capacity := float64(node.Status.Allocatable.Cpu().MilliValue()); capacity > 0 {
@@ -151,7 +118,7 @@ func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (resource2.No
 		podFraction = float64(len(podList.Items)) / float64(podCapacity) * 100
 	}
 
-	return resource2.NodeAllocatedResources{
+	return resourceNode.NodeAllocatedResources{
 		CPURequests:            cpuRequests.MilliValue(),
 		CPURequestsFraction:    cpuRequestsFraction,
 		CPULimits:              cpuLimits.MilliValue(),
@@ -172,8 +139,8 @@ func getNodeAllocatedResources(node *v1.Node, podList *v1.PodList) (resource2.No
 // containers of the pod. If pod overhead is non-nil, the pod overhead is added to the
 // total container resource requests and to the total container limits which have a
 // non-zero quantity.
-func PodRequestsAndLimits(pod *v1.Pod) (reqs, limits v1.ResourceList, err error) {
-	reqs, limits = v1.ResourceList{}, v1.ResourceList{}
+func PodRequestsAndLimits(pod *corev1.Pod) (reqs, limits corev1.ResourceList, err error) {
+	reqs, limits = corev1.ResourceList{}, corev1.ResourceList{}
 	for _, container := range pod.Spec.Containers {
 		addResourceList(reqs, container.Resources.Requests)
 		addResourceList(limits, container.Resources.Limits)
@@ -199,7 +166,7 @@ func PodRequestsAndLimits(pod *v1.Pod) (reqs, limits v1.ResourceList, err error)
 }
 
 // addResourceList adds the resources in newList to list
-func addResourceList(list, new v1.ResourceList) {
+func addResourceList(list, new corev1.ResourceList) {
 	for name, quantity := range new {
 		if value, ok := list[name]; !ok {
 			list[name] = quantity.DeepCopy()
@@ -212,7 +179,7 @@ func addResourceList(list, new v1.ResourceList) {
 
 // maxResourceList sets list to the greater of list/newList for every resource
 // either list
-func maxResourceList(list, new v1.ResourceList) {
+func maxResourceList(list, new corev1.ResourceList) {
 	for name, quantity := range new {
 		if value, ok := list[name]; !ok {
 			list[name] = quantity.DeepCopy()

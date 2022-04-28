@@ -12,8 +12,7 @@ import (
 
 type NodeApi struct{}
 
-// 获取所有节点
-
+// GetNodeList 获取所有节点
 func (n *NodeApi) GetNodeList(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -23,9 +22,10 @@ func (n *NodeApi) GetNodeList(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
 	if list, total, err := nodeService.GetNodeList(&pageInfo); err != nil {
-		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(response.PageResult{
 			List:     list,
@@ -36,8 +36,7 @@ func (n *NodeApi) GetNodeList(c *gin.Context) {
 	}
 }
 
-// 获取节点详情
-
+// GetNodeDetail 获取节点详情
 func (n *NodeApi) GetNodeDetail(c *gin.Context) {
 	var nameInfo request.GetByName
 	_ = c.ShouldBindJSON(&nameInfo)
@@ -47,16 +46,16 @@ func (n *NodeApi) GetNodeDetail(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
 	if nodeDetail, err := nodeService.GetNodeDetail(nameInfo.Name); err != nil {
-		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(nodeDetail, "获取成功", c)
 	}
 }
 
-// 获取节点 in raw
-
+// GetNodeRaw 获取节点 in raw
 func (n *NodeApi) GetNodeRaw(c *gin.Context) {
 	var nameInfo request.GetByName
 	_ = c.ShouldBindJSON(&nameInfo)
@@ -66,9 +65,10 @@ func (n *NodeApi) GetNodeRaw(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
 	if nodeDetail, err := nodeService.GetNodeRaw(nameInfo.Name); err != nil {
-		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(nodeDetail, "获取成功", c)
 	}
