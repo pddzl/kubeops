@@ -26,3 +26,12 @@ export const getNodeRaw = (data) => {
     data
   })
 }
+
+// 获取node pods
+export const getNodePods = (data) => {
+  return service({
+    url: '/node/getNodePods',
+    method: 'post',
+    data
+  })
+}

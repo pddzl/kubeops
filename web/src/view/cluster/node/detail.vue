@@ -148,21 +148,36 @@
           </div>
         </el-collapse-item>
         <el-collapse-item v-if="nodeDetail.status?.conditions" title="状态" name="status">
-          <el-table :data="nodeDetail.status.conditions">
-            <el-table-column prop="type" label="类别" min-width="120" />
-            <el-table-column prop="status" label="状态" />
-            <el-table-column label="最近检查时间" width="200">
-              <template #default="scope">{{ formatDate(scope.row.lastHeartbeatTime) }}</template>
-            </el-table-column>
-            <el-table-column label="最近迁移时间" width="200">
-              <template #default="scope">{{ formatDate(scope.row.lastTransitionTime) }}</template>
-            </el-table-column>
-            <el-table-column prop="reason" label="原因" min-width="180" />
-            <el-table-column prop="message" label="信息" min-width="200" />
-          </el-table>
+          <div class="info-table">
+            <el-table :data="nodeDetail.status.conditions">
+              <el-table-column prop="type" label="类别" min-width="120" />
+              <el-table-column prop="status" label="状态" />
+              <el-table-column label="最近检查时间" width="200">
+                <template #default="scope">{{ formatDate(scope.row.lastHeartbeatTime) }}</template>
+              </el-table-column>
+              <el-table-column label="最近迁移时间" width="200">
+                <template #default="scope">{{ formatDate(scope.row.lastTransitionTime) }}</template>
+              </el-table-column>
+              <el-table-column prop="reason" label="原因" min-width="180" />
+              <el-table-column prop="message" label="信息" min-width="200" />
+            </el-table>
+          </div>
         </el-collapse-item>
-        <el-collapse-item v-if="nodeDetail.pods" title="Pods" name="pods">
-          <pod-brief :pods="nodeDetail.pods" />
+        <el-collapse-item title="Pods" name="pods">
+          <div class="info-table">
+            <pod-brief :pods="nodePods" />
+            <div class="gva-pagination">
+              <el-pagination
+                :current-page="page"
+                :page-size="pageSize"
+                :page-sizes="[10, 30, 50, 100]"
+                :total="total"
+                layout="total, sizes, prev, pager, next, jumper"
+                @current-change="handleCurrentChange"
+                @size-change="handleSizeChange"
+              />
+            </div>
+          </div>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -176,7 +191,7 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getNodeDetail, getNodeRaw } from '@/api/kubernetes/node'
+import { getNodeDetail, getNodeRaw, getNodePods } from '@/api/kubernetes/node'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
@@ -191,9 +206,13 @@ export default {
   },
   setup() {
     const activeNames = ref(['metadata', 'spec', 'nodeInfo', 'allocated', 'status', 'pods'])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
     const nodeDetail = ref({})
     const nodeFormat = ref({})
     const dialogFormVisible = ref(false)
+    const nodePods = ref([])
 
     const route = useRoute()
     const nodeName = route.query.name
@@ -207,6 +226,28 @@ export default {
       })
     }
     getData()
+
+    const getNodePodsData = async() => {
+      const res = await getNodePods({ node_name: nodeName, page: page.value, pageSize: pageSize.value })
+      if (res.code === 0) {
+        nodePods.value = res.data.list
+        total.value = res.data.total
+        page.value = res.data.page
+        pageSize.value = res.data.pageSize
+      }
+    }
+    getNodePodsData()
+
+    // 分页
+    const handleSizeChange = (val) => {
+      pageSize.value = val
+      getNodePodsData()
+    }
+
+    const handleCurrentChange = (val) => {
+      page.value = val
+      getNodePodsData()
+    }
 
     // 操作
     const viewNode = async() => {
@@ -222,11 +263,18 @@ export default {
       nodeDetail,
       formatDate,
       nodeFormat,
+      nodePods,
       dialogFormVisible,
       // filter
       statusPodFilter,
       // 函数
-      viewNode
+      viewNode,
+      // 分页
+      total,
+      page,
+      pageSize,
+      handleSizeChange,
+      handleCurrentChange
     }
   }
 }

@@ -16,6 +16,7 @@ func (s *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) {
 	{
 		nodeRouter.POST("getNodeDetail", nodeRouterApi.GetNodeDetail) // 获取node详情
 		nodeRouter.POST("getNodeRaw", nodeRouterApi.GetNodeRaw)       // 获取node in raw
+		nodeRouter.POST("getNodePods", nodeRouterApi.GetNodePods)     // 获取node pods
 	}
 	{
 		nodeRouterWithoutRecord.POST("getNodeList", nodeRouterApi.GetNodeList) // 获取所有node

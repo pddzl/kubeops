@@ -19,7 +19,7 @@
     <el-table-column label="创建时间" width="200">
       <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
     </el-table-column>
-    <el-table-column fixed="right" label="操作" width="240">
+    <el-table-column fixed="right" label="操作" width="220">
       <template #default>
         <el-button icon="tickets" type="text" size="small">日志</el-button>
         <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
@@ -36,8 +36,8 @@ export default {
   name: 'PodBrief',
   props: {
     pods: {
-      type: Object,
-      default: () => {}
+      type: Array,
+      default: () => []
     }
   },
   setup() {

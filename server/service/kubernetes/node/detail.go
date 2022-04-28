@@ -2,15 +2,12 @@ package node
 
 import (
 	"context"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/fields"
-
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	resourceNode "github.com/pddzl/kubeops/server/model/kubernetes/resource/node"
-	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func (n *NodeService) GetNodeDetail(name string) (*resourceNode.NodeDetail, error) {
@@ -41,34 +38,12 @@ func (n *NodeService) GetNodeDetail(name string) (*resourceNode.NodeDetail, erro
 	if err != nil {
 		return nil, err
 	}
-	for _, podRaw := range podList.Items {
-		var pod resourcePod.PodBrief
-		pod.ObjectMeta = api.NewObjectMeta(podRaw.ObjectMeta)
-		pod.Node = podRaw.Spec.NodeName
-		pod.Status = string(podRaw.Status.Phase)
-		// append
-		nodeDetail.Pods = append(nodeDetail.Pods, pod)
-	}
-
+	
 	// NodeAllocatedResources
 	allocatedResources, err := getNodeAllocatedResources(node, podList)
 	nodeDetail.NodeAllocatedResources = allocatedResources
 
 	return &nodeDetail, err
-}
-
-func getNodePods(nodeName string) (*corev1.PodList, error) {
-	fieldSelector, err := fields.ParseSelector("spec.nodeName=" + nodeName +
-		",status.phase!=" + string(corev1.PodSucceeded) +
-		",status.phase!=" + string(corev1.PodFailed))
-
-	if err != nil {
-		return nil, err
-	}
-
-	return global.KOP_KUBERNETES.CoreV1().Pods(corev1.NamespaceAll).List(context.TODO(), metav1.ListOptions{
-		FieldSelector: fieldSelector.String(),
-	})
 }
 
 func getNodeAllocatedResources(node *corev1.Node, podList *corev1.PodList) (resourceNode.NodeAllocatedResources, error) {
