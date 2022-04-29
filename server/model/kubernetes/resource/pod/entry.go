@@ -6,7 +6,7 @@ import (
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type PodBrief struct {
+type PodRefer struct {
 	ObjectMeta api.ObjectMeta `json:"metadata"`
 	Status     string         `json:"status"`
 	Node       string         `json:"node"`

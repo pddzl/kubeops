@@ -16,6 +16,11 @@ type SearchPodParams struct {
 	request.PageInfo
 }
 
+type PodList struct {
+	Namespace string `json:"namespace"`
+	request.PageInfo
+}
+
 type PodDetail struct {
 	Pod       string `json:"pod" validate:"required"`
 	NameSpace string `json:"namespace" validate:"required"`

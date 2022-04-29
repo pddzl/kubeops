@@ -10,53 +10,38 @@ import (
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/response"
-	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	"github.com/pddzl/kubeops/server/model/kubernetes/request"
-	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
 type PodApi struct{}
 
-// 获取集群所有pod
-
+// GetPodList 获取集群所有pod
 func (p *PodApi) GetPodList(c *gin.Context) {
-	var pageInfo request.SearchPodParams
-	_ = c.ShouldBindJSON(&pageInfo)
+	var podList request.PodList
+	_ = c.ShouldBindJSON(&podList)
 	// 校验字段
 	validate := validator.New()
-	if err := validate.Struct(&pageInfo.PageInfo); err != nil {
+	if err := validate.Struct(&podList.PageInfo); err != nil {
 		global.KOP_LOG.Error("请求参数有误", zap.Error(err))
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
 
-	var list []resourcePod.PodBrief
-	podList, total, err := podService.GetPodList(pageInfo.NameSpace, pageInfo.PageInfo)
+	list, total, err := podService.GetPodList(podList.Namespace, podList.PageInfo)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
-		global.KOP_LOG.Error("获取pod列表失败", zap.Error(err))
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
-		// 处理pod原始数据
-		for _, podRaw := range podList {
-			var pod resourcePod.PodBrief
-			pod.ObjectMeta = api.NewObjectMeta(podRaw.ObjectMeta)
-			pod.Node = podRaw.Spec.NodeName
-			pod.Status = string(podRaw.Status.Phase)
-			// append
-			list = append(list, pod)
-		}
-
 		response.OkWithDetailed(response.PageResult{
 			List:     list,
 			Total:    int64(total),
-			Page:     pageInfo.Page,
-			PageSize: pageInfo.PageSize,
+			Page:     podList.Page,
+			PageSize: podList.PageSize,
 		}, "获取成功", c)
 	}
 }
 
-// 获取pod详情
-
+// GetPodDetail 获取pod详情
 func (p *PodApi) GetPodDetail(c *gin.Context) {
 	var podDetail request.PodDetail
 	_ = c.ShouldBindJSON(&podDetail)
@@ -74,8 +59,7 @@ func (p *PodApi) GetPodDetail(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取pod in raw
-
+// GetPodRaw 获取pod in raw
 func (p *PodApi) GetPodRaw(c *gin.Context) {
 	var podDetail request.PodDetail
 	_ = c.ShouldBindJSON(&podDetail)
@@ -93,8 +77,7 @@ func (p *PodApi) GetPodRaw(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取pod日志
-
+// GetPodLog 获取pod日志
 func (p *PodApi) GetPodLog(c *gin.Context) {
 	var podLog request.PodLog
 	_ = c.ShouldBindJSON(&podLog)
@@ -114,7 +97,6 @@ func (p *PodApi) GetPodLog(c *gin.Context) {
 }
 
 // 获取pod webShell
-
 var upGrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true

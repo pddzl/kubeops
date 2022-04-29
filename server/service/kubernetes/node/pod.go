@@ -12,7 +12,7 @@ import (
 	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
-func (n *NodeService) GetNodePods(name string, info request.PageInfo) ([]resourcePod.PodBrief, int, error) {
+func (n *NodeService) GetNodePods(name string, info request.PageInfo) ([]resourcePod.PodRefer, int, error) {
 	// 获取PodList原生数据
 	podListRaw, err := getNodePods(name)
 	if err != nil {
@@ -34,9 +34,9 @@ func (n *NodeService) GetNodePods(name string, info request.PageInfo) ([]resourc
 	}
 
 	// 处理podRaw数据
-	var podBriefList []resourcePod.PodBrief
+	var podBriefList []resourcePod.PodRefer
 	for _, podRaw := range podList.Items {
-		var pod resourcePod.PodBrief
+		var pod resourcePod.PodRefer
 		pod.ObjectMeta = api.NewObjectMeta(podRaw.ObjectMeta)
 		pod.Node = podRaw.Spec.NodeName
 		pod.Status = string(podRaw.Status.Phase)
