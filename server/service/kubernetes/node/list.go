@@ -52,6 +52,7 @@ func (n *NodeService) GetNodeList(info *request.PageInfo) ([]resourceNode.NodeBr
 		}
 		nodeBrief.Cpu = node.Status.Capacity.Cpu().String()
 		nodeBrief.Memory = node.Status.Capacity.Memory().String()
+		nodeBrief.CreationTimestamp = node.CreationTimestamp
 		nodeBriefList = append(nodeBriefList, nodeBrief)
 	}
 

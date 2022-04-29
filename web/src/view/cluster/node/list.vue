@@ -18,12 +18,12 @@
         <el-table-column type="selection" width="55" />
         <el-table-column label="名称" min-width="100">
           <template #default="scope">
-            <router-link :to="{ name: 'node_detail', query: { name: scope.row.metadata.name } }">
-              <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
+            <router-link :to="{ name: 'node_detail', query: { name: scope.row.name } }">
+              <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
           </template>
         </el-table-column>
-        <el-table-column label="内部IP" min-width="130" prop="status.addresses[0].address" />
+        <el-table-column label="内部IP" min-width="130" prop="internalIP" />
         <el-table-column label="角色" min-width="220" prop="roles">
           <template #default="scope">
             <span v-for="(role, index) in scope.row.roles" :key="index" style="margin-right: 5px;">
@@ -31,19 +31,19 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="120" prop="ready">
+        <el-table-column label="状态" min-width="120" prop="status">
           <template #default="scope">
             <el-tag
-              :type="statusNodeTypeFilter(scope.row.ready)"
+              :type="statusNodeTypeFilter(scope.row.status)"
               size="small"
-            >{{ statusNodeFilter(scope.row.ready) }}</el-tag>
+            >{{ statusNodeFilter(scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="CPU (core)" min-width="100" prop="status.capacity.cpu" />
+        <el-table-column label="CPU (core)" min-width="100" prop="cpu" />
         <el-table-column label="内存 (GB)" min-width="100">
           <template
             #default="scope"
-          >{{ (parseInt(scope.row.status.capacity.memory.slice(0, -2)) / 1024 / 1024).toFixed(2) }}</template>
+          >{{ (parseInt(scope.row.memory.slice(0, -2)) / 1024 / 1024).toFixed(2) }}</template>
         </el-table-column>
         <el-table-column
           label="创建时间"
@@ -51,11 +51,11 @@
           prop="metadata.creationTimestamp"
           sortable="custom"
         >
-          <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
+          <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <el-button icon="view" size="small" type="text" @click="editNode(scope.row)">查看</el-button>
+            <el-button icon="view" size="small" type="text" @click="viewNode(scope.row)">查看</el-button>
             <el-button icon="delete" size="small" type="text" @click="deleteNode(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -121,31 +121,13 @@ export default {
         page.value = table.data.page
         pageSize.value = table.data.pageSize
       }
-      const roleRe = new RegExp('node-role.kubernetes.io\/(.*)')
-      tableData.value.forEach(element => {
-        // 角色
-        element.roles = []
-        Object.keys(element.metadata.labels).forEach(item => {
-          const role = roleRe.exec(item)
-          if (role) {
-            element.roles.push(role[1])
-          }
-        })
-        // 状态
-        for (const item of element.status.conditions) {
-          if (item.type === 'Ready') {
-            element.ready = item.status
-            break
-          }
-        }
-      })
     }
 
     getTableData()
 
     // 操作
-    const editNode = async(row) => {
-      const result = await getNodeRaw({ name: row.metadata.name })
+    const viewNode = async(row) => {
+      const result = await getNodeRaw({ name: row.name })
       if (result.code === 0) {
         nodeFormat.value = JSON.stringify(result.data)
       }
@@ -199,7 +181,7 @@ export default {
       nodes,
       nodeFormat,
       // 操作
-      editNode,
+      viewNode,
       deleteNode,
       handleSelectionChange,
       // 分页
@@ -216,15 +198,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.button-box {
-  padding: 10px 20px;
-  .el-button {
-    float: right;
-  }
-}
-.warning {
-  color: #dc143c;
-}
-</style>
