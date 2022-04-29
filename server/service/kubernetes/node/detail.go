@@ -38,7 +38,7 @@ func (n *NodeService) GetNodeDetail(name string) (*resourceNode.NodeDetail, erro
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// NodeAllocatedResources
 	allocatedResources, err := getNodeAllocatedResources(node, podList)
 	nodeDetail.NodeAllocatedResources = allocatedResources

@@ -20,9 +20,9 @@
       <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
     </el-table-column>
     <el-table-column fixed="right" label="操作" width="220">
-      <template #default>
-        <el-button icon="tickets" type="text" size="small">日志</el-button>
-        <el-button icon="ArrowRight" type="text" size="small">终端</el-button>
+      <template #default="scope">
+        <el-button icon="tickets" type="text" size="small" @click="routerPod(scope.row, 'log')">日志</el-button>
+        <el-button icon="ArrowRight" type="text" size="small" @click="routerPod(scope.row, 'terminal')">终端</el-button>
         <el-button icon="delete" type="text" size="small">删除</el-button>
       </template>
     </el-table-column>
@@ -32,6 +32,7 @@
 <script>
 import { statusPodFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
+import { useRouter } from 'vue-router'
 export default {
   name: 'PodBrief',
   props: {
@@ -41,11 +42,24 @@ export default {
     }
   },
   setup() {
+    const router = useRouter()
+
+    // 跳转日志页面
+    const routerPod = async(row, dest) => {
+      if (dest === 'log') {
+        router.push({ name: 'pod_log', query: { pod: row.metadata.name, namespace: row.metadata.namespace }})
+      } else if (dest === 'terminal') {
+        router.push({ name: 'pod_terminal', query: { pod: row.metadata.name, namespace: row.metadata.namespace }})
+      }
+    }
+
     return {
       // filter
       statusPodFilter,
       // time format
-      formatDate
+      formatDate,
+      // 函数
+      routerPod
     }
   }
 }
