@@ -35,7 +35,7 @@ func (p *PodService) GetPodList(namespace string, info request.PageInfo) ([]reso
 
 	// 处理pods数据
 	var podBriefList []resourcePod.PodBrief
-	for _, pod := range pods.Items {
+	for _, pod := range podList.Items {
 		var podBrief resourcePod.PodBrief
 		podBrief.Name = pod.Name
 		podBrief.Namespace = pod.Namespace
