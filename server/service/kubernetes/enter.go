@@ -4,6 +4,7 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/daemonSet"
 	"github.com/pddzl/kubeops/server/service/kubernetes/deployment"
 	"github.com/pddzl/kubeops/server/service/kubernetes/ingress"
+	"github.com/pddzl/kubeops/server/service/kubernetes/job"
 	"github.com/pddzl/kubeops/server/service/kubernetes/namespace"
 	"github.com/pddzl/kubeops/server/service/kubernetes/node"
 	"github.com/pddzl/kubeops/server/service/kubernetes/pod"
@@ -20,4 +21,5 @@ type ServiceGroup struct {
 	DaemonSetService  daemonSet.DaemonSetService
 	ServicesService   services.ServicesService
 	IngressService    ingress.IngressService
+	JobService        job.JobService
 }

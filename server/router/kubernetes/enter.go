@@ -9,4 +9,5 @@ type RouterGroup struct {
 	DaemonSetRouter
 	ServicesRouter
 	IngressRouter
+	JobRouter
 }
