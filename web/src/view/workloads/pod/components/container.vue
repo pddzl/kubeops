@@ -60,7 +60,7 @@
         <p>挂载点</p>
         <div class="info-table">
           <el-table :data="detail.volumeMounts">
-            <el-table-column prop="name" label="名称" />
+            <el-table-column prop="name" label="名称" min-width="100" />
             <el-table-column prop="readOnly" label="只读">
               <template #default="scope">
                 <span v-if="scope.row.readOnly">{{ scope.row.readOnly }}</span>
