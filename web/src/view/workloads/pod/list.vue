@@ -62,7 +62,6 @@
           @size-change="handleSizeChange"
         />
       </div>
-
       <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
         <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
@@ -129,7 +128,7 @@ export default {
       dialogFormVisible.value = true
     }
 
-    // 跳转日志页面
+    // 跳转日志/webssh页面
     const routerPod = async(row, dest) => {
       if (dest === 'log') {
         router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})

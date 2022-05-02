@@ -59,7 +59,7 @@ export default {
     const getPodContainer = async() => {
       const podDetail = await getPodDetail({ namespace: namespace, pod: pod })
       if (podDetail.code === 0) {
-        podDetail.data.containers.forEach(element => {
+        podDetail.data.spec.containers.forEach(element => {
           containers.value.push(element.name)
         })
       }

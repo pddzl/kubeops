@@ -1,132 +1,165 @@
 <template>
   <div>
-    <el-collapse v-model="activeNames">
-      <el-collapse-item v-if="podDetail.metadata" title="元数据" name="1">
-        <div class="row_mine">
-          <div class="row_context">
-            <div v-if="podDetail.metadata.name">
-              <p>名称</p>
-              <span class="content">{{ podDetail.metadata.name }}</span>
+    <div class="detail-operation">
+      <div class="button">
+        <el-affix :offset="120">
+          <el-button icon="view" size="small" type="primary" plain @click="viewPod">查看</el-button>
+          <el-button icon="expand" size="small" type="primary" plain @click="routerPod('log')">日志</el-button>
+          <el-button icon="expand" size="small" type="primary" plain @click="routerPod('terminal')">终端</el-button>
+          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+        </el-affix>
+      </div>
+    </div>
+    <div class="kop-collapse">
+      <el-collapse v-model="activeNames">
+        <el-collapse-item v-if="podDetail.metadata" title="元数据" name="metadata">
+          <div class="info-box">
+            <div class="row">
+              <div class="item">
+                <p>名称</p>
+                <span class="content">{{ podDetail.metadata.name }}</span>
+              </div>
+              <div class="item">
+                <p>命名空间</p>
+                <span class="content">{{ podDetail.metadata.namespace }}</span>
+              </div>
+              <div class="item">
+                <p>UID</p>
+                <span class="content">{{ podDetail.metadata.uid }}</span>
+              </div>
+              <div class="item">
+                <p>创建时间</p>
+                <span class="content">{{ formatDate(podDetail.metadata.creationTimestamp) }}</span>
+              </div>
             </div>
-            <div v-if="podDetail.metadata.namespace">
-              <p>命名空间</p>
-              <span class="content">{{ podDetail.metadata.namespace }}</span>
-            </div>
-            <div v-if="podDetail.metadata.uid">
-              <p>UID</p>
-              <span class="content">{{ podDetail.metadata.uid }}</span>
-            </div>
-            <div v-if="podDetail.metadata.createTimestamp">
-              <p>创建时间</p>
-              <span class="content">{{ formatDate(podDetail.metadata.createTimestamp) }}</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="podDetail.metadata.labels" class="common_show">
-          <p>标签</p>
-          <span
-            v-for="(label, index) in podDetail.metadata.labels"
-            :key="index"
-            class="span-shadow"
-          >{{ index }}: {{ label }}</span>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="podDetail.resource_info" title="资源信息" name="2">
-        <div class="row_mine">
-          <div class="row_context">
-            <div v-if="podDetail.resource_info.node">
-              <p>节点</p>
-              <span class="content">{{ podDetail.resource_info.node }}</span>
-            </div>
-            <div v-if="podDetail.resource_info.phase">
-              <p>状态</p>
-              <el-tag :type="statusPodFilter(podDetail.resource_info.phase)" size="small">
-                {{ podDetail.resource_info.phase }}
-              </el-tag>
-            </div>
-            <div v-if="podDetail.resource_info.ip">
-              <p>IP</p>
-              <span class="content">{{ podDetail.resource_info.ip }}</span>
-            </div>
-            <div v-if="podDetail.resource_info.qosClass">
-              <p>服务质量</p>
-              <span class="content">{{ podDetail.resource_info.qosClass }}</span>
-            </div>
-            <div v-if="podDetail.resource_info.restartPolicy">
-              <p>重启策略</p>
-              <span class="content">{{ podDetail.resource_info.restartPolicy }}</span>
-            </div>
-            <div>
-              <p>重启次数</p>
-              <span class="content">{{ podDetail.resource_info.restarts }}</span>
-            </div>
-            <div v-if="podDetail.resource_info.serviceAccount">
-              <p>服务账号</p>
-              <span class="content">{{ podDetail.resource_info.serviceAccount }}</span>
+            <div v-if="podDetail.metadata.labels" class="row">
+              <div class="item">
+                <p>标签</p>
+                <div class="content">
+                  <span v-for="(label, index) in podDetail.metadata.labels" :key="index" class="shadow">{{ index }}: {{
+                      label
+                  }}</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="podDetail.conditions" title="状态" name="3">
-        <div class="table">
-          <el-table :data="podDetail.conditions">
-            <el-table-column prop="type" label="类别" min-width="120" />
-            <el-table-column prop="status" label="状态" />
-            <el-table-column label="最后检查时间" min-width="200">
-              <template #default="scope">
-                <span v-if="scope.row.lastProbeTime">{{ formatDate(scope.row.lastProbeTime) }}</span>
-                <span v-else>-</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="最后迁移时间" min-width="200">
-              <template #default="scope">{{ formatDate(scope.row.lastTransitionTime) }}</template>
-            </el-table-column>
-          </el-table>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="podDetail.ownerReferences && podDetail.ownerReferences.length > 0" title="控制器" name="4">
-        <div v-for="reference in podDetail.ownerReferences" :key="reference" class="row_mine">
-          <div v-if="reference.controller" class="row_context">
-            <div>
-              <p>名称</p>
-              <span class="content">{{ reference.name }}</span>
-            </div>
-            <div>
-              <p>类型</p>
-              <span class="content">{{ reference.kind }}</span>
+        </el-collapse-item>
+        <el-collapse-item v-if="podDetail.spec && podDetail.status" title="资源信息" name="resource">
+          <div class="info-box">
+            <div class="row">
+              <div v-if="podDetail.spec.nodeName" class="item">
+                <p>节点</p>
+                <span class="content">{{ podDetail.spec.nodeName }}</span>
+              </div>
+              <div v-if="podDetail.status.phase" class="item">
+                <p>状态</p>
+                <el-tag :type="statusPodFilter(podDetail.status.phase)" size="small">
+                  {{ podDetail.status.phase }}
+                </el-tag>
+              </div>
+              <div v-if="podDetail.status.podIP" class="item">
+                <p>IP</p>
+                <span class="content">{{ podDetail.status.podIP }}</span>
+              </div>
+              <div v-if="podDetail.status.qosClass" class="item">
+                <p>服务质量</p>
+                <span class="content">{{ podDetail.status.qosClass }}</span>
+              </div>
+              <div v-if="podDetail.spec.restartPolicy" class="item">
+                <p>重启策略</p>
+                <span class="content">{{ podDetail.spec.restartPolicy }}</span>
+              </div>
+              <div v-if="podDetail.spec.serviceAccountName">
+                <p>服务账号</p>
+                <span class="content">{{ podDetail.spec.serviceAccountName }}</span>
+              </div>
             </div>
           </div>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item v-if="podDetail.containers && podDetail.containers.length > 0" title="容器" name="5">
-        <container :data="podDetail.containers" />
-      </el-collapse-item>
-      <el-collapse-item v-if="podDetail.initContainers && podDetail.initContainers.length > 0" title="初始容器" name="6">
-        <container :data="podDetail.initContainers" />
-      </el-collapse-item>
-    </el-collapse>
+        </el-collapse-item>
+        <el-collapse-item v-if="podDetail.status?.conditions" title="状态" name="conditions">
+          <div class="info-table">
+            <el-table :data="podDetail.status.conditions">
+              <el-table-column prop="type" label="类别" />
+              <el-table-column prop="status" label="状态" />
+              <el-table-column label="最后检查时间">
+                <template #default="scope">
+                  <span v-if="scope.row.lastProbeTime">{{ formatDate(scope.row.lastProbeTime) }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="最后迁移时间">
+                <template #default="scope">
+                  <span v-if="scope.row.lastTransitionTime">{{ formatDate(scope.row.lastTransitionTime) }}</span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item v-if="podDetail.metadata?.ownerReferences" title="控制器" name="controller">
+          <div v-for="reference in podDetail.metadata.ownerReferences" :key="reference" class="info-box">
+            <div class="row">
+              <div class="item">
+                <p>名称</p>
+                <div class="content">
+                  <router-link v-if="reference.kind === 'ReplicaSet'" :to="{ name: 'replicaSet_detail', query: { replicaSet: reference.name, namespace: namespace } }">
+                    <el-link type="primary" :underline="false">{{ reference.name }}</el-link>
+                  </router-link>
+                  <router-link v-else-if="reference.kind === 'DaemonSet'" :to="{ name: 'daemonSet_detail', query: { daemonSet: reference.name, namespace: namespace } }">
+                    <el-link type="primary" :underline="false">{{ reference.name }}</el-link>
+                  </router-link>
+                  <router-link v-else-if="reference.kind === 'Job'" :to="{ name: 'daemonSet_detail', query: { daemonSet: reference.name, namespace: namespace } }">
+                    <el-link type="primary" :underline="false">{{ reference.name }}</el-link>
+                  </router-link>
+                </div>
+              </div>
+              <div class="item">
+                <p>类型</p>
+                <span class="content">{{ reference.kind }}</span>
+              </div>
+            </div>
+          </div>
+        </el-collapse-item>
+        <el-collapse-item v-if="podDetail.spec?.containers.length > 0" title="容器" name="container">
+          <container :data="podDetail.spec.containers" />
+        </el-collapse-item>
+        <el-collapse-item v-if="podDetail.spec?.initContainers && podDetail.spec.initContainers.length > 0" title="初始容器" name="initContainers">
+          <container :data="podDetail.spec.initContainers" />
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
+      <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { statusPodFilter } from '@/mixin/filter.js'
-import { getPodDetail } from '@/api/kubernetes/pod'
+import { getPodDetail, getPodRaw } from '@/api/kubernetes/pod'
 import { formatDate } from '@/utils/format'
 import Container from './components/container.vue'
+import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
   name: 'PodDetail',
   components: {
-    Container
+    Container,
+    VueCodeMirror
   },
   setup() {
-    const activeNames = ref(['1', '2', '3', '4', '5', '6'])
+    const activeNames = ref(['metadata', 'resource', 'conditions', 'controller', 'container', 'initContainers'])
     const podDetail = ref({})
+    const dialogFormVisible = ref(false)
+    const podFormat = ref({})
 
     const route = useRoute()
     const pod = route.query.pod
     const namespace = route.query.namespace
+
+    const router = useRouter()
 
     // 加载pod详情
     const getData = async() => {
@@ -138,32 +171,37 @@ export default {
     }
     getData()
 
+    // 操作
+    const viewPod = async() => {
+      const result = await getPodRaw({ pod: pod, namespace: namespace })
+      if (result.code === 0) {
+        podFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 跳转日志/webssh页面
+    const routerPod = async(dest) => {
+      if (dest === 'log') {
+        router.push({ name: 'pod_log', query: { pod: pod, namespace: namespace }})
+      } else if (dest === 'terminal') {
+        router.push({ name: 'pod_terminal', query: { pod: pod, namespace: namespace }})
+      }
+    }
+
     return {
       activeNames,
+      namespace,
       podDetail,
+      podFormat,
+      dialogFormVisible,
       formatDate,
       // filter
-      statusPodFilter
+      statusPodFilter,
+      // 操作
+      viewPod,
+      routerPod
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.el-collapse {
-  --el-collapse-header-font-size: 15px;
-  .el-collapse-item {
-    background-color: #ffffff;
-    padding-left: 20px;
-  }
-  .el-collapse-item:not(:last-child) {
-    margin-bottom: 15px;
-  }
-}
-.span-shadow:not(:last-child) {
-  margin-right: 10px;
-}
-.table {
-  margin-right: 20px;
-}
-</style>
