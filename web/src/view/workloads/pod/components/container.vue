@@ -60,9 +60,14 @@
         <p>挂载点</p>
         <div class="info-table">
           <el-table :data="detail.volumeMounts">
-            <el-table-column prop="name" label="名称" min-width="120" />
-            <el-table-column prop="readOnly" label="只读" min-width="80" />
-            <el-table-column prop="mountPath" label="挂载路径" min-width="240" />
+            <el-table-column prop="name" label="名称" />
+            <el-table-column prop="readOnly" label="只读">
+              <template #default="scope">
+                <span v-if="scope.row.readOnly">{{ scope.row.readOnly }}</span>
+                <span v-else>false</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="mountPath" label="挂载路径" min-width="200" />
             <el-table-column label="子路径">
               <template #default="scope">
                 <span v-if="scope.row.subPath">{{ scope.row.subPath }}</span>
