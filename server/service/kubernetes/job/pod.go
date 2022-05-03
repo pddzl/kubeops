@@ -11,7 +11,7 @@ import (
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource/common"
 )
 
-func (j *JobService) GetJobPods(namespace string, name string, info request.PageInfo) ([]common.RelatedPods, int, error) {
+func (j *JobService) GetJobPods(namespace string, name string, info request.PageInfo) ([]common.RelatedPod, int, error) {
 	// 获取job
 	job, err := global.KOP_KUBERNETES.BatchV1().Jobs(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
@@ -29,14 +29,14 @@ func (j *JobService) GetJobPods(namespace string, name string, info request.Page
 	}
 
 	// 处理job Pods
-	var jobPods []common.RelatedPods
+	var relatedPodList []common.RelatedPod
 	for _, pod := range podList.Items {
-		var jobPod common.RelatedPods
-		jobPod.ObjectMeta = api.NewObjectMeta(pod.ObjectMeta)
-		jobPod.Status = string(pod.Status.Phase)
-		jobPod.NodeName = pod.Spec.NodeName
+		var relatedPod common.RelatedPod
+		relatedPod.ObjectMeta = api.NewObjectMeta(pod.ObjectMeta)
+		relatedPod.Status = string(pod.Status.Phase)
+		relatedPod.NodeName = pod.Spec.NodeName
 		// append
-		jobPods = append(jobPods, jobPod)
+		relatedPodList = append(relatedPodList, relatedPod)
 	}
 
 	// 分页
@@ -47,8 +47,8 @@ func (j *JobService) GetJobPods(namespace string, name string, info request.Page
 		return nil, total, nil
 	}
 	if total < end {
-		return jobPods[offset:], total, nil
+		return relatedPodList[offset:], total, nil
 	} else {
-		return jobPods[offset:end], total, nil
+		return relatedPodList[offset:end], total, nil
 	}
 }

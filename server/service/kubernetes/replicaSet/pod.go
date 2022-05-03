@@ -2,16 +2,16 @@ package replicaSet
 
 import (
 	"context"
+	"github.com/pddzl/kubeops/server/model/kubernetes/resource/common"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/kubernetes/api"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 )
 
-func (r *ReplicaSetService) GetReplicaSetPods(namespace string, name string, info request.PageInfo) ([]replicaSet.Pod, int, error) {
+func (r *ReplicaSetService) GetReplicaSetPods(namespace string, name string, info request.PageInfo) ([]common.RelatedPod, int, error) {
 	// 获取replicaSet原始数据
 	rs, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
@@ -23,20 +23,20 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, name string, inf
 	options := metav1.ListOptions{LabelSelector: selector.String()}
 
 	// 获取pods
-	var replicaSetPods []replicaSet.Pod
 	podList, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).List(context.TODO(), options)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	// 处理replicaSet Pods
+	// 处理related pod
+	var relatedPodList []common.RelatedPod
 	for _, pod := range podList.Items {
-		replicaSetPod := replicaSet.Pod{}
-		replicaSetPod.ObjectMeta = api.NewObjectMeta(pod.ObjectMeta)
-		replicaSetPod.Status = string(pod.Status.Phase)
-		replicaSetPod.NodeName = pod.Spec.NodeName
+		var relatedPod common.RelatedPod
+		relatedPod.ObjectMeta = api.NewObjectMeta(pod.ObjectMeta)
+		relatedPod.NodeName = pod.Spec.NodeName
+		relatedPod.Status = string(pod.Status.Phase)
 		// append
-		replicaSetPods = append(replicaSetPods, replicaSetPod)
+		relatedPodList = append(relatedPodList, relatedPod)
 	}
 
 	// 分页
@@ -47,8 +47,8 @@ func (r *ReplicaSetService) GetReplicaSetPods(namespace string, name string, inf
 		return nil, total, nil
 	}
 	if total < end {
-		return replicaSetPods[offset:], total, nil
+		return relatedPodList[offset:], total, nil
 	} else {
-		return replicaSetPods[offset:end], total, nil
+		return relatedPodList[offset:end], total, nil
 	}
 }

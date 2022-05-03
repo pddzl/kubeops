@@ -14,7 +14,7 @@
         <el-tag :type="statusPodFilter(scope.row.status)" size="small">{{ scope.row.status }}</el-tag>
       </template>
     </el-table-column>
-    <el-table-column prop="node" label="节点" min-width="80" />
+    <el-table-column prop="nodeName" label="节点" min-width="80" />
     <el-table-column prop="metadata.namespace" label="命名空间" min-width="80" />
     <el-table-column label="创建时间" width="200">
       <template #default="scope">{{ formatDate(scope.row.metadata.creationTimestamp) }}</template>
