@@ -32,7 +32,7 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "pod/log", Name: "pod_log", Component: "view/workloads/pod/log.vue", Sort: 3, Meta: system.Meta{Title: "Pod日志", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "pod/terminal", Name: "pod_terminal", Component: "view/workloads/pod/terminal.vue", Sort: 4, Meta: system.Meta{Title: "Pod终端", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "job", Name: "job", Component: "view/workloads/job/list.vue", Sort: 5, Meta: system.Meta{Title: "Job", Icon: "ship"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "job/detail", Name: "job_detail", Component: "view/workloads/job/detail.vue", Sort: 6, Meta: system.Meta{Title: "Job详情", Icon: "ship"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "job/detail", Name: "job_detail", Component: "view/workloads/job/detail.vue", Sort: 6, Meta: system.Meta{Title: "Job详情", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "replicaSet", Name: "replicaSet", Component: "view/workloads/replicaSet/list.vue", Sort: 7, Meta: system.Meta{Title: "ReplicaSet", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "7", Path: "replicaSet/detail", Name: "replicaSet_detail", Component: "view/workloads/replicaSet/detail.vue", Sort: 8, Meta: system.Meta{Title: "ReplicaSet详情", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "7", Path: "deployment", Name: "deployment", Component: "view/workloads/deployment/list.vue", Sort: 9, Meta: system.Meta{Title: "Deployment", Icon: "ship"}},

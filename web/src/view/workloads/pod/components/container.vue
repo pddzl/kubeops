@@ -106,7 +106,7 @@
               <span v-if="detail.securityContext.capabilities.drop.length - 1 != indexD">,</span>
             </span>
           </div>
-          <div v-if="detail.securityContext.privileged" class="column">
+          <div v-if="detail.securityContext.privileged !== undefined" class="column">
             <p>Privileged</p>
             <span>{{ detail.securityContext.privileged }}</span>
           </div>
@@ -138,7 +138,7 @@
             <p>WindowsOptions RunAsUserName</p>
             <span>{{ detail.securityContext.windowsOptions.runAsUserName }}</span>
           </div>
-          <div v-if="detail.securityContext.windowsOptions?.hostProcess != undefined" class="column">
+          <div v-if="detail.securityContext.windowsOptions?.hostProcess !== undefined" class="column">
             <p>WindowsOptions HostProcess</p>
             <span>{{ detail.securityContext.windowsOptions.hostProcess }}</span>
           </div>
@@ -150,15 +150,15 @@
             <p>RunAsGroup</p>
             <span class="content">{{ detail.securityContext.runAsGroup }}</span>
           </div>
-          <div v-if="detail.securityContext.runAsNonRoot" class="column">
+          <div v-if="detail.securityContext.runAsNonRoot !== undefined" class="column">
             <p>RunAsNonRoot</p>
             <span class="content">{{ detail.securityContext.runAsNonRoot }}</span>
           </div>
-          <div v-if="detail.securityContext.readOnlyRootFilesystem" class="column">
+          <div v-if="detail.securityContext.readOnlyRootFilesystem !== undefined" class="column">
             <p>ReadOnlyRootFilesystem</p>
             <span class="conetnt">{{ detail.securityContext.readOnlyRootFilesystem }}</span>
           </div>
-          <div v-if="detail.securityContext.allowPrivilegeEscalation" class="column">
+          <div v-if="detail.securityContext.allowPrivilegeEscalation !== undefined" class="column">
             <p>AllowPrivilegeEscalation</p>
             <span class="content">{{ detail.securityContext.allowPrivilegeEscalation }}</span>
           </div>

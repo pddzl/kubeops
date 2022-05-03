@@ -108,7 +108,7 @@
                   <router-link v-else-if="reference.kind === 'DaemonSet'" :to="{ name: 'daemonSet_detail', query: { daemonSet: reference.name, namespace: namespace } }">
                     <el-link type="primary" :underline="false">{{ reference.name }}</el-link>
                   </router-link>
-                  <router-link v-else-if="reference.kind === 'Job'" :to="{ name: 'daemonSet_detail', query: { daemonSet: reference.name, namespace: namespace } }">
+                  <router-link v-else-if="reference.kind === 'Job'" :to="{ name: 'job_detail', query: { job: reference.name, namespace: namespace } }">
                     <el-link type="primary" :underline="false">{{ reference.name }}</el-link>
                   </router-link>
                 </div>
