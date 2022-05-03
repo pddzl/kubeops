@@ -36,6 +36,25 @@ func (j *JobApi) GetJobList(c *gin.Context) {
 	}
 }
 
+func (j *JobApi) GetJobRaw(c *gin.Context) {
+	var job request.JobCommon
+	_ = c.ShouldBindJSON(&job)
+	// 校验字段
+	validate := validator.New()
+	if err := validate.Struct(&job); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	raw, err := jobService.GetJobRaw(job.NameSpace, job.Job)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(raw, "获取成功", c)
+	}
+}
+
 func (j *JobApi) GetJobDetail(c *gin.Context) {
 	var job request.JobCommon
 	_ = c.ShouldBindJSON(&job)

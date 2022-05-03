@@ -14,8 +14,7 @@ func (j *JobRouter) InitJobRouter(Router *gin.RouterGroup) {
 	jobRouterApi := v1.ApiGroupApp.KubernetesApiGroup.JobApi
 	{
 		jobRouter.POST("getJobDetail", jobRouterApi.GetJobDetail) // 获取job详情
-		//jobRouter.POST("getPodRaw", podRouterApi.GetPodRaw)       // 获取pod in raw
-		//jobRouter.POST("getPodLog", podRouterApi.GetPodLog)       // 获取pod日志
+		jobRouter.POST("getJobRaw", jobRouterApi.GetJobRaw)       // 获取pod编排
 	}
 	{
 		jobRouterWithoutRecord.POST("getJobList", jobRouterApi.GetJobList) // 获取所有job
