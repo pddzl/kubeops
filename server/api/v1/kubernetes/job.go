@@ -73,3 +73,27 @@ func (j *JobApi) GetJobDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+func (j *JobApi) GetJobPods(c *gin.Context) {
+	var job request.JobPods
+	_ = c.ShouldBindJSON(&job)
+	// 校验字段
+	validate := validator.New()
+	if err := validate.Struct(&job); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	pods, total, err := jobService.GetJobPods(job.NameSpace, job.Job, job.PageInfo)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     pods,
+			Total:    int64(total),
+			Page:     job.Page,
+			PageSize: job.PageSize,
+		}, "获取成功", c)
+	}
+}
