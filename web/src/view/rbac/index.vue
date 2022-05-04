@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'Service'
+  name: 'Rbac'
 }
 </script>
 <script setup>
