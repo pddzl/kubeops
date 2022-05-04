@@ -9,6 +9,7 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/node"
 	"github.com/pddzl/kubeops/server/service/kubernetes/pod"
 	"github.com/pddzl/kubeops/server/service/kubernetes/replicaSet"
+	"github.com/pddzl/kubeops/server/service/kubernetes/serviceAccount"
 	"github.com/pddzl/kubeops/server/service/kubernetes/services"
 )
 
@@ -22,4 +23,5 @@ type ServiceGroup struct {
 	ServicesService   services.ServicesService
 	IngressService    ingress.IngressService
 	JobService        job.JobService
+	ServiceAccount    serviceAccount.ServiceAccountService
 }

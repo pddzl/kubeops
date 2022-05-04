@@ -45,18 +45,22 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: true, ParentId: "20", Path: "services/detail", Name: "services_detail", Component: "view/service/services/detail.vue", Sort: 2, Meta: system.Meta{Title: "Services详情", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "20", Path: "ingress", Name: "ingress", Component: "view/service/ingress/list.vue", Sort: 3, Meta: system.Meta{Title: "Ingress", Icon: "ship"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "20", Path: "ingress/detail", Name: "ingress_detail", Component: "view/service/ingress/detail.vue", Sort: 4, Meta: system.Meta{Title: "Ingress详情", Icon: "ship"}},
-		// 25 superAdmin 超级管理员
-		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 5, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
-		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 5, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
-		// 31 example 示例文件
-		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 6, Meta: system.Meta{Title: "示例文件", Icon: "management"}},
-		{MenuLevel: 0, Hidden: false, ParentId: "31", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 1, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
+		// 25 访问控制
+		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "rbac", Name: "rbac", Component: "view/rbac/index.vue", Sort: 5, Meta: system.Meta{Title: "访问控制", Icon: "lock"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "serviceAccount", Name: "serviceAccount", Component: "view/rbac/serviceAccount/list.vue", Sort: 1, Meta: system.Meta{Title: "ServiceAccount", Icon: "IceTea"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "25", Path: "serviceAccount/detail", Name: "serviceAccount_detail", Component: "view/rbac/serviceAccount/detail.vue", Sort: 2, Meta: system.Meta{Title: "ServiceAccount详情", Icon: "IceTea"}},
+		// 28 superAdmin 超级管理员
+		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 6, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "28", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "28", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "28", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
+		{MenuLevel: 0, Hidden: false, ParentId: "28", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "28", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 5, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
+		// 34 example 示例文件
+		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 7, Meta: system.Meta{Title: "示例文件", Icon: "management"}},
+		{MenuLevel: 0, Hidden: false, ParentId: "34", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 1, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
 		// person 个人信息
-		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 7, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 8, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil { // 创建 model.User 初始化数据
 		return errors.Wrap(err, m.TableName()+"表数据初始化失败!")
