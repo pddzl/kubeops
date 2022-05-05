@@ -56,4 +56,20 @@ func (sa *ServiceAccountApi) GetServiceAccountRaw(c *gin.Context) {
 }
 
 func (sa *ServiceAccountApi) GetServiceAccountDetail(c *gin.Context) {
+	var serviceAccount request.ServiceAccountCommon
+	_ = c.ShouldBindJSON(&serviceAccount)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&serviceAccount); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	detail, err := serviceAccountService.GetServiceAccountDetail(serviceAccount.NameSpace, serviceAccount.ServiceAccount)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(detail, "获取成功", c)
+	}
 }
