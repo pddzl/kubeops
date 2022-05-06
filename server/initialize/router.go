@@ -77,6 +77,7 @@ func Routers() *gin.Engine {
 		kubernetesRouter.InitIngressRouter(PrivateGroup)        // Ingress
 		kubernetesRouter.InitJobRouter(PrivateGroup)            // Job
 		kubernetesRouter.InitServiceAccountRouter(PrivateGroup) // serviceAccount
+		kubernetesRouter.InitRoleRouter(PrivateGroup)           // role
 	}
 
 	global.KOP_LOG.Info("router register success")

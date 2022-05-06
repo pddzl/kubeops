@@ -15,6 +15,7 @@ type ApiGroup struct {
 	IngressApi
 	JobApi
 	ServiceAccountApi
+	RoleApi
 }
 
 var (
@@ -28,4 +29,5 @@ var (
 	ingressService        = service.ServiceGroupApp.KubernetesServiceGroup.IngressService
 	jobService            = service.ServiceGroupApp.KubernetesServiceGroup.JobService
 	serviceAccountService = service.ServiceGroupApp.KubernetesServiceGroup.ServiceAccount
+	roleService           = service.ServiceGroupApp.KubernetesServiceGroup.RoleService
 )

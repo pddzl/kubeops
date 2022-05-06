@@ -11,4 +11,5 @@ type RouterGroup struct {
 	IngressRouter
 	JobRouter
 	ServiceAccountRouter
+	RoleRouter
 }
