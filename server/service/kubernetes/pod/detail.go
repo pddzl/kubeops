@@ -4,16 +4,15 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
+	coreV1 "k8s.io/api/core/v1"
 	res "k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"math"
 	"strconv"
 
 	"github.com/pddzl/kubeops/server/global"
-	"github.com/pddzl/kubeops/server/model/kubernetes/api"
 	resourcePod "github.com/pddzl/kubeops/server/model/kubernetes/resource/pod"
 )
 
@@ -21,19 +20,19 @@ import (
 
 func (p *PodService) GetPodDetail(namespace string, name string) (*resourcePod.PodDetail, error) {
 	// 获取原生pod数据
-	podRaw, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	podRaw, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, nil
 	}
 
 	// 获取 configMap
-	configMapList, err := global.KOP_KUBERNETES.CoreV1().ConfigMaps(namespace).List(context.TODO(), api.ListEverything)
+	configMapList, err := global.KOP_KUBERNETES.CoreV1().ConfigMaps(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 
 	// 获取secret
-	secretList, err := global.KOP_KUBERNETES.CoreV1().Secrets(namespace).List(context.TODO(), api.ListEverything)
+	secretList, err := global.KOP_KUBERNETES.CoreV1().Secrets(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +65,7 @@ func (p *PodService) GetPodDetail(namespace string, name string) (*resourcePod.P
 	return &podDetail, nil
 }
 
-func extractContainerInfo(containerList []corev1.Container, pod *corev1.Pod, configMaps *corev1.ConfigMapList, secrets *corev1.SecretList) []resourcePod.Container {
+func extractContainerInfo(containerList []coreV1.Container, pod *coreV1.Pod, configMaps *coreV1.ConfigMapList, secrets *coreV1.SecretList) []resourcePod.Container {
 	containers := make([]resourcePod.Container, 0)
 	for _, container := range containerList {
 		vars := make([]resourcePod.EnvVar, 0)
@@ -103,7 +102,7 @@ func extractContainerInfo(containerList []corev1.Container, pod *corev1.Pod, con
 	return containers
 }
 
-func extractContainerMounts(container corev1.Container, podDeatil *corev1.Pod) []resourcePod.VolumeMount {
+func extractContainerMounts(container coreV1.Container, podDeatil *coreV1.Pod) []resourcePod.VolumeMount {
 	volumeMounts := make([]resourcePod.VolumeMount, 0)
 	for _, aVolumeMount := range container.VolumeMounts {
 		volumeMount := resourcePod.VolumeMount{
@@ -118,19 +117,19 @@ func extractContainerMounts(container corev1.Container, podDeatil *corev1.Pod) [
 	return volumeMounts
 }
 
-func getVolume(volumes []corev1.Volume, volumeName string) corev1.Volume {
+func getVolume(volumes []coreV1.Volume, volumeName string) coreV1.Volume {
 	for _, volume := range volumes {
 		if volume.Name == volumeName {
 			// yes, this is exponential, but N is VERY small, so the malloc for creating a named dictionary would probably take longer
 			return volume
 		}
 	}
-	return corev1.Volume{}
+	return coreV1.Volume{}
 }
 
 // evalValueFrom evaluates environment value from given source. For more details check:
 // https://github.com/kubernetes/kubernetes/blob/d82e51edc5f02bff39661203c9b503d054c3493b/pkg/kubectl/describe.go#L1056
-func evalValueFrom(src *corev1.EnvVarSource, container *corev1.Container, pod *corev1.Pod, configMaps *corev1.ConfigMapList, secrets *corev1.SecretList) string {
+func evalValueFrom(src *coreV1.EnvVarSource, container *coreV1.Container, pod *coreV1.Pod, configMaps *coreV1.ConfigMapList, secrets *coreV1.SecretList) string {
 	switch {
 	case src.ConfigMapKeyRef != nil:
 		name := src.ConfigMapKeyRef.LocalObjectReference.Name
@@ -180,7 +179,7 @@ func evalValueFrom(src *corev1.EnvVarSource, container *corev1.Container, pod *c
 }
 
 // extractContainerResourceValue extracts the value of a resource in an already known container.
-func extractContainerResourceValue(fs *corev1.ResourceFieldSelector, container *corev1.Container) (string, error) {
+func extractContainerResourceValue(fs *coreV1.ResourceFieldSelector, container *coreV1.Container) (string, error) {
 	divisor := res.Quantity{}
 	if divisor.Cmp(fs.Divisor) == 0 {
 		divisor = res.MustParse("1")
@@ -206,7 +205,7 @@ func extractContainerResourceValue(fs *corev1.ResourceFieldSelector, container *
 	return "", fmt.Errorf("unsupported container resource : %v", fs.Resource)
 }
 
-func extractContainerStatus(pod *corev1.Pod, container *corev1.Container) *corev1.ContainerStatus {
+func extractContainerStatus(pod *coreV1.Pod, container *coreV1.Container) *coreV1.ContainerStatus {
 	for _, status := range pod.Status.ContainerStatuses {
 		if status.Name == container.Name {
 			return &status
@@ -216,7 +215,7 @@ func extractContainerStatus(pod *corev1.Pod, container *corev1.Container) *corev
 	return nil
 }
 
-func evalEnvFrom(container corev1.Container, configMaps *corev1.ConfigMapList, secrets *corev1.SecretList) []resourcePod.EnvVar {
+func evalEnvFrom(container coreV1.Container, configMaps *coreV1.ConfigMapList, secrets *coreV1.SecretList) []resourcePod.EnvVar {
 	vars := make([]resourcePod.EnvVar, 0)
 	for _, envFromVar := range container.EnvFrom {
 		switch {
@@ -225,9 +224,9 @@ func evalEnvFrom(container corev1.Container, configMaps *corev1.ConfigMapList, s
 			for _, configMap := range configMaps.Items {
 				if configMap.ObjectMeta.Name == name {
 					for key, value := range configMap.Data {
-						valueFrom := &corev1.EnvVarSource{
-							ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{
+						valueFrom := &coreV1.EnvVarSource{
+							ConfigMapKeyRef: &coreV1.ConfigMapKeySelector{
+								LocalObjectReference: coreV1.LocalObjectReference{
 									Name: name,
 								},
 								Key: key,
@@ -248,9 +247,9 @@ func evalEnvFrom(container corev1.Container, configMaps *corev1.ConfigMapList, s
 			for _, secret := range secrets.Items {
 				if secret.ObjectMeta.Name == name {
 					for key, value := range secret.Data {
-						valueFrom := &corev1.EnvVarSource{
-							SecretKeyRef: &corev1.SecretKeySelector{
-								LocalObjectReference: corev1.LocalObjectReference{
+						valueFrom := &coreV1.EnvVarSource{
+							SecretKeyRef: &coreV1.SecretKeySelector{
+								LocalObjectReference: coreV1.LocalObjectReference{
 									Name: name,
 								},
 								Key: key,

@@ -2,8 +2,8 @@ package node
 
 import (
 	"context"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	coreV1 "k8s.io/api/core/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"regexp"
 
 	"github.com/pddzl/kubeops/server/global"
@@ -12,27 +12,27 @@ import (
 )
 
 func (n *NodeService) GetNodeList(info *request.PageInfo) ([]resourceNode.NodeBrief, int, error) {
-	// 获取node原生数据
-	nodes, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	// 获取node list
+	list, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
 
+	var nodeList coreV1.NodeList
 	// 分页
-	var list corev1.NodeList
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
-	total := len(nodes.Items)
+	total := len(list.Items)
 	if total <= offset {
 		return nil, total, nil
 	}
 	if total < end {
-		list.Items = nodes.Items[offset:]
+		nodeList.Items = list.Items[offset:]
 	} else {
-		list.Items = nodes.Items[offset:end]
+		nodeList.Items = list.Items[offset:end]
 	}
 
-	// 处理nodes数据
+	// 处理list数据
 	var nodeBriefList []resourceNode.NodeBrief
 	roleRe, _ := regexp.Compile("node-role.kubernetes.io/(.*)")
 	for _, node := range list.Items {

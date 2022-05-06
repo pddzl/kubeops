@@ -5,7 +5,7 @@ import (
 	"github.com/pddzl/kubeops/server/model/kubernetes/resource"
 )
 
-type NameSpaceDetail struct {
+type NamespaceDetail struct {
 	Metadata api.ObjectMeta `json:"metadata,omitempty"`
 	Status   string         `json:"status"`
 	// ResourceQuotaList is list of resource quotas associated to the namespace

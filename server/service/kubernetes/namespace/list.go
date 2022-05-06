@@ -2,40 +2,39 @@ package namespace
 
 import (
 	"context"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource/namespace"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	coreV1 "k8s.io/api/core/v1"
+	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
-	"github.com/pddzl/kubeops/server/model/kubernetes/api"
+	resourceNamespace "github.com/pddzl/kubeops/server/model/kubernetes/resource/namespace"
 )
 
-func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interface{}, total int, err error) {
-	end := info.PageSize * info.Page
-	offset := info.PageSize * (info.Page - 1)
-	var namespaceBriefList []namespace.NameSpaceBrief
-	var namespaceList v1.NamespaceList
-
-	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+func (n *NamespaceService) GetNamespaceList(info request.PageInfo) ([]resourceNamespace.NamespaceBrief, int, error) {
+	// 获取namespace list
+	list, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
 
+	var namespaceList coreV1.NamespaceList
 	// 分页
-	total = len(namespaces.Items)
+	end := info.PageSize * info.Page
+	offset := info.PageSize * (info.Page - 1)
+	total := len(list.Items)
 	if total <= offset {
 		return nil, total, nil
 	}
 	if total < end {
-		namespaceList.Items = namespaces.Items[offset:]
+		namespaceList.Items = list.Items[offset:]
 	} else {
-		namespaceList.Items = namespaces.Items[offset:end]
+		namespaceList.Items = list.Items[offset:end]
 	}
 
+	var namespaceBriefList []resourceNamespace.NamespaceBrief
 	// 处理namespace原始数据
 	for _, ns := range namespaceList.Items {
-		var namespaceBrief namespace.NameSpaceBrief
+		var namespaceBrief resourceNamespace.NamespaceBrief
 		namespaceBrief.Name = ns.Name
 		namespaceBrief.Labels = ns.Labels
 		namespaceBrief.CreationTimestamp = ns.CreationTimestamp
@@ -47,15 +46,16 @@ func (n *NamespaceService) GetNamespaceList(info request.PageInfo) (list interfa
 	return namespaceBriefList, total, nil
 }
 
-func (n *NamespaceService) GetNamespaceOnlyName() (list interface{}, err error) {
-	var nameList []string
-	namespaces, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), api.ListEverything)
+func (n *NamespaceService) GetNamespaceOnlyName() ([]string, error) {
+	// 获取namespace list
+	list, err := global.KOP_KUBERNETES.CoreV1().Namespaces().List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
 
+	var nameList []string
 	// 处理namespace原始数据
-	for _, ns := range namespaces.Items {
+	for _, ns := range list.Items {
 		// append
 		nameList = append(nameList, ns.Name)
 	}

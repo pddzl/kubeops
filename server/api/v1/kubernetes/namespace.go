@@ -3,10 +3,11 @@ package kubernetes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.uber.org/zap"
+
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/common/response"
-	"go.uber.org/zap"
 )
 
 type NamespaceApi struct{}
@@ -26,14 +27,14 @@ func (n *NamespaceApi) GetNamespaceList(c *gin.Context) {
 	if err != nil {
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
-		return
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    int64(total),
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
 	}
-	response.OkWithDetailed(response.PageResult{
-		List:     list,
-		Total:    int64(total),
-		Page:     pageInfo.Page,
-		PageSize: pageInfo.PageSize,
-	}, "获取成功", c)
 }
 
 // GetNamespaceOnlyName 获取集群所以namespace（只包括name）

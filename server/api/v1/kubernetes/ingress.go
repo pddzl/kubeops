@@ -26,14 +26,14 @@ func (i *IngressApi) GetIngressList(c *gin.Context) {
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
-		return
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     list,
+			Total:    int64(total),
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, "获取成功", c)
 	}
-	response.OkWithDetailed(response.PageResult{
-		List:     list,
-		Total:    int64(total),
-		Page:     pageInfo.Page,
-		PageSize: pageInfo.PageSize,
-	}, "获取成功", c)
 }
 
 // GetIngressRaw 获取Ingress in raw

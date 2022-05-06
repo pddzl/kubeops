@@ -3,8 +3,6 @@ package api
 import (
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/fields"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 )
 
@@ -162,12 +160,6 @@ const (
 	ResourceKindEndpoint                 = "endpoint"
 	ResourceKindNetworkPolicy            = "networkpolicy"
 )
-
-// ListEverything is a list options used to list all resources without any filtering.
-var ListEverything = metaV1.ListOptions{
-	LabelSelector: labels.Everything().String(),
-	FieldSelector: fields.Everything().String(),
-}
 
 // IsSelectorMatching returns true when an object with the given selector targets the same
 // Resources (or subset) that the target object with the given selector.
