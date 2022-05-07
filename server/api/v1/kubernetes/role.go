@@ -55,4 +55,21 @@ func (r *RoleApi) GetRoleRaw(c *gin.Context) {
 	}
 }
 
-func (r *RoleApi) GetRoleDetail(c *gin.Context) {}
+func (r *RoleApi) GetRoleDetail(c *gin.Context) {
+	var role request.RoleCommon
+	_ = c.ShouldBindJSON(&role)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&role); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	detail, err := roleService.GetRoleDetail(role.Namespace, role.Role)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(detail, "获取成功", c)
+	}
+}
