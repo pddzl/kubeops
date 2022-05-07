@@ -9,7 +9,7 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/node"
 	"github.com/pddzl/kubeops/server/service/kubernetes/pod"
 	"github.com/pddzl/kubeops/server/service/kubernetes/replicaSet"
-	role "github.com/pddzl/kubeops/server/service/kubernetes/roles"
+	role "github.com/pddzl/kubeops/server/service/kubernetes/role"
 	"github.com/pddzl/kubeops/server/service/kubernetes/serviceAccount"
 	"github.com/pddzl/kubeops/server/service/kubernetes/services"
 )

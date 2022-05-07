@@ -10,7 +10,7 @@ import (
 	"github.com/pddzl/kubeops/server/model/common/request"
 )
 
-func (role *RoleService) GetRoleList(namespace string, info request.PageInfo) ([]resourceRoles.RolesBrief, int, error) {
+func (r *RoleService) GetRoleList(namespace string, info request.PageInfo) ([]resourceRoles.RolesBrief, int, error) {
 	// 获取roles list
 	list, err := global.KOP_KUBERNETES.RbacV1().Roles(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
