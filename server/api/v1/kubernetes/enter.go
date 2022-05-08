@@ -16,6 +16,7 @@ type ApiGroup struct {
 	JobApi
 	ServiceAccountApi
 	RoleApi
+	RoleBindingApi
 }
 
 var (
@@ -30,4 +31,5 @@ var (
 	jobService            = service.ServiceGroupApp.KubernetesServiceGroup.JobService
 	serviceAccountService = service.ServiceGroupApp.KubernetesServiceGroup.ServiceAccount
 	roleService           = service.ServiceGroupApp.KubernetesServiceGroup.RoleService
+	roleBindingService    = service.ServiceGroupApp.KubernetesServiceGroup.RoleBindingService
 )

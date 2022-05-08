@@ -12,4 +12,5 @@ type RouterGroup struct {
 	JobRouter
 	ServiceAccountRouter
 	RoleRouter
+	RoleBindingRouter
 }

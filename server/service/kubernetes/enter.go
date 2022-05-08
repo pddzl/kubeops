@@ -10,20 +10,22 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/pod"
 	"github.com/pddzl/kubeops/server/service/kubernetes/replicaSet"
 	role "github.com/pddzl/kubeops/server/service/kubernetes/role"
+	"github.com/pddzl/kubeops/server/service/kubernetes/roleBinding"
 	"github.com/pddzl/kubeops/server/service/kubernetes/serviceAccount"
 	"github.com/pddzl/kubeops/server/service/kubernetes/services"
 )
 
 type ServiceGroup struct {
-	NodeService       node.NodeService
-	PodService        pod.PodService
-	NamespaceService  namespace.NamespaceService
-	ReplicaSetService replicaSet.ReplicaSetService
-	DeploymentService deployment.DeploymentService
-	DaemonSetService  daemonSet.DaemonSetService
-	ServicesService   services.ServicesService
-	IngressService    ingress.IngressService
-	JobService        job.JobService
-	ServiceAccount    serviceAccount.ServiceAccountService
-	RoleService       role.RoleService
+	NodeService        node.NodeService
+	PodService         pod.PodService
+	NamespaceService   namespace.NamespaceService
+	ReplicaSetService  replicaSet.ReplicaSetService
+	DeploymentService  deployment.DeploymentService
+	DaemonSetService   daemonSet.DaemonSetService
+	ServicesService    services.ServicesService
+	IngressService     ingress.IngressService
+	JobService         job.JobService
+	ServiceAccount     serviceAccount.ServiceAccountService
+	RoleService        role.RoleService
+	RoleBindingService roleBinding.RoleBindingService
 }
