@@ -3,15 +3,15 @@ package replicaSet
 import (
 	"context"
 	"fmt"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 	appsV1 "k8s.io/api/apps/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
+	resourceReplicaSet "github.com/pddzl/kubeops/server/model/kubernetes/resource/replicaSet"
 )
 
-func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.PageInfo) ([]replicaSet.ReplicaSetBrief, int, error) {
+func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.PageInfo) ([]resourceReplicaSet.ReplicaSetBrief, int, error) {
 	// 获取replicaSet list
 	list, err := global.KOP_KUBERNETES.AppsV1().ReplicaSets(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
@@ -33,9 +33,9 @@ func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.Pag
 	}
 
 	// 处理replicaSet数据
-	var replicaSetBriefList []replicaSet.ReplicaSetBrief
-	for _, rs := range list.Items {
-		var replicaSetBrief replicaSet.ReplicaSetBrief
+	var replicaSetBriefList []resourceReplicaSet.ReplicaSetBrief
+	for _, rs := range replicaSetList.Items {
+		var replicaSetBrief resourceReplicaSet.ReplicaSetBrief
 		replicaSetBrief.Name = rs.Name
 		replicaSetBrief.NameSpace = rs.Namespace
 		replicaSetBrief.Pods = fmt.Sprintf("%d / %d", rs.Status.AvailableReplicas, rs.Status.Replicas)

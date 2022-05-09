@@ -33,7 +33,7 @@ func (i *IngressService) GetIngressList(namespace string, info request.PageInfo)
 
 	// 处理list数据
 	var IngressBriefList []resourceIngress.IngressBrief
-	for _, ingress := range list.Items {
+	for _, ingress := range ingressList.Items {
 		var ingressBrief resourceIngress.IngressBrief
 		ingressBrief.Name = ingress.Name
 		ingressBrief.NameSpace = ingress.Namespace

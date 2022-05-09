@@ -32,8 +32,8 @@ func (j *JobService) GetJobList(namespace string, info request.PageInfo) ([]reso
 		jobList.Items = list.Items[offset:end]
 	}
 
-	// 处理jobs数据
 	var jobBriefList []resourceJob.JobBrief
+	// 处理jobs数据
 	for _, job := range jobList.Items {
 		var jobBrief resourceJob.JobBrief
 		jobBrief.Name = job.Name

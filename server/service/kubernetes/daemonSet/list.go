@@ -13,7 +13,7 @@ import (
 
 func (d *DaemonSetService) GetDaemonSetList(namespace string, info request.PageInfo) ([]resourceDaemonSet.DaemonSetBrief, int, error) {
 	// 获取daemonSet list数据
-	daemonSets, err := global.KOP_KUBERNETES.AppsV1().DaemonSets(namespace).List(context.TODO(), metaV1.ListOptions{})
+	list, err := global.KOP_KUBERNETES.AppsV1().DaemonSets(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
@@ -22,19 +22,19 @@ func (d *DaemonSetService) GetDaemonSetList(namespace string, info request.PageI
 	// 分页
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
-	total := len(daemonSets.Items)
+	total := len(list.Items)
 	if total <= offset {
 		return nil, total, nil
 	}
 	if total < end {
-		daemonSetList.Items = daemonSets.Items[offset:]
+		daemonSetList.Items = list.Items[offset:]
 	} else {
-		daemonSetList.Items = daemonSets.Items[offset:end]
+		daemonSetList.Items = list.Items[offset:end]
 	}
 
 	var daemonSetBriefList []resourceDaemonSet.DaemonSetBrief
 	// 处理daemonSets数据
-	for _, ds := range daemonSets.Items {
+	for _, ds := range daemonSetList.Items {
 		var daemonSetBrief resourceDaemonSet.DaemonSetBrief
 		daemonSetBrief.Name = ds.Name
 		daemonSetBrief.NameSpace = ds.Namespace

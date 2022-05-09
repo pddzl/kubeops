@@ -31,8 +31,8 @@ func (sa *ServiceAccountService) GetServiceAccountList(namespace string, info re
 		serviceAccountList.Items = list.Items[offset:end]
 	}
 
-	// 处理list数据
 	var serviceAccountBriefList []resourceServiceAccount.ServiceAccountBrief
+	// 处理list数据
 	for _, serviceAccount := range serviceAccountList.Items {
 		var serviceAccountBrief resourceServiceAccount.ServiceAccountBrief
 		serviceAccountBrief.Name = serviceAccount.Name

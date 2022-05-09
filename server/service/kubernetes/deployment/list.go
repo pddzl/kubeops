@@ -34,7 +34,7 @@ func (d *DeploymentService) GetDeploymentList(namespace string, info request.Pag
 
 	var deploymentBriefList []resourceDeployment.DeploymentBrief
 	// 处理list数据
-	for _, dm := range list.Items {
+	for _, dm := range deploymentList.Items {
 		var deploymentBrief resourceDeployment.DeploymentBrief
 		deploymentBrief.Name = dm.Name
 		deploymentBrief.NameSpace = dm.Namespace

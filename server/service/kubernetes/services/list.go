@@ -7,10 +7,10 @@ import (
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
-	"github.com/pddzl/kubeops/server/model/kubernetes/resource/services"
+	resourceServices "github.com/pddzl/kubeops/server/model/kubernetes/resource/services"
 )
 
-func (s *ServicesService) GetServicesList(namespace string, info request.PageInfo) ([]services.ServicesBrief, int, error) {
+func (s *ServicesService) GetServicesList(namespace string, info request.PageInfo) ([]resourceServices.ServicesBrief, int, error) {
 	// 获取service list
 	list, err := global.KOP_KUBERNETES.CoreV1().Services(namespace).List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
@@ -31,10 +31,10 @@ func (s *ServicesService) GetServicesList(namespace string, info request.PageInf
 		serviceList.Items = list.Items[offset:end]
 	}
 
+	var serviceBriefList []resourceServices.ServicesBrief
 	// 处理list数据
-	var serviceBriefList []services.ServicesBrief
-	for _, slr := range list.Items {
-		var servicesBrief services.ServicesBrief
+	for _, slr := range serviceList.Items {
+		var servicesBrief resourceServices.ServicesBrief
 		servicesBrief.Name = slr.Name
 		servicesBrief.NameSpace = slr.Namespace
 		servicesBrief.ClusterIP = slr.Spec.ClusterIP

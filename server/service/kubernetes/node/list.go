@@ -32,10 +32,10 @@ func (n *NodeService) GetNodeList(info *request.PageInfo) ([]resourceNode.NodeBr
 		nodeList.Items = list.Items[offset:end]
 	}
 
-	// 处理list数据
 	var nodeBriefList []resourceNode.NodeBrief
+	// 处理list数据
 	roleRe, _ := regexp.Compile("node-role.kubernetes.io/(.*)")
-	for _, node := range list.Items {
+	for _, node := range nodeList.Items {
 		var nodeBrief resourceNode.NodeBrief
 		nodeBrief.Name = node.Name
 		nodeBrief.InternalIP = node.Status.Addresses[0].Address
