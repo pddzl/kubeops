@@ -12,13 +12,13 @@ type NodeRouter struct{}
 func (s *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) {
 	nodeRouter := Router.Group("node").Use(middleware.OperationRecord())
 	nodeRouterWithoutRecord := Router.Group("node")
-	nodeRouterApi := v1.ApiGroupApp.KubernetesApiGroup.NodeApi
+	nodeApi := v1.ApiGroupApp.KubernetesApiGroup.NodeApi
 	{
-		nodeRouter.POST("getNodeDetail", nodeRouterApi.GetNodeDetail) // 获取node详情
-		nodeRouter.POST("getNodeRaw", nodeRouterApi.GetNodeRaw)       // 获取node in raw
-		nodeRouter.POST("getNodePods", nodeRouterApi.GetNodePods)     // 获取node pods
+		nodeRouter.POST("getNodeDetail", nodeApi.GetNodeDetail) // 获取node详情
+		nodeRouter.POST("getNodeRaw", nodeApi.GetNodeRaw)       // 获取node in raw
+		nodeRouter.POST("getNodePods", nodeApi.GetNodePods)     // 获取node pods
 	}
 	{
-		nodeRouterWithoutRecord.POST("getNodeList", nodeRouterApi.GetNodeList) // 获取所有node
+		nodeRouterWithoutRecord.POST("getNodeList", nodeApi.GetNodeList) // 获取所有node
 	}
 }

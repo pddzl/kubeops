@@ -15,7 +15,6 @@ func (s *ServiceAccountRouter) InitServiceAccountRouter(Router *gin.RouterGroup)
 	{
 		serviceAccountRouter.POST("getServiceAccountDetail", serviceAccountApi.GetServiceAccountDetail) // 获取serviceAccount详情
 		serviceAccountRouter.POST("getServiceAccountRaw", serviceAccountApi.GetServiceAccountRaw)       // 获取serviceAccount编排
-		//serviceAccountRouter.POST("getServiceAccountPods", serviceAccountApi.GetServiceAccountDetail)     // 获取service
 	}
 	{
 		ServiceAccountRouterWithoutRecord.POST("getServiceAccountList", serviceAccountApi.GetServiceAccountList) // 获取所有serviceAccount

@@ -11,14 +11,14 @@ type PodRouter struct{}
 func (s *PodRouter) InitPodRouter(Router *gin.RouterGroup) {
 	podRouter := Router.Group("pod").Use(middleware.OperationRecord())
 	podRouterWithoutRecord := Router.Group("pod")
-	podRouterApi := v1.ApiGroupApp.KubernetesApiGroup.PodApi
+	podApi := v1.ApiGroupApp.KubernetesApiGroup.PodApi
 	{
-		podRouter.POST("getPodDetail", podRouterApi.GetPodDetail) // 获取pod详情
-		podRouter.POST("getPodRaw", podRouterApi.GetPodRaw)       // 获取pod in raw
-		podRouter.POST("getPodLog", podRouterApi.GetPodLog)       // 获取pod日志
+		podRouter.POST("getPodDetail", podApi.GetPodDetail) // 获取pod详情
+		podRouter.POST("getPodRaw", podApi.GetPodRaw)       // 获取pod in raw
+		podRouter.POST("getPodLog", podApi.GetPodLog)       // 获取pod日志
 	}
 	{
-		podRouterWithoutRecord.POST("getPodList", podRouterApi.GetPodList)        // 获取所有pod
-		podRouterWithoutRecord.GET("getPodTerminal", podRouterApi.GetPodTerminal) // 获取pod webShell websocket携带不了jwt
+		podRouterWithoutRecord.POST("getPodList", podApi.GetPodList)        // 获取所有pod
+		podRouterWithoutRecord.GET("getPodTerminal", podApi.GetPodTerminal) // 获取pod webShell websocket携带不了jwt
 	}
 }

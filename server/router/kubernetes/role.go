@@ -11,12 +11,12 @@ type RoleRouter struct{}
 func (role *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) {
 	roleRouter := Router.Group("role").Use(middleware.OperationRecord())
 	roleRouterWithoutRecord := Router.Group("role")
-	roleRouterApi := v1.ApiGroupApp.KubernetesApiGroup.RoleApi
+	roleApi := v1.ApiGroupApp.KubernetesApiGroup.RoleApi
 	{
-		roleRouter.POST("getRoleRaw", roleRouterApi.GetRoleRaw)       // 获取pod编排
-		roleRouter.POST("getRoleDetail", roleRouterApi.GetRoleDetail) // 获取role详情
+		roleRouter.POST("getRoleRaw", roleApi.GetRoleRaw)       // 获取pod编排
+		roleRouter.POST("getRoleDetail", roleApi.GetRoleDetail) // 获取role详情
 	}
 	{
-		roleRouterWithoutRecord.POST("getRoleList", roleRouterApi.GetRoleList) // 获取所有role
+		roleRouterWithoutRecord.POST("getRoleList", roleApi.GetRoleList) // 获取所有role
 	}
 }
