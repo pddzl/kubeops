@@ -91,7 +91,6 @@ export default {
       await getRoleDetail({ namespace: namespace, role: role }).then(response => {
         if (response.code === 0) {
           roleDetail.value = response.data
-          console.log('roleDetail', roleDetail.value)
         }
       })
     }
