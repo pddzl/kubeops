@@ -1,6 +1,7 @@
 package kubernetes
 
 import (
+	"github.com/pddzl/kubeops/server/service/kubernetes/clusterRole"
 	"github.com/pddzl/kubeops/server/service/kubernetes/daemonSet"
 	"github.com/pddzl/kubeops/server/service/kubernetes/deployment"
 	"github.com/pddzl/kubeops/server/service/kubernetes/ingress"
@@ -28,4 +29,5 @@ type ServiceGroup struct {
 	ServiceAccount     serviceAccount.ServiceAccountService
 	RoleService        role.RoleService
 	RoleBindingService roleBinding.RoleBindingService
+	ClusterRoleService clusterRole.ClusterRoleService
 }
