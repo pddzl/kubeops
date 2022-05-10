@@ -10,7 +10,7 @@ import (
 	resourceClusterRoleBinding "github.com/pddzl/kubeops/server/model/kubernetes/resource/clusterRoleBinding"
 )
 
-func (cb *ClusterRoleBindingService) GetClusterRoleBindingList(info request.PageInfo) ([]resourceClusterRoleBinding.ClusterRoleBindingBrief, int, error) {
+func (c *ClusterRoleBindingService) GetClusterRoleBindingList(info request.PageInfo) ([]resourceClusterRoleBinding.ClusterRoleBindingBrief, int, error) {
 	list, err := global.KOP_KUBERNETES.RbacV1().ClusterRoleBindings().List(context.TODO(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
