@@ -5,7 +5,7 @@
         <el-table-column label="名称">
           <template #default="scope">
             <router-link
-              :to="{ name: 'clusterRole_detail', query: { clusterRole: scope.row.name, namespace: scope.row.namespace } }"
+              :to="{ name: 'clusterRole_detail', query: { clusterRole: scope.row.name } }"
             >
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getClusterRoleList, getClusterRoleRaw } from '@/api/kubernetes/clusterRole'
@@ -55,9 +55,6 @@ export default {
   setup() {
     // 响应式数据
     const namespace = ref([])
-    const searchInfo = reactive({
-      namespace: ''
-    })
     const page = ref(1)
     const pageSize = ref(10)
     const total = ref(0)
@@ -76,7 +73,7 @@ export default {
 
     // 加载clusterRole数据
     const getTableData = async() => {
-      const table = await getClusterRoleList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
+      const table = await getClusterRoleList({ page: page.value, pageSize: pageSize.value })
       if (table.code === 0) {
         tableData.value = table.data.list
         total.value = table.data.total
@@ -109,7 +106,6 @@ export default {
     return {
       // 响应式数据
       namespace,
-      searchInfo,
       tableData,
       clusterRoleFormat,
       dialogFormVisible,
