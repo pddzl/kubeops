@@ -5,7 +5,7 @@
         <el-table-column label="名称">
           <template #default="scope">
             <router-link
-              :to="{ name: 'clusterRole_detail', query: { clusterRole: scope.row.name } }"
+              :to="{ name: 'clusterRoleBinding_detail', query: { clusterRoleBinding: scope.row.name } }"
             >
               <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
             </router-link>
@@ -16,7 +16,7 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
-            <el-button icon="view" type="text" size="small" @click="viewClusterRole(scope.row)">查看</el-button>
+            <el-button icon="view" type="text" size="small" @click="viewClusterRoleBinding(scope.row)">查看</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -35,7 +35,7 @@
 
       <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-        <vue-code-mirror v-model:modelValue="clusterRoleFormat" :readOnly="true" />
+        <vue-code-mirror v-model:modelValue="clusterRoleBindingFormat" :readOnly="true" />
       </el-dialog>
     </div>
   </div>
@@ -44,10 +44,10 @@
 <script>
 import { ref } from 'vue'
 import { formatDate } from '@/utils/format'
-import { getClusterRoleList, getClusterRoleRaw } from '@/api/kubernetes/clusterRole'
+import { getClusterRoleBindingList, getClusterRoleBindingRaw } from '@/api/kubernetes/clusterRoleBinding'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 export default {
-  name: 'ClusterRoleList',
+  name: 'ClusterRoleBindingList',
   components: {
     VueCodeMirror,
   },
@@ -57,12 +57,12 @@ export default {
     const pageSize = ref(10)
     const total = ref(0)
     const tableData = ref([])
-    const clusterRoleFormat = ref({})
+    const clusterRoleBindingFormat = ref({})
     const dialogFormVisible = ref(false)
 
-    // 加载clusterRole数据
+    // 加载clusterRoleBinding数据
     const getTableData = async() => {
-      const table = await getClusterRoleList({ page: page.value, pageSize: pageSize.value })
+      const table = await getClusterRoleBindingList({ page: page.value, pageSize: pageSize.value })
       if (table.code === 0) {
         tableData.value = table.data.list
         total.value = table.data.total
@@ -73,10 +73,10 @@ export default {
     getTableData()
 
     // 操作
-    const viewClusterRole = async(row) => {
-      const result = await getClusterRoleRaw({ clusterRole: row.name, namespace: row.namespace })
+    const viewClusterRoleBinding = async(row) => {
+      const result = await getClusterRoleBindingRaw({ clusterRoleBinding: row.name })
       if (result.code === 0) {
-        clusterRoleFormat.value = JSON.stringify(result.data)
+        clusterRoleBindingFormat.value = JSON.stringify(result.data)
       }
       dialogFormVisible.value = true
     }
@@ -95,7 +95,7 @@ export default {
     return {
       // 响应式数据
       tableData,
-      clusterRoleFormat,
+      clusterRoleBindingFormat,
       dialogFormVisible,
       // time format
       formatDate,
@@ -105,7 +105,7 @@ export default {
       total,
       handleSizeChange,
       handleCurrentChange,
-      viewClusterRole
+      viewClusterRoleBinding
     }
   }
 }

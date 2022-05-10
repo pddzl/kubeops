@@ -67,20 +67,20 @@ func Routers() *gin.Engine {
 		exampleRouter.InitFileUploadAndDownloadRouter(PrivateGroup) // 文件上传下载功能路由
 
 		// kubernetes
-		kubernetesRouter.InitNamespaceRouter(PrivateGroup)      // namespace
-		kubernetesRouter.InitNodeRouter(PrivateGroup)           // node
-		kubernetesRouter.InitPodRouter(PrivateGroup)            // pod
-		kubernetesRouter.InitReplicaSetRouter(PrivateGroup)     // replicaSet
-		kubernetesRouter.InitDeploymentRouter(PrivateGroup)     // deployment
-		kubernetesRouter.InitDaemonSetRouter(PrivateGroup)      //  daemonSet
-		kubernetesRouter.InitServicesRouter(PrivateGroup)       // services
-		kubernetesRouter.InitIngressRouter(PrivateGroup)        // Ingress
-		kubernetesRouter.InitJobRouter(PrivateGroup)            // Job
-		kubernetesRouter.InitServiceAccountRouter(PrivateGroup) // serviceAccount
-		kubernetesRouter.InitRoleRouter(PrivateGroup)           // role
-		kubernetesRouter.InitRoleBindingRouter(PrivateGroup)    // roleBinding
-		kubernetesRouter.InitClusterRoleRouter(PrivateGroup)    // clusterRole
-		kubernetesRouter.InitRoleBindingRouter(PrivateGroup)    // clusterRoleBinding
+		kubernetesRouter.InitNamespaceRouter(PrivateGroup)          // namespace
+		kubernetesRouter.InitNodeRouter(PrivateGroup)               // node
+		kubernetesRouter.InitPodRouter(PrivateGroup)                // pod
+		kubernetesRouter.InitReplicaSetRouter(PrivateGroup)         // replicaSet
+		kubernetesRouter.InitDeploymentRouter(PrivateGroup)         // deployment
+		kubernetesRouter.InitDaemonSetRouter(PrivateGroup)          //  daemonSet
+		kubernetesRouter.InitServicesRouter(PrivateGroup)           // services
+		kubernetesRouter.InitIngressRouter(PrivateGroup)            // Ingress
+		kubernetesRouter.InitJobRouter(PrivateGroup)                // Job
+		kubernetesRouter.InitServiceAccountRouter(PrivateGroup)     // serviceAccount
+		kubernetesRouter.InitRoleRouter(PrivateGroup)               // role
+		kubernetesRouter.InitRoleBindingRouter(PrivateGroup)        // roleBinding
+		kubernetesRouter.InitClusterRoleRouter(PrivateGroup)        // clusterRole
+		kubernetesRouter.InitClusterRoleBindingRouter(PrivateGroup) // clusterRoleBinding
 	}
 
 	global.KOP_LOG.Info("router register success")
