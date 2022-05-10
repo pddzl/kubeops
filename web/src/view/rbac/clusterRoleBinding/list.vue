@@ -74,7 +74,7 @@ export default {
 
     // 操作
     const viewClusterRoleBinding = async(row) => {
-      const result = await getClusterRoleBindingRaw({ clusterRoleBinding: row.name })
+      const result = await getClusterRoleBindingRaw({ cluster_role_binding: row.name })
       if (result.code === 0) {
         clusterRoleBindingFormat.value = JSON.stringify(result.data)
       }
