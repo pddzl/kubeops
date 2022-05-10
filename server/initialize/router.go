@@ -80,6 +80,7 @@ func Routers() *gin.Engine {
 		kubernetesRouter.InitRoleRouter(PrivateGroup)           // role
 		kubernetesRouter.InitRoleBindingRouter(PrivateGroup)    // roleBinding
 		kubernetesRouter.InitClusterRoleRouter(PrivateGroup)    // clusterRole
+		kubernetesRouter.InitRoleBindingRouter(PrivateGroup)    // clusterRoleBinding
 	}
 
 	global.KOP_LOG.Info("router register success")

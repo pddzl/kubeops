@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/clusterRole"
+	"github.com/pddzl/kubeops/server/service/kubernetes/clusterRoleBinding"
 	"github.com/pddzl/kubeops/server/service/kubernetes/daemonSet"
 	"github.com/pddzl/kubeops/server/service/kubernetes/deployment"
 	"github.com/pddzl/kubeops/server/service/kubernetes/ingress"
@@ -17,17 +18,18 @@ import (
 )
 
 type ServiceGroup struct {
-	NodeService        node.NodeService
-	PodService         pod.PodService
-	NamespaceService   namespace.NamespaceService
-	ReplicaSetService  replicaSet.ReplicaSetService
-	DeploymentService  deployment.DeploymentService
-	DaemonSetService   daemonSet.DaemonSetService
-	ServicesService    services.ServicesService
-	IngressService     ingress.IngressService
-	JobService         job.JobService
-	ServiceAccount     serviceAccount.ServiceAccountService
-	RoleService        role.RoleService
-	RoleBindingService roleBinding.RoleBindingService
-	ClusterRoleService clusterRole.ClusterRoleService
+	NodeService               node.NodeService
+	PodService                pod.PodService
+	NamespaceService          namespace.NamespaceService
+	ReplicaSetService         replicaSet.ReplicaSetService
+	DeploymentService         deployment.DeploymentService
+	DaemonSetService          daemonSet.DaemonSetService
+	ServicesService           services.ServicesService
+	IngressService            ingress.IngressService
+	JobService                job.JobService
+	ServiceAccount            serviceAccount.ServiceAccountService
+	RoleService               role.RoleService
+	RoleBindingService        roleBinding.RoleBindingService
+	ClusterRoleService        clusterRole.ClusterRoleService
+	ClusterRoleBindingService clusterRoleBinding.ClusterRoleBindingService
 }
