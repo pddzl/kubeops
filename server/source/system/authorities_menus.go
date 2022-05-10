@@ -60,9 +60,13 @@ func (a *authoritiesMenus) Initialize() error {
 		{BaseMenuId: 36, AuthorityId: "888"},
 		{BaseMenuId: 37, AuthorityId: "888"},
 		{BaseMenuId: 38, AuthorityId: "888"},
+		{BaseMenuId: 39, AuthorityId: "888"},
+		{BaseMenuId: 40, AuthorityId: "888"},
+		{BaseMenuId: 41, AuthorityId: "888"},
+		{BaseMenuId: 42, AuthorityId: "888"},
 		// 9528
 		{BaseMenuId: 1, AuthorityId: "9528"},
-		{BaseMenuId: 38, AuthorityId: "9528"},
+		{BaseMenuId: 42, AuthorityId: "9528"},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil {
 		return errors.Wrap(err, a.TableName()+"表数据初始化失败!")
