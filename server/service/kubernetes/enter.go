@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/clusterRole"
 	"github.com/pddzl/kubeops/server/service/kubernetes/clusterRoleBinding"
+	"github.com/pddzl/kubeops/server/service/kubernetes/configMap"
 	"github.com/pddzl/kubeops/server/service/kubernetes/daemonSet"
 	"github.com/pddzl/kubeops/server/service/kubernetes/deployment"
 	"github.com/pddzl/kubeops/server/service/kubernetes/ingress"
@@ -34,4 +35,5 @@ type ServiceGroup struct {
 	ClusterRoleService        clusterRole.ClusterRoleService
 	ClusterRoleBindingService clusterRoleBinding.ClusterRoleBindingService
 	SecretService             secret.SecretService
+	ConfigMapService          configMap.ConfigMapService
 }
