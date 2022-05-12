@@ -13,6 +13,7 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/replicaSet"
 	role "github.com/pddzl/kubeops/server/service/kubernetes/role"
 	"github.com/pddzl/kubeops/server/service/kubernetes/roleBinding"
+	"github.com/pddzl/kubeops/server/service/kubernetes/secret"
 	"github.com/pddzl/kubeops/server/service/kubernetes/serviceAccount"
 	"github.com/pddzl/kubeops/server/service/kubernetes/services"
 )
@@ -32,4 +33,5 @@ type ServiceGroup struct {
 	RoleBindingService        roleBinding.RoleBindingService
 	ClusterRoleService        clusterRole.ClusterRoleService
 	ClusterRoleBindingService clusterRoleBinding.ClusterRoleBindingService
+	SecretService             secret.SecretService
 }
