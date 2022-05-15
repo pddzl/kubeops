@@ -15,7 +15,9 @@
         </el-collapse-item>
         <el-collapse-item v-if="serviceAccountDetail.secrets && serviceAccountDetail.secrets.length > 0" title="Secrets" name="secrets">
           <p v-for="secret in serviceAccountDetail.secrets" :key="secret">
-            {{ secret.name }}
+            <router-link :to="{ name: 'secret_detail', query: { secret: secret.name, namespace: namespace } }">
+              <el-link type="primary" :underline="false">{{ secret.name }}</el-link>
+            </router-link>
           </p>
         </el-collapse-item>
       </el-collapse>

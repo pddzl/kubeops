@@ -15,8 +15,11 @@
         </el-collapse-item>
         <el-collapse-item v-if="secretDetail.data" title="数据" name="data">
           <div v-for="(d,k) in secretDetail.data" :key="k" style="margin-bottom: 10px;">
-            <p>{{ k }}</p>
-            <div style="padding: 16px; margin-right: 20px; word-break: break-all; background-color: #0000001f; font-size: 12px;">
+            <div>
+              <span style="margin-right: 3px;">{{ k }}</span>
+              <el-icon><View /></el-icon>
+            </div>
+            <div class="code-block">
               {{ dataDecode(d) }}
             </div>
           </div>
@@ -66,7 +69,9 @@ export default {
     const dataDecode = (str) => {
       // const res = Buffer.from(str, 'base64')
       // return res.toString()
+      // console.log(str)
       return atob(str)
+      // console.log(decodeStr)
     }
 
     // 操作
@@ -93,3 +98,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.code-block {
+  border-radius: 2px;
+  display: block;
+  padding: 16px;
+  margin-right: 20px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  background-color: #0000001f;
+  font-family: Roboto Mono Regular,monospace;
+}
+.el-icon svg {
+  height: 0.8em;
+}
+</style>
