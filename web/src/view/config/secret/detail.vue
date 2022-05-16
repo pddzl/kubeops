@@ -17,7 +17,6 @@
           <div v-for="(d,k) in secretDetail.data" :key="k" style="margin-bottom: 10px;">
             <div>
               <span style="margin-right: 3px;">{{ k }}</span>
-              <el-icon><View /></el-icon>
             </div>
             <div class="code-block">
               {{ dataDecode(d) }}

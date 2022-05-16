@@ -17,4 +17,5 @@ type RouterGroup struct {
 	ClusterRoleBindingRouter
 	SecretRouter
 	ConfigMapRouter
+	ScaleRouter
 }

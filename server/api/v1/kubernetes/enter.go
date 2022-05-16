@@ -21,6 +21,7 @@ type ApiGroup struct {
 	ClusterRoleBindingApi
 	SecretApi
 	ConfigMapApi
+	ScaleApi
 }
 
 var (
@@ -40,4 +41,5 @@ var (
 	ClusterRoleBindingService = service.ServiceGroupApp.KubernetesServiceGroup.ClusterRoleBindingService
 	SecretService             = service.ServiceGroupApp.KubernetesServiceGroup.SecretService
 	ConfigMapService          = service.ServiceGroupApp.KubernetesServiceGroup.ConfigMapService
+	ScaleService              = service.ServiceGroupApp.KubernetesServiceGroup.ScaleService
 )
