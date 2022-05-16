@@ -2,7 +2,6 @@ package deployment
 
 import (
 	"context"
-	"fmt"
 	appsV1 "k8s.io/api/apps/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -38,7 +37,8 @@ func (d *DeploymentService) GetDeploymentList(namespace string, info request.Pag
 		var deploymentBrief resourceDeployment.DeploymentBrief
 		deploymentBrief.Name = dm.Name
 		deploymentBrief.NameSpace = dm.Namespace
-		deploymentBrief.Pods = fmt.Sprintf("%d / %d", dm.Status.AvailableReplicas, dm.Status.Replicas)
+		deploymentBrief.AvailableReplicas = dm.Status.AvailableReplicas
+		deploymentBrief.Replicas = dm.Status.Replicas
 		deploymentBrief.CreationTimestamp = dm.CreationTimestamp
 		// append
 		deploymentBriefList = append(deploymentBriefList, deploymentBrief)

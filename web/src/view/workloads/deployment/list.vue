@@ -25,14 +25,18 @@
           </template>
         </el-table-column>
         <el-table-column label="命名空间" prop="namespace" min-width="120" />
-        <el-table-column label="Pods" prop="pods" min-width="80" />
+        <el-table-column label="Pods" prop="pods" min-width="80">
+          <template #default="scope">
+            {{ scope.row.availableReplicas }} / {{ scope.row.replicas }}
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
-            <el-button icon="expand" type="text" size="small">伸缩</el-button>
+            <el-button icon="expand" type="text" size="small" @click="openScaleDialog(scope.row)">伸缩</el-button>
             <el-button icon="delete" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -49,24 +53,41 @@
         />
       </div>
 
-      <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <el-dialog v-model="dialogViewVisible" title="查看资源" width="52%">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
         <vue-code-mirror v-model:modelValue="deploymentFormat" :readOnly="true" />
+      </el-dialog>
+
+      <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
+        <p>deployment {{ deploymentName }} will be updated to reflect the desired replicas count.</p>
+        <div style="margin: 20px 0 20px 0px;">
+          <span style="margin-right: 10px;">Desired Replicas:</span>
+          <el-input-number v-model="desiredNum" :min="0" :max="50" style="margin-right: 20px;" />
+          <span style="margin-right: 10px;">Actual Replicas: </span>
+          <el-input-number v-model="ActualNum" disabled />
+        </div>
+        <warning-bar :title="warningTitle" />
+        <template #footer>
+          <el-button>取消</el-button>
+          <el-button type="primary">确认</el-button>
+        </template>
       </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getDeploymentList, getDeploymentRaw } from '@/api/kubernetes/deployment'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import warningBar from '@/components/warningBar/warningBar.vue'
 export default {
   name: 'DeploymentList',
   components: {
     VueCodeMirror,
+    warningBar
   },
   setup() {
     // 响应式数据
@@ -79,7 +100,14 @@ export default {
     const total = ref(0)
     const tableData = ref([])
     const deploymentFormat = ref({})
-    const dialogFormVisible = ref(false)
+    const dialogViewVisible = ref(false)
+    const dialogScaleVisible = ref(false)
+    const deploymentName = ref('')
+    const desiredNum = ref(0)
+    const ActualNum = ref(0)
+    const warningTitle = ref('')
+    const activeNamespace = ref('')
+    const activeName = ref('')
 
     // 加载namespace数据
     const getNamespace = async() => {
@@ -108,8 +136,22 @@ export default {
       if (result.code === 0) {
         deploymentFormat.value = JSON.stringify(result.data)
       }
-      dialogFormVisible.value = true
+      dialogViewVisible.value = true
     }
+
+    const openScaleDialog = async(row) => {
+      deploymentName.value = row.name
+      desiredNum.value = row.replicas
+      ActualNum.value = row.replicas
+      activeNamespace.value = row.namespace
+      activeName.value = row.name
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${row.namespace} deployment ${row.name} --replicas=${row.replicas}`
+      dialogScaleVisible.value = true
+    }
+
+    watch(desiredNum, (val) => {
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${activeNamespace.value} deployment ${activeName.value} --replicas=${val}`
+    })
 
     // 分页
     const handleSizeChange = (val) => {
@@ -140,7 +182,12 @@ export default {
       searchInfo,
       tableData,
       deploymentFormat,
-      dialogFormVisible,
+      dialogViewVisible,
+      dialogScaleVisible,
+      deploymentName,
+      desiredNum,
+      ActualNum,
+      warningTitle,
       // time format
       formatDate,
       // 分页
@@ -152,7 +199,8 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editDeployment
+      editDeployment,
+      openScaleDialog
     }
   }
 }

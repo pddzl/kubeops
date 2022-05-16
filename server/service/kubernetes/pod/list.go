@@ -2,8 +2,8 @@ package pod
 
 import (
 	"context"
-	coreV1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
@@ -14,12 +14,12 @@ import (
 
 func (p *PodService) GetPodList(namespace string, info request.PageInfo) ([]resourcePod.PodBrief, int, error) {
 	// 获取pod list
-	list, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).List(context.TODO(), metaV1.ListOptions{})
+	list, err := global.KOP_KUBERNETES.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
 
-	var podList coreV1.PodList
+	var podList corev1.PodList
 	// 分页
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)
