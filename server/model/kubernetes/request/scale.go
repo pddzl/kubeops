@@ -1,8 +1,8 @@
 package request
 
 type ScaleCommon struct {
-	Namespace string `json:"namespace" validated:"required"`
-	Name      string `json:"name" validated:"required"`
-	Kind      string `json:"kind" validated:"oneof=replicaset deployment"`
-	Num       int32  `json:"num" validated:"min=0,max=50"`
+	Namespace string `json:"namespace" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+	Kind      string `json:"kind" validate:"oneof=replicaset deployment"`
+	Num       int32  `json:"num" validate:"min=0,max=50"`
 }

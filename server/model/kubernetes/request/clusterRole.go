@@ -1,5 +1,5 @@
 package request
 
 type ClusterRoleCommon struct {
-	ClusterRole string `json:"clusterRole" validated:"required"`
+	ClusterRole string `json:"clusterRole" validate:"required"`
 }
