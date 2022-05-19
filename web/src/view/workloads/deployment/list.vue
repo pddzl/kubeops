@@ -59,8 +59,8 @@
       </el-dialog>
 
       <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
-        <p>deployment {{ deploymentName }} will be updated to reflect the desired replicas count.</p>
-        <div style="margin: 20px 0 20px 0px;">
+        <p style="font-weight: bold; font-size: 15px;">Deployment {{ deploymentName }} will be updated to reflect the desired replicas count.</p>
+        <div style="margin: 25px 0 25px 0px;">
           <span style="margin-right: 10px;">Desired Replicas:</span>
           <el-input-number v-model="desiredNum" :min="0" :max="50" style="margin-right: 20px;" />
           <span style="margin-right: 10px;">Actual Replicas: </span>
@@ -68,8 +68,8 @@
         </div>
         <warning-bar :title="warningTitle" />
         <template #footer>
-          <el-button>取消</el-button>
-          <el-button type="primary">确认</el-button>
+          <el-button @click="closeScaleDialog">取消</el-button>
+          <el-button type="primary" @click="scaleFunc">确认</el-button>
         </template>
       </el-dialog>
     </div>
@@ -81,8 +81,10 @@ import { ref, reactive, watch } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getDeploymentList, getDeploymentRaw } from '@/api/kubernetes/deployment'
+import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import warningBar from '@/components/warningBar/warningBar.vue'
+import { ElMessage } from 'element-plus'
 export default {
   name: 'DeploymentList',
   components: {
@@ -149,6 +151,22 @@ export default {
       dialogScaleVisible.value = true
     }
 
+    const closeScaleDialog = () => {
+      dialogScaleVisible.value = false
+    }
+
+    const scaleFunc = async() => {
+      const res = await scale({ namespace: activeNamespace.value, name: activeName.value, kind: 'deployment', num: desiredNum.value })
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '伸缩成功',
+          showClose: true
+        })
+      }
+      dialogScaleVisible.value = false
+    }
+
     watch(desiredNum, (val) => {
       warningTitle.value = `This action is equivalent to: kubectl scale -n ${activeNamespace.value} deployment ${activeName.value} --replicas=${val}`
     })
@@ -200,7 +218,9 @@ export default {
       onSubmit,
       onReset,
       editDeployment,
-      openScaleDialog
+      openScaleDialog,
+      closeScaleDialog,
+      scaleFunc
     }
   }
 }
