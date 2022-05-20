@@ -108,8 +108,7 @@ export default {
     const desiredNum = ref(0)
     const ActualNum = ref(0)
     const warningTitle = ref('')
-    const activeNamespace = ref('')
-    const activeName = ref('')
+    const activeRow = ref([])
 
     // 加载namespace数据
     const getNamespace = async() => {
@@ -145,8 +144,7 @@ export default {
       deploymentName.value = row.name
       desiredNum.value = row.replicas
       ActualNum.value = row.replicas
-      activeNamespace.value = row.namespace
-      activeName.value = row.name
+      activeRow.value = row
       warningTitle.value = `This action is equivalent to: kubectl scale -n ${row.namespace} deployment ${row.name} --replicas=${row.replicas}`
       dialogScaleVisible.value = true
     }
@@ -156,8 +154,11 @@ export default {
     }
 
     const scaleFunc = async() => {
-      const res = await scale({ namespace: activeNamespace.value, name: activeName.value, kind: 'deployment', num: desiredNum.value })
+      const res = await scale({ namespace: activeRow.value.namespace, name: activeRow.value.name, kind: 'deployment', num: desiredNum.value })
       if (res.code === 0) {
+        const index = tableData.value.indexOf(activeRow.value)
+        tableData.value[index].availableReplicas = desiredNum.value
+        tableData.value[index].replicas = desiredNum.value
         ElMessage({
           type: 'success',
           message: '伸缩成功',
@@ -168,7 +169,7 @@ export default {
     }
 
     watch(desiredNum, (val) => {
-      warningTitle.value = `This action is equivalent to: kubectl scale -n ${activeNamespace.value} deployment ${activeName.value} --replicas=${val}`
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${activeRow.value.namespace} deployment ${activeRow.value.name} --replicas=${val}`
     })
 
     // 分页
