@@ -4,8 +4,9 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewDeployment">查看</el-button>
-          <el-button icon="expand" size="small" type="warning" plain>伸缩</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="expand" size="small" type="warning" plain @click="openScaleDialog">伸缩</el-button>
+          <el-button :disabled="namespace === 'kube-system'" icon="delete" size="small" type="danger" plain>删除
+          </el-button>
         </el-affix>
       </div>
     </div>
@@ -141,35 +142,54 @@
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="deploymentFormat" :readOnly="true" />
     </el-dialog>
+
+    <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
+      <p style="font-weight: bold; font-size: 15px;">Deployment {{ deployment }} will be updated to reflect the
+        desired replicas count.</p>
+      <div style="margin: 25px 0 25px 0px;">
+        <span style="margin-right: 10px;">Desired Replicas:</span>
+        <el-input-number v-model="desiredNum" :min="0" :max="50" style="margin-right: 20px;" />
+        <span style="margin-right: 10px;">Actual Replicas: </span>
+        <el-input-number v-model="ActualNum" disabled />
+      </div>
+      <warning-bar :title="warningTitle" />
+      <template #footer>
+        <el-button @click="closeScaleDialog">取消</el-button>
+        <el-button type="primary" @click="scaleFunc">确认</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDeploymentDetail, getDeploymentRaw, getNewReplicaSet } from '@/api/kubernetes/deployment'
+import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
+import warningBar from '@/components/warningBar/warningBar.vue'
+import { ElMessage } from 'element-plus'
 export default {
   name: 'DeploymentDetail',
   components: {
     VueCodeMirror,
-    MetaData
+    MetaData,
+    warningBar
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'status', 'replicaSet'])
-    const deploymentDetail = ref({})
-    const newReplicaSet = ref({})
-    const deploymentFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const deployment = route.query.deployment
 
     // 获取deployment详情
+    const deploymentDetail = ref({})
     const getDeploymentDetailData = async() => {
       await getDeploymentDetail({ namespace: namespace, deployment: deployment }).then(response => {
         if (response.code === 0) {
@@ -180,6 +200,7 @@ export default {
     getDeploymentDetailData()
 
     // 获取deployment关联的replicaset
+    const newReplicaSet = ref({})
     const getNewReplicaSetData = async() => {
       await getNewReplicaSet({ namespace: namespace, deployment: deployment }).then(response => {
         if (response.code === 0) {
@@ -189,7 +210,9 @@ export default {
     }
     getNewReplicaSetData()
 
-    // 操作
+    // 查看编排
+    const deploymentFormat = ref({})
+    const dialogFormVisible = ref(false)
     const viewDeployment = async() => {
       const result = await getDeploymentRaw({ deployment: deployment, namespace: namespace })
       if (result.code === 0) {
@@ -198,8 +221,46 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 伸缩
+    const dialogScaleVisible = ref(false)
+    const warningTitle = ref('')
+    const desiredNum = ref(0)
+    const ActualNum = ref(0)
+
+    const openScaleDialog = async() => {
+      desiredNum.value = deploymentDetail.value.status.replicas
+      ActualNum.value = deploymentDetail.value.status.availableReplicas
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${namespace} deployment ${deployment} --replicas=${ActualNum.value}`
+      dialogScaleVisible.value = true
+    }
+
+    watch(desiredNum, (val) => {
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${namespace} deployment ${deployment} --replicas=${val}`
+    })
+
+    const closeScaleDialog = () => {
+      dialogScaleVisible.value = false
+    }
+
+    const scaleFunc = async() => {
+      const res = await scale({ namespace: namespace, name: deployment, kind: 'deployment', num: desiredNum.value })
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '伸缩成功',
+          showClose: true
+        })
+        // 查询刷新数据
+        getDeploymentDetailData()
+        getNewReplicaSetData()
+      }
+      dialogScaleVisible.value = false
+    }
+
     return {
       // 响应式数据
+      deployment,
+      namespace,
       activeNames,
       deploymentDetail,
       deploymentFormat,
@@ -210,7 +271,15 @@ export default {
       // 格式化日期
       formatDate,
       // 操作
-      viewDeployment
+      viewDeployment,
+      // 伸缩
+      dialogScaleVisible,
+      warningTitle,
+      desiredNum,
+      ActualNum,
+      openScaleDialog,
+      closeScaleDialog,
+      scaleFunc
     }
   }
 }
