@@ -4,8 +4,10 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewReplicaSet">查看</el-button>
-          <el-button icon="expand" size="small" type="warning" plain>伸缩</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="expand" size="small" type="warning" plain :disabled="namespace === 'kube-system'" @click="openScaleDialog">伸缩
+          </el-button>
+          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'">删除
+          </el-button>
         </el-affix>
       </div>
     </div>
@@ -118,7 +120,9 @@
             <el-table :data="replicaSetServices">
               <el-table-column label="名称" prop="metadata.name" min-width="120">
                 <template #default="scope">
-                  <router-link :to="{ name: 'services_detail', query: { service: scope.row.metadata.name, namespace: namespace} }">
+                  <router-link
+                    :to="{ name: 'services_detail', query: { service: scope.row.metadata.name, namespace: namespace } }"
+                  >
                     <el-link type="primary" :underline="false">{{ scope.row.metadata.name }}</el-link>
                   </router-link>
                 </template>
@@ -134,43 +138,60 @@
         </el-collapse-item>
       </el-collapse>
     </div>
-    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+    <!-- 查看编排对话框 -->
+    <el-dialog v-model="dialogViewVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="replicaSetFormat" :readOnly="true" />
+    </el-dialog>
+    <!-- 伸缩对话框 -->
+    <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
+      <p style="font-weight: bold;">ReplicaSet {{ replicaSet }} will be updated to reflect the
+        desired replicas count.</p>
+      <div style="margin: 25px 0 25px 0px;">
+        <span style="margin-right: 10px;">Desired Replicas:</span>
+        <el-input-number v-model="desiredNum" :min="0" :max="50" style="margin-right: 20px;" />
+        <span style="margin-right: 10px;">Actual Replicas: </span>
+        <el-input-number v-model="ActualNum" disabled />
+      </div>
+      <warning-bar :title="warningTitle" />
+      <template #footer>
+        <el-button @click="closeScaleDialog">取消</el-button>
+        <el-button type="primary" @click="scaleFunc">确认</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter, statusRsFilter } from '@/mixin/filter.js'
+import { scale } from '@/api/kubernetes/scale'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import warningBar from '@/components/warningBar/warningBar.vue'
+import { ElMessage } from 'element-plus'
 export default {
   name: 'ReplicaSetDetail',
   components: {
     VueCodeMirror,
-    MetaData
+    MetaData,
+    warningBar
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'status', 'pods', 'services'])
-    const replicaSetDetail = ref({})
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const replicaSetPods = ref([])
-    const replicaSetServices = ref([])
-    const replicaSetFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const replicaSet = route.query.replicaSet
 
     // 加载replicaSet详情
+    const replicaSetDetail = ref({})
+
     const getData = async() => {
       await getReplicaSetDetail({ namespace: namespace, replicaSet: replicaSet }).then(response => {
         if (response.code === 0) {
@@ -180,7 +201,12 @@ export default {
     }
     getData()
 
-    // 加载关联pods
+    // 加载replicaSet关联pods
+    const replicaSetPods = ref([])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+
     const getReplicaSetPodsData = async() => {
       const table = await getReplicaSetPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, replicaSet: replicaSet })
       if (table.code === 0) {
@@ -192,7 +218,9 @@ export default {
     }
     getReplicaSetPodsData()
 
-    // 加载关联services
+    // 加载replicaSet关联services
+    const replicaSetServices = ref([])
+
     const getReplicaSetServicesData = async() => {
       const table = await getReplicaSetServices({ namespace: namespace, replicaSet: replicaSet })
       if (table.code === 0) {
@@ -201,13 +229,16 @@ export default {
     }
     getReplicaSetServicesData()
 
-    // 操作
+    // 查看编排
+    const dialogViewVisible = ref(false)
+    const replicaSetFormat = ref({})
+
     const viewReplicaSet = async() => {
       const result = await getReplicaSetRaw({ replicaSet: replicaSet, namespace: namespace })
       if (result.code === 0) {
         replicaSetFormat.value = JSON.stringify(result.data)
       }
-      dialogFormVisible.value = true
+      dialogViewVisible.value = true
     }
 
     // 分页
@@ -221,19 +252,62 @@ export default {
       getReplicaSetPodsData()
     }
 
+    // 伸缩
+    const dialogScaleVisible = ref(false)
+    const warningTitle = ref('')
+    const desiredNum = ref(0)
+    const ActualNum = ref(0)
+
+    // -> 打开对话框
+    const openScaleDialog = () => {
+      desiredNum.value = replicaSetDetail.value.status.replicas
+      ActualNum.value = replicaSetDetail.value.status.availableReplicas
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${namespace} replicaset ${replicaSet} --replicas=${ActualNum.value}`
+      dialogScaleVisible.value = true
+    }
+
+    watch(desiredNum, (val) => {
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${namespace} replicaset ${replicaSet} --replicas=${val}`
+    })
+
+    // -> 关闭对话框
+    const closeScaleDialog = () => {
+      dialogScaleVisible.value = false
+    }
+
+    // -> 操作
+    const scaleFunc = async() => {
+      const res = await scale({ namespace: namespace, name: replicaSet, kind: 'replicaSet', num: desiredNum.value })
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '伸缩成功',
+          showClose: true
+        })
+        // 查询刷新数据
+        getData()
+        getReplicaSetPodsData()
+        getReplicaSetServicesData()
+      }
+      dialogScaleVisible.value = false
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // replicaSet相关
+      namespace,
+      replicaSet,
       replicaSetDetail,
       replicaSetPods,
       replicaSetServices,
+      // time format
       formatDate,
-      dialogFormVisible,
-      namespace,
       // filter
       statusPodFilter,
       statusRsFilter,
-      // 操作
+      // 查看编排
+      dialogViewVisible,
       viewReplicaSet,
       replicaSetFormat,
       // 分页
@@ -241,7 +315,15 @@ export default {
       pageSize,
       total,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      // 伸缩
+      dialogScaleVisible,
+      warningTitle,
+      desiredNum,
+      ActualNum,
+      openScaleDialog,
+      closeScaleDialog,
+      scaleFunc
     }
   }
 }

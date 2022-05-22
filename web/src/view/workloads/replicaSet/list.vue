@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getReplicaSetList, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
@@ -163,7 +163,7 @@ export default {
     const replicasetName = ref('')
     const desiredNum = ref(0)
     const ActualNum = ref(0)
-    const activeRow = ref([])
+    const activeRow = ref({})
 
     // -> 打开对话框
     const openScaleDialog = (row) => {
@@ -175,6 +175,10 @@ export default {
       warningTitle.value = `This action is equivalent to: kubectl scale -n ${row.namespace} replicaset ${row.name} --replicas=${row.replicas}`
     }
 
+    watch(desiredNum, (val) => {
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${activeRow.value.namespace} replicaset ${activeRow.value.name} --replicas=${val}`
+    })
+
     // -> 关闭对话框
     const closeScaleDialog = () => {
       dialogScaleVisible.value = false
@@ -182,7 +186,7 @@ export default {
 
     // -> 操作
     const scaleFunc = async() => {
-      const res = await scale({ namespace: activeRow.value.namespace, name: activeRow.value.name, kind: 'replicaset', num: desiredNum.value })
+      const res = await scale({ namespace: activeRow.value.namespace, name: activeRow.value.name, kind: 'replicaSet', num: desiredNum.value })
       if (res.code === 0) {
         const index = tableData.value.indexOf(activeRow.value)
         tableData.value[index].availableReplicas = desiredNum.value

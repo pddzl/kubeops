@@ -110,7 +110,7 @@ export default {
     const desiredNum = ref(0)
     const ActualNum = ref(0)
     const warningTitle = ref('')
-    const activeRow = ref([])
+    const activeRow = ref({})
 
     // 加载namespace数据
     const getNamespace = async() => {
