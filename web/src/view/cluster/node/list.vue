@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%" :destroy-on-close="true">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
       <!-- <warning-bar title="此操作相当于：kubectl apply -f <spec.json>" style="margin-top: 10px;" /> -->

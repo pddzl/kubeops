@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <el-dialog v-model="dialogFormVisible" title="编辑资源">
+    <el-dialog v-model="dialogFormVisible" title="编辑资源" :destroy-on-close="true">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="namespaceFormat" :readOnly="true" />
     </el-dialog>

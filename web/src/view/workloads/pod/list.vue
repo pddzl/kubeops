@@ -62,7 +62,7 @@
           @size-change="handleSizeChange"
         />
       </div>
-      <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%" :destroy-on-close="true">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
         <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
       </el-dialog>

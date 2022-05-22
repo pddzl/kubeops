@@ -54,7 +54,7 @@
         />
       </div>
 
-      <el-dialog v-model="dialogViewVisible" title="查看资源" width="52%">
+      <el-dialog v-model="dialogViewVisible" title="查看资源" width="52%" :destroy-on-close="true">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
         <vue-code-mirror v-model:modelValue="deploymentFormat" :readOnly="true" />
       </el-dialog>
