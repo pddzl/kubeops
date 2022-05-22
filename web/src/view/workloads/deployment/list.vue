@@ -36,7 +36,7 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
-            <el-button icon="expand" type="text" size="small" @click="openScaleDialog(scope.row)">伸缩</el-button>
+            <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
             <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'">删除
             </el-button>
           </template>
@@ -60,7 +60,7 @@
       </el-dialog>
 
       <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
-        <p style="font-weight: bold; font-size: 15px;">Deployment {{ deploymentName }} will be updated to reflect the
+        <p style="font-weight: bold;">Deployment {{ deploymentName }} will be updated to reflect the
           desired replicas count.</p>
         <div style="margin: 25px 0 25px 0px;">
           <span style="margin-right: 10px;">Desired Replicas:</span>

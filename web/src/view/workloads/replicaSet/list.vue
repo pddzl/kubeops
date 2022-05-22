@@ -25,15 +25,17 @@
           </template>
         </el-table-column>
         <el-table-column label="命名空间" prop="namespace" min-width="120" />
-        <el-table-column label="Pods" prop="pods" min-width="80" />
+        <el-table-column label="Pods" prop="pods" min-width="80">
+          <template #default="scope">{{ scope.row.availableReplicas }} / {{ scope.row.replicas }}</template>
+        </el-table-column>
         <el-table-column label="创建时间" width="200">
           <template #default="scope">{{ formatDate(scope.row.creationTimestamp) }}</template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button icon="view" type="text" size="small" @click="editReplicaSet(scope.row)">查看</el-button>
-            <el-button icon="expand" type="text" size="small">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small">删除</el-button>
+            <el-button icon="view" type="text" size="small" @click="viewReplicaSet(scope.row)">查看</el-button>
+            <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
+            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,10 +50,26 @@
           @size-change="handleSizeChange"
         />
       </div>
-
-      <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%" :destroy-on-close="true">
+      <!-- 查看对话框 -->
+      <el-dialog v-model="dialogViewVisible" title="查看资源" width="55%" :destroy-on-close="true">
         <!-- eslint-disable-next-line vue/attribute-hyphenation -->
         <vue-code-mirror v-model:modelValue="replicaSetFormat" :readOnly="true" />
+      </el-dialog>
+      <!-- 伸缩对话框 -->
+      <el-dialog v-model="dialogScaleVisible" title="伸缩" width="55%" center>
+        <p style="font-weight: bold;">ReplicaSet {{ replicasetName }} will be updated to reflect the
+          desired replicas count.</p>
+        <div style="margin: 25px 0 25px 0px;">
+          <span style="margin-right: 10px;">Desired Replicas:</span>
+          <el-input-number v-model="desiredNum" :min="0" :max="50" style="margin-right: 20px;" />
+          <span style="margin-right: 10px;">Actual Replicas: </span>
+          <el-input-number v-model="ActualNum" disabled />
+        </div>
+        <warning-bar :title="warningTitle" />
+        <template #footer>
+          <el-button @click="closeScaleDialog">取消</el-button>
+          <el-button type="primary" @click="scaleFunc">确认</el-button>
+        </template>
       </el-dialog>
     </div>
   </div>
@@ -62,26 +80,20 @@ import { ref, reactive } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
 import { getReplicaSetList, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
+import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import warningBar from '@/components/warningBar/warningBar.vue'
+import { ElMessage } from 'element-plus'
 export default {
   name: 'ReplicaSetList',
   components: {
     VueCodeMirror,
+    warningBar
   },
   setup() {
-    // 响应式数据
+    // 加载namespace by name
     const namespace = ref([])
-    const searchInfo = reactive({
-      namespace: ''
-    })
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const tableData = ref([])
-    const replicaSetFormat = ref({})
-    const dialogFormVisible = ref(false)
 
-    // 加载namespace数据
     const getNamespace = async() => {
       const table = await getNamespaceOnlyName()
       if (table.code === 0) {
@@ -91,6 +103,14 @@ export default {
     getNamespace()
 
     // 加载pod数据
+    const searchInfo = reactive({
+      namespace: ''
+    })
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const tableData = ref([])
+
     const getTableData = async() => {
       const table = await getReplicaSetList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
       if (table.code === 0) {
@@ -101,15 +121,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const editReplicaSet = async(row) => {
-      const result = await getReplicaSetRaw({ replicaSet: row.name, namespace: row.namespace })
-      if (result.code === 0) {
-        replicaSetFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -134,13 +145,66 @@ export default {
       searchInfo.namespace = ''
     }
 
+    // 查看编排
+    const dialogViewVisible = ref(false)
+    const replicaSetFormat = ref({})
+
+    const viewReplicaSet = async(row) => {
+      const result = await getReplicaSetRaw({ replicaSet: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        replicaSetFormat.value = JSON.stringify(result.data)
+      }
+      dialogViewVisible.value = true
+    }
+
+    // 伸缩
+    const dialogScaleVisible = ref(false)
+    const warningTitle = ref('')
+    const replicasetName = ref('')
+    const desiredNum = ref(0)
+    const ActualNum = ref(0)
+    const activeRow = ref([])
+
+    // -> 打开对话框
+    const openScaleDialog = (row) => {
+      replicasetName.value = row.name
+      desiredNum.value = row.replicas
+      ActualNum.value = row.replicas
+      activeRow.value = row
+      dialogScaleVisible.value = true
+      warningTitle.value = `This action is equivalent to: kubectl scale -n ${row.namespace} replicaset ${row.name} --replicas=${row.replicas}`
+    }
+
+    // -> 关闭对话框
+    const closeScaleDialog = () => {
+      dialogScaleVisible.value = false
+    }
+
+    // -> 操作
+    const scaleFunc = async() => {
+      const res = await scale({ namespace: activeRow.value.namespace, name: activeRow.value.name, kind: 'replicaset', num: desiredNum.value })
+      if (res.code === 0) {
+        const index = tableData.value.indexOf(activeRow.value)
+        tableData.value[index].availableReplicas = desiredNum.value
+        tableData.value[index].replicas = desiredNum.value
+        ElMessage({
+          type: 'success',
+          message: '伸缩成功',
+          showClose: true
+        })
+      }
+      dialogScaleVisible.value = false
+    }
+
     return {
-      // 响应式数据
+      // 表单数据相关
       namespace,
       searchInfo,
       tableData,
+      // 查看编排
       replicaSetFormat,
-      dialogFormVisible,
+      dialogViewVisible,
+      viewReplicaSet,
       // time format
       formatDate,
       // 分页
@@ -152,7 +216,16 @@ export default {
       // 查询
       onSubmit,
       onReset,
-      editReplicaSet
+      // 伸缩
+      dialogScaleVisible,
+      warningTitle,
+      replicasetName,
+      desiredNum,
+      ActualNum,
+      activeRow,
+      openScaleDialog,
+      closeScaleDialog,
+      scaleFunc
     }
   }
 }

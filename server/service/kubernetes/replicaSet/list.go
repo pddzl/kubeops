@@ -2,7 +2,6 @@ package replicaSet
 
 import (
 	"context"
-	"fmt"
 	appsV1 "k8s.io/api/apps/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -38,7 +37,8 @@ func (r *ReplicaSetService) GetReplicaSetList(namespace string, info request.Pag
 		var replicaSetBrief resourceReplicaSet.ReplicaSetBrief
 		replicaSetBrief.Name = rs.Name
 		replicaSetBrief.NameSpace = rs.Namespace
-		replicaSetBrief.Pods = fmt.Sprintf("%d / %d", rs.Status.AvailableReplicas, rs.Status.Replicas)
+		replicaSetBrief.AvailableReplicas = rs.Status.AvailableReplicas
+		replicaSetBrief.Replicas = rs.Status.Replicas
 		replicaSetBrief.CreationTimestamp = rs.CreationTimestamp
 		// append
 		replicaSetBriefList = append(replicaSetBriefList, replicaSetBrief)
