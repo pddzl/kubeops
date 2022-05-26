@@ -18,4 +18,5 @@ type RouterGroup struct {
 	SecretRouter
 	ConfigMapRouter
 	ScaleRouter
+	ResourceRouter
 }

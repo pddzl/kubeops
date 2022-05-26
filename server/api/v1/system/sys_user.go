@@ -1,11 +1,12 @@
 package system
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
+	"strconv"
+
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/common/response"
@@ -13,7 +14,6 @@ import (
 	systemReq "github.com/pddzl/kubeops/server/model/system/request"
 	systemRes "github.com/pddzl/kubeops/server/model/system/response"
 	"github.com/pddzl/kubeops/server/utils"
-	"go.uber.org/zap"
 )
 
 // @Tags Base
@@ -336,7 +336,7 @@ func (b *BaseApi) SetUserInfo(c *gin.Context) {
 // @accept application/json
 // @Produce application/json
 // @Param data body system.SysUser true "ID, 用户名, 昵称, 头像链接"
-// @Success 200 {object} response.Response{data=map[string]interface{},msg=string} "设置用户信息"
+// @Success 200 {resource} response.Response{data=map[string]interface{},msg=string} "设置用户信息"
 // @Router /user/SetSelfInfo [put]
 
 func (b *BaseApi) SetSelfInfo(c *gin.Context) {

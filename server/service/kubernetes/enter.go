@@ -12,6 +12,7 @@ import (
 	"github.com/pddzl/kubeops/server/service/kubernetes/node"
 	"github.com/pddzl/kubeops/server/service/kubernetes/pod"
 	"github.com/pddzl/kubeops/server/service/kubernetes/replicaSet"
+	"github.com/pddzl/kubeops/server/service/kubernetes/resource"
 	role "github.com/pddzl/kubeops/server/service/kubernetes/role"
 	"github.com/pddzl/kubeops/server/service/kubernetes/roleBinding"
 	"github.com/pddzl/kubeops/server/service/kubernetes/scale"
@@ -38,4 +39,5 @@ type ServiceGroup struct {
 	SecretService             secret.SecretService
 	ConfigMapService          configMap.ConfigMapService
 	ScaleService              scale.ScaleService
+	ResourceService           resource.ResourceService
 }

@@ -84,6 +84,7 @@ func Routers() *gin.Engine {
 		kubernetesRouter.InitSecretRouter(PrivateGroup)             // secret
 		kubernetesRouter.InitConfigMapRouter(PrivateGroup)          // configMap
 		kubernetesRouter.InitScaleRouter(PrivateGroup)              // scale
+		kubernetesRouter.InitResourceRouter(PrivateGroup)           // resource
 	}
 
 	global.KOP_LOG.Info("router register success")

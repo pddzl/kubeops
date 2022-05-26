@@ -41,6 +41,11 @@
     >
       <Screenfull class="search-icon" :style="{cursor:'pointer'}" />
     </div>
+    <div class="user-box">
+      <el-icon class="search-icon" @click="toResource">
+        <plus />
+      </el-icon>
+    </div>
     <!-- <div
       v-if="btnShow"
       class="user-box"
@@ -98,8 +103,12 @@ const handleReload = () => {
     reload.value = false
   }, 500)
 }
-const toService = () => {
-  window.open('https://support.qq.com/product/371961')
+// const toService = () => {
+//   window.open('https://support.qq.com/product/371961')
+// }
+
+const toResource = () => {
+  router.push({ name: 'resource' })
 }
 
 </script>

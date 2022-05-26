@@ -22,6 +22,7 @@ type ApiGroup struct {
 	SecretApi
 	ConfigMapApi
 	ScaleApi
+	ResourceApi
 }
 
 var (
@@ -42,4 +43,5 @@ var (
 	SecretService             = service.ServiceGroupApp.KubernetesServiceGroup.SecretService
 	ConfigMapService          = service.ServiceGroupApp.KubernetesServiceGroup.ConfigMapService
 	ScaleService              = service.ServiceGroupApp.KubernetesServiceGroup.ScaleService
+	resourceService           = service.ServiceGroupApp.KubernetesServiceGroup.ResourceService
 )

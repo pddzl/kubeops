@@ -45,13 +45,13 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: true, ParentId: "20", Path: "services/detail", Name: "services_detail", Component: "view/service/services/detail.vue", Sort: 2, Meta: system.Meta{Title: "Services详情", Icon: "camera"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "20", Path: "ingress", Name: "ingress", Component: "view/service/ingress/list.vue", Sort: 3, Meta: system.Meta{Title: "Ingress", Icon: "cellphone"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "20", Path: "ingress/detail", Name: "ingress_detail", Component: "view/service/ingress/detail.vue", Sort: 4, Meta: system.Meta{Title: "Ingress详情", Icon: "cellphone"}},
-		// 配置
+		// 25 配置
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "config", Name: "config", Component: "view/config/index.vue", Sort: 5, Meta: system.Meta{Title: "配置", Icon: "CoffeeCup"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "configMap", Name: "configMap", Component: "view/config/configMap/list.vue", Sort: 1, Meta: system.Meta{Title: "ConfigMap", Icon: "Coffee"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "25", Path: "configMap/detail", Name: "configMap_detail", Component: "view/config/configMap/detail.vue", Sort: 2, Meta: system.Meta{Title: "ConfigMap详情", Icon: "Coffee"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "25", Path: "secret", Name: "secret", Component: "view/config/secret/list.vue", Sort: 3, Meta: system.Meta{Title: "Secret", Icon: "Coin"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "25", Path: "secret/detail", Name: "secret_detail", Component: "view/config/secret/detail.vue", Sort: 4, Meta: system.Meta{Title: "Secret详情", Icon: "Coin"}},
-		// 25 访问控制
+		// 30 访问控制
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "rbac", Name: "rbac", Component: "view/rbac/index.vue", Sort: 6, Meta: system.Meta{Title: "访问控制", Icon: "lock"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "30", Path: "serviceAccount", Name: "serviceAccount", Component: "view/rbac/serviceAccount/list.vue", Sort: 1, Meta: system.Meta{Title: "ServiceAccount", Icon: "IceTea"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "30", Path: "serviceAccount/detail", Name: "serviceAccount_detail", Component: "view/rbac/serviceAccount/detail.vue", Sort: 2, Meta: system.Meta{Title: "ServiceAccount详情", Icon: "IceTea"}},
@@ -63,18 +63,20 @@ func (m *menu) Initialize() error {
 		{MenuLevel: 0, Hidden: true, ParentId: "30", Path: "clusterRole/detail", Name: "clusterRole_detail", Component: "view/rbac/clusterRole/detail.vue", Sort: 8, Meta: system.Meta{Title: "ClusterRole详情", Icon: "Chicken"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "30", Path: "clusterRoleBinding", Name: "clusterRoleBinding", Component: "view/rbac/clusterRoleBinding/list.vue", Sort: 9, Meta: system.Meta{Title: "ClusterRoleBinding", Icon: "Cloudy"}},
 		{MenuLevel: 0, Hidden: true, ParentId: "30", Path: "clusterRoleBinding/detail", Name: "clusterRoleBinding_detail", Component: "view/rbac/clusterRoleBinding/detail.vue", Sort: 10, Meta: system.Meta{Title: "ClusterRoleBinding详情", Icon: "Cloudy"}},
-		// 28 superAdmin 超级管理员
+		// 41 superAdmin 超级管理员
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 7, Meta: system.Meta{Title: "超级管理员", Icon: "user"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "41", Path: "authority", Name: "authority", Component: "view/superAdmin/authority/authority.vue", Sort: 1, Meta: system.Meta{Title: "角色管理", Icon: "avatar"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "41", Path: "menu", Name: "menu", Component: "view/superAdmin/menu/menu.vue", Sort: 2, Meta: system.Meta{Title: "菜单管理", Icon: "tickets", KeepAlive: true}},
 		{MenuLevel: 0, Hidden: false, ParentId: "41", Path: "api", Name: "api", Component: "view/superAdmin/api/api.vue", Sort: 3, Meta: system.Meta{Title: "api管理", Icon: "platform", KeepAlive: true}},
 		{MenuLevel: 0, Hidden: false, ParentId: "41", Path: "user", Name: "user", Component: "view/superAdmin/user/user.vue", Sort: 4, Meta: system.Meta{Title: "用户管理", Icon: "coordinate"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "41", Path: "operation", Name: "operation", Component: "view/superAdmin/operation/sysOperationRecord.vue", Sort: 5, Meta: system.Meta{Title: "操作历史", Icon: "pie-chart"}},
-		// 34 example 示例文件
+		// 47 example 示例文件
 		{MenuLevel: 0, Hidden: false, ParentId: "0", Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 8, Meta: system.Meta{Title: "示例文件", Icon: "management"}},
 		{MenuLevel: 0, Hidden: false, ParentId: "47", Path: "upload", Name: "upload", Component: "view/example/upload/upload.vue", Sort: 1, Meta: system.Meta{Title: "媒体库", Icon: "upload"}},
+		// resource 创建资源
+		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "resource", Name: "resource", Component: "view/resource/index.vue", Sort: 9, Meta: system.Meta{Title: "创建资源", Icon: "mug"}},
 		// person 个人信息
-		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 9, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
+		{MenuLevel: 0, Hidden: true, ParentId: "0", Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 10, Meta: system.Meta{Title: "个人信息", Icon: "message"}},
 	}
 	if err := global.KOP_DB.Create(&entities).Error; err != nil { // 创建 model.User 初始化数据
 		return errors.Wrap(err, m.TableName()+"表数据初始化失败!")

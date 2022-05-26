@@ -16,8 +16,8 @@ func FormatMap(m map[string]string) (fmtStr string) {
 	return
 }
 
-// ExtractFieldPathAsString extracts the field from the given object
-// and returns it as a string.  The object must be a pointer to an
+// ExtractFieldPathAsString extracts the field from the given resource
+// and returns it as a string.  The resource must be a pointer to an
 // API type.
 func ExtractFieldPathAsString(obj interface{}, fieldPath string) (string, error) {
 	accessor, err := meta.Accessor(obj)

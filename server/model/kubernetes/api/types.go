@@ -34,7 +34,7 @@ type ObjectMeta struct {
 	// comments on Labels for details.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
-	// CreationTimestamp is a timestamp representing the server time when this object was
+	// CreationTimestamp is a timestamp representing the server time when this resource was
 	// created. It is not guaranteed to be set in happens-before order across separate operations.
 	// Clients may not set this value. It is represented in RFC3339 form and is in UTC.
 	CreationTimestamp v1.Time `json:"creationTimestamp,omitempty"`
@@ -45,19 +45,19 @@ type ObjectMeta struct {
 	UID types.UID `json:"uid,omitempty"`
 }
 
-// TypeMeta describes an individual object in an API response or request with strings representing
-// the type of the object.
+// TypeMeta describes an individual resource in an API response or request with strings representing
+// the type of the resource.
 type TypeMeta struct {
-	// Kind is a string value representing the REST resource this object represents.
+	// Kind is a string value representing the REST resource this resource represents.
 	// Servers may infer this from the endpoint the client submits requests to.
 	// In smalllettercase.
 	// More info: http://releases.k8s.io/HEAD/docs/devel/api-conventions.md#types-kinds
 	Kind ResourceKind `json:"kind,omitempty"`
 
-	// Scalable represents whether or not an object is scalable.
+	// Scalable represents whether or not an resource is scalable.
 	Scalable bool `json:"scalable,omitempty"`
 
-	// Restartable represents whether or not an object is restartable.
+	// Restartable represents whether or not an resource is restartable.
 	Restartable bool `json:"restartable,omitempty"`
 }
 
@@ -73,7 +73,7 @@ type ListMeta struct {
 }
 
 // NewObjectMeta returns internal endpoint name for the given service properties, e.g.,
-// NewObjectMeta creates a new instance of ObjectMeta struct based on K8s object meta.
+// NewObjectMeta creates a new instance of ObjectMeta struct based on K8s resource meta.
 func NewObjectMeta(k8SObjectMeta metaV1.ObjectMeta) ObjectMeta {
 	return ObjectMeta{
 		Name:              k8SObjectMeta.Name,
@@ -161,8 +161,8 @@ const (
 	ResourceKindNetworkPolicy            = "networkpolicy"
 )
 
-// IsSelectorMatching returns true when an object with the given selector targets the same
-// Resources (or subset) that the target object with the given selector.
+// IsSelectorMatching returns true when an resource with the given selector targets the same
+// Resources (or subset) that the target resource with the given selector.
 func IsSelectorMatching(srcSelector map[string]string, targetObjectLabels map[string]string) bool {
 	// If service has no selectors, then assume it targets different resource.
 	if len(srcSelector) == 0 {
