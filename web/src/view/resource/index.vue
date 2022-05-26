@@ -1,19 +1,23 @@
 <template>
   <div>
-    <div style="position: absolute; top: 10px; right: 20px;">
-      <el-select v-model="mimeType" size="small">
-        <el-option v-for="mine in mimeList" :key="mine" :label="mine" :value="mine" />
-      </el-select>
+    <div style="background-color: white; padding: 10px 0 10px 10px; color: gray;">
+      <p>请输入资源编排内容，支持JSON YAML格式</p>
     </div>
     <div>
       <textarea ref="codeEditor" />
+    </div>
+    <div style="margin-top: 10px;">
+      <el-button type="primary" @click="createResourceFunc">创 建</el-button>
+      <el-button @click="resetContent">清 空</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import { createResource } from '@/api/kubernetes/resource/index.js'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import yaml from 'js-yaml'
+import { ElMessage } from 'element-plus'
+// import yaml from 'js-yaml'
 // codemirror基础资源引入
 import _CodeMirror from 'codemirror'
 import 'codemirror/lib/codemirror.css'
@@ -22,10 +26,13 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/yaml/yaml.js'
 
 // 代码错误检查
+// require('script-loader!jsonlint')
+// import jsonlint from 'jsonlint'
+// window.jsonlint = jsonlint
 // import 'script-loader!jsonlint'
-// import 'codemirror/addon/lint/lint.css'
-// import 'codemirror/addon/lint/lint'
-// import 'codemirror/addon/lint/json-lint'
+import 'codemirror/addon/lint/lint.css'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/lint/json-lint'
 
 import 'codemirror/addon/display/autorefresh'
 import 'codemirror/addon/edit/matchbrackets'
@@ -60,27 +67,38 @@ const CodeMirror = window.CodeMirror || _CodeMirror
 
 export default {
   name: 'Resource',
-  setup(props, context) {
-    const mimeList = ref(['YAML', 'JSON'])
-    const mimeType = ref('YAML')
-    const modelValue = ref('')
-    const defaultValue = ref('')
+  setup() {
     const readOnly = ref(false)
-    const codeEditor = ref()
+    const codeEditor = ref(false)
     let editor
+
+    const createResourceFunc = async() => {
+      const content = editor.getValue()
+      const res = await createResource({ content: content })
+      if (res.code === 0) {
+        ElMessage({
+          type: 'success',
+          message: '创建成功!'
+        })
+      }
+    }
+
+    const resetContent = () => {
+      editor.setValue('')
+    }
 
     onMounted(() => {
       editor = CodeMirror.fromTextArea(codeEditor.value, {
-        value: modelValue.value,
-        // mode: 'yaml',
-        // mime: 'text/x-yaml',
+        // value: modelValue.value,
+        mode: 'yaml',
+        mime: 'text/x-yaml',
         indentWithTabs: false, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符，默认为false
         smartIndent: true, // 自动缩进，设置是否根据上下文自动缩进（和上一行相同的缩进量）。默认为true
         lineNumbers: true, // 是否在编辑器左侧显示行号
         matchBrackets: true, // 括号匹配
         readOnly: readOnly.value,
         autoRefresh: true,
-        // lint: true, // window.jsonlint not defined, CodeMirror JSON linting cannot run
+        lint: true, // window.jsonlint not defined, CodeMirror JSON linting cannot run
         // 启用代码折叠相关功能:开始
         foldGutter: true,
         lineWrapping: true,
@@ -88,62 +106,6 @@ export default {
         // 启用代码折叠相关功能:结束
         styleActiveLine: true // 光标行高亮
       })
-      // 监听编辑器的change事件
-      editor.on('change', () => {
-        // 触发v-model的双向绑定
-        context.emit('update:modelValue', editor.getValue())
-      })
-      if (defaultValue.value) {
-        editor.setValue(defaultValue.value)
-      } else {
-        if (mimeType.value === 'JSON') {
-          editor.setOption('mode', 'javascript')
-          editor.setOption('mime', 'text/javascript')
-          editor.setValue(JSON.stringify(JSON.parse(modelValue.value), null, 2))
-        } else if (mimeType.value === 'YAML') {
-          editor.setOption('mode', 'yaml')
-          editor.setOption('mime', 'text/x-yaml')
-          editor.setValue(yaml.dump(JSON.parse(modelValue.value)))
-        }
-      }
-    })
-    onMounted(() => {
-      editor = CodeMirror.fromTextArea(codeEditor.value, {
-        value: modelValue.value,
-        // mode: 'yaml',
-        // mime: 'text/x-yaml',
-        indentWithTabs: false, // 在缩进时，是否需要把 n*tab宽度个空格替换成n个tab字符，默认为false
-        smartIndent: true, // 自动缩进，设置是否根据上下文自动缩进（和上一行相同的缩进量）。默认为true
-        lineNumbers: true, // 是否在编辑器左侧显示行号
-        matchBrackets: true, // 括号匹配
-        readOnly: readOnly.value,
-        autoRefresh: true,
-        // lint: true, // window.jsonlint not defined, CodeMirror JSON linting cannot run
-        // 启用代码折叠相关功能:开始
-        foldGutter: true,
-        lineWrapping: true,
-        gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],
-        // 启用代码折叠相关功能:结束
-        styleActiveLine: true // 光标行高亮
-      })
-      // 监听编辑器的change事件
-      editor.on('change', () => {
-        // 触发v-model的双向绑定
-        context.emit('update:modelValue', editor.getValue())
-      })
-      if (defaultValue.value) {
-        editor.setValue(defaultValue.value)
-      } else {
-        if (mimeType.value === 'JSON') {
-          editor.setOption('mode', 'javascript')
-          editor.setOption('mime', 'text/javascript')
-          editor.setValue(JSON.stringify(JSON.parse(modelValue.value), null, 2))
-        } else if (mimeType.value === 'YAML') {
-          editor.setOption('mode', 'yaml')
-          editor.setOption('mime', 'text/x-yaml')
-          editor.setValue(yaml.dump(JSON.parse(modelValue.value)))
-        }
-      }
     })
     onBeforeUnmount(() => {
       if (editor !== null) {
@@ -154,8 +116,8 @@ export default {
 
     return {
       codeEditor,
-      mimeList,
-      mimeType
+      createResourceFunc,
+      resetContent
     }
   }
 }
