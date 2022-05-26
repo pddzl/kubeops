@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import yaml from 'js-yaml'
 // codemirror基础资源引入
 import _CodeMirror from 'codemirror'

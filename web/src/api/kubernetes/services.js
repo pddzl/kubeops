@@ -35,3 +35,12 @@ export const getServicesPods = (data) => {
     data
   })
 }
+
+// 删除services
+export const deleteServices = (data) => {
+  return service({
+    url: '/services/deleteServices',
+    method: 'post',
+    data
+  })
+}

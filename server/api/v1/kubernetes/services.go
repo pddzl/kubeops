@@ -101,3 +101,22 @@ func (s *ServicesApi) GetServicesPods(c *gin.Context) {
 		PageSize: servicesPods.PageSize,
 	}, "获取成功", c)
 }
+
+// DeleteServices 删除service
+func (s *ServicesApi) DeleteServices(c *gin.Context) {
+	var services request.ServicesCommon
+	_ = c.ShouldBindJSON(&services)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&services); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := servicesService.DeleteService(services.NameSpace, services.Service); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

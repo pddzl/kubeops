@@ -16,6 +16,7 @@ func (s *ServicesRouter) InitServicesRouter(Router *gin.RouterGroup) {
 		servicesRouter.POST("getServicesDetail", servicesApi.GetServicesDetail) // 获取services详情
 		servicesRouter.POST("getServicesRaw", servicesApi.GetServicesRaw)       // 获取services in raw
 		servicesRouter.POST("getServicesPods", servicesApi.GetServicesPods)     // 获取services pods
+		servicesRouter.POST("deleteServices", servicesApi.DeleteServices)       // 删除 services
 	}
 	{
 		servicesRouterWithoutRecord.POST("getServicesList", servicesApi.GetServicesList) // 获取所有services
