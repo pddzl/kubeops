@@ -20,7 +20,7 @@
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button icon="view" size="small" type="text" @click="editNamespace(scope.row)">查看</el-button>
-            <el-button icon="delete" size="small" type="text" @click="deleteNamespace(scope.row)">删除</el-button>
+            <el-button icon="delete" size="small" type="text" :disabled="scope.row.name === 'kube-system'" @click="deleteNamespace(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

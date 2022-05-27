@@ -68,6 +68,25 @@ func (n *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
+// DeleteNamespace 删除namespace
+func (n *NamespaceApi) DeleteNamespace(c *gin.Context) {
+	var name request.GetByName
+	_ = c.ShouldBindJSON(&name)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&name); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := namespaceService.DeleteNamespace(name.Name); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
 // GetNamespaceRaw 获取namespace in raw
 func (n *NamespaceApi) GetNamespaceRaw(c *gin.Context) {
 	var nameInfo request.GetByName

@@ -26,7 +26,7 @@
         <el-table-column label="内部IP" min-width="130" prop="internalIP" />
         <el-table-column label="角色" min-width="220" prop="roles">
           <template #default="scope">
-            <span v-for="(role, index) in scope.row.roles" :key="index" style="margin-right: 5px;">
+            <span v-for="(role, index) in scope.row.role" :key="index" style="margin-right: 5px;">
               <el-tag size="small">{{ role }}</el-tag>
             </span>
           </template>
