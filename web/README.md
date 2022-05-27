@@ -12,5 +12,5 @@ yarn dev
 
 ### Compiles and minifies for production
 ```
-npm build
+yarn build
 ```
