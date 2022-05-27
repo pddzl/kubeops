@@ -11,8 +11,7 @@ import (
 
 type DaemonSetApi struct{}
 
-// 获取deployment list
-
+// GetDaemonSetList 获取deployment list
 func (d *DaemonSetApi) GetDaemonSetList(c *gin.Context) {
 	var pageInfo request.ListParams
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -38,8 +37,7 @@ func (d *DaemonSetApi) GetDaemonSetList(c *gin.Context) {
 	}
 }
 
-// 获取deployment in 编排
-
+// GetDaemonSetRaw 获取deployment in 编排
 func (d *DaemonSetApi) GetDaemonSetRaw(c *gin.Context) {
 	var daemonSetRaw request.DaemonSetCommon
 	_ = c.ShouldBindJSON(&daemonSetRaw)
@@ -59,8 +57,7 @@ func (d *DaemonSetApi) GetDaemonSetRaw(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取daemonSet detail
-
+// GetDaemonSetDetail 获取daemonSet detail
 func (d *DaemonSetApi) GetDaemonSetDetail(c *gin.Context) {
 	var daemonSetDetail request.DaemonSetCommon
 	_ = c.ShouldBindJSON(&daemonSetDetail)
@@ -80,8 +77,26 @@ func (d *DaemonSetApi) GetDaemonSetDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
-// 获取daemonSet关联的pods
+// DeleteDaemonSet 删除daemonSet
+func (d *DaemonSetApi) DeleteDaemonSet(c *gin.Context) {
+	var daemonSetCommon request.DaemonSetCommon
+	_ = c.ShouldBindJSON(&daemonSetCommon)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&daemonSetCommon); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
 
+	if err := daemonSetService.DeleteDaemonSet(daemonSetCommon.NameSpace, daemonSetCommon.DaemonSet); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
+// GetDaemonSetPods 获取daemonSet关联的pods
 func (d *DaemonSetApi) GetDaemonSetPods(c *gin.Context) {
 	var daemonSetPods request.DaemonSetPods
 	_ = c.ShouldBindJSON(&daemonSetPods)
