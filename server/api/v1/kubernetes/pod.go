@@ -96,6 +96,25 @@ func (p *PodApi) GetPodLog(c *gin.Context) {
 	response.OkWithDetailed(log, "获取日志成功", c)
 }
 
+// DeletePod 删除pod
+func (p *PodApi) DeletePod(c *gin.Context) {
+	var podDetail request.PodDetail
+	_ = c.ShouldBindJSON(&podDetail)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&podDetail); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := podService.DeletePod(podDetail.NameSpace, podDetail.Pod); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
 // 获取pod webShell
 var upGrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
