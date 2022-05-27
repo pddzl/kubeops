@@ -75,3 +75,22 @@ func (i *IngressApi) GetIngressDetail(c *gin.Context) {
 	}
 	response.OkWithDetailed(detail, "获取成功", c)
 }
+
+// DeleteIngress 删除Ingress
+func (i *IngressApi) DeleteIngress(c *gin.Context) {
+	var ingress request.IngressCommon
+	_ = c.ShouldBindJSON(&ingress)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&ingress); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := ingressService.DeleteIngress(ingress.NameSpace, ingress.Ingress); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

@@ -15,6 +15,7 @@ func (i *IngressRouter) InitIngressRouter(Router *gin.RouterGroup) {
 	{
 		ingressRouter.POST("getIngressDetail", ingressApi.GetIngressDetail) // 获取Ingress详情
 		ingressRouter.POST("getIngressRaw", ingressApi.GetIngressRaw)       // 获取Ingress编排
+		ingressRouter.POST("deleteIngress", ingressApi.DeleteIngress)       // 删除Ingress
 	}
 	{
 		ingressRouterWithoutRecord.POST("getIngressList", ingressApi.GetIngressList) // 获取所有Ingress
