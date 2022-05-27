@@ -37,7 +37,7 @@
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
             <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteDeploymentFunc(scope.row)">删除
+            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteFunc(scope.row)">删除
             </el-button>
           </template>
         </el-table-column>
@@ -205,9 +205,9 @@ export default {
       searchInfo.namespace = ''
     }
 
-    // 删除deployment
-    const deleteDeploymentFunc = async(row) => {
-      ElMessageBox.confirm('此操作将永久删除该Service, 是否继续?', '提示', {
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Deployment, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -254,7 +254,7 @@ export default {
       deploymentFormat,
       editDeployment,
       // 删除deployment
-      deleteDeploymentFunc
+      deleteFunc
     }
   }
 }

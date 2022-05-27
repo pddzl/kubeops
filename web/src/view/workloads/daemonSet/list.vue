@@ -32,8 +32,7 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDaemonSet(scope.row)">查看</el-button>
-            <el-button icon="expand" type="text" size="small">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small">删除</el-button>
+            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,27 +60,23 @@
 import { ref, reactive } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getDaemonSetList, getDaemonSetRaw } from '@/api/kubernetes/daemonSet'
+import { getDaemonSetList, getDaemonSetRaw, deleteDaemonSet } from '@/api/kubernetes/daemonSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'DaemonSetList',
   components: {
     VueCodeMirror,
   },
   setup() {
-    // 响应式数据
-    const namespace = ref([])
+    // search
     const searchInfo = reactive({
       namespace: ''
     })
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const tableData = ref([])
-    const daemonSetFormat = ref({})
-    const dialogFormVisible = ref(false)
 
     // 加载namespace数据
+    const namespace = ref([])
+
     const getNamespace = async() => {
       const table = await getNamespaceOnlyName()
       if (table.code === 0) {
@@ -91,6 +86,11 @@ export default {
     getNamespace()
 
     // 加载pod数据
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const tableData = ref([])
+
     const getTableData = async() => {
       const table = await getDaemonSetList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
       if (table.code === 0) {
@@ -101,15 +101,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const editDaemonSet = async(row) => {
-      const result = await getDaemonSetRaw({ daemonSet: row.name, namespace: row.namespace })
-      if (result.code === 0) {
-        daemonSetFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -134,13 +125,46 @@ export default {
       searchInfo.namespace = ''
     }
 
+    // 编辑
+    const daemonSetFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const editDaemonSet = async(row) => {
+      const result = await getDaemonSetRaw({ daemonSet: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        daemonSetFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该DaemonSet, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteDaemonSet({ namespace: row.namespace, daemonSet: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
       // 响应式数据
-      namespace,
       searchInfo,
+      // data、查询相关
+      namespace,
       tableData,
-      daemonSetFormat,
-      dialogFormVisible,
+      onSubmit,
+      onReset,
       // time format
       formatDate,
       // 分页
@@ -149,10 +173,12 @@ export default {
       total,
       handleSizeChange,
       handleCurrentChange,
-      // 查询
-      onSubmit,
-      onReset,
-      editDaemonSet
+      // 编辑
+      daemonSetFormat,
+      dialogFormVisible,
+      editDaemonSet,
+      // 删除
+      deleteFunc
     }
   }
 }

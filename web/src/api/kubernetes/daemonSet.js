@@ -35,3 +35,12 @@ export const getDaemonSetPods = (data) => {
     data
   })
 }
+
+// 删除daemonSet
+export const deleteDaemonSet = (data) => {
+  return service({
+    url: '/daemonSet/deleteDaemonSet',
+    method: 'post',
+    data
+  })
+}

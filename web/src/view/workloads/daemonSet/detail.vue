@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewDaemonSet">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'" @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -135,12 +135,13 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDaemonSetDetail, getDaemonSetRaw, getDaemonSetPods } from '@/api/kubernetes/daemonSet'
+import { getDaemonSetDetail, getDaemonSetRaw, getDaemonSetPods, deleteDaemonSet } from '@/api/kubernetes/daemonSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
 import { statusPodFilter } from '@/mixin/filter.js'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'DaemonSetDetail',
   components: {
@@ -148,20 +149,17 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'resource', 'status', 'pods'])
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const daemonSetPods = ref([])
-    const daemonSetDetail = ref({})
-    const daemonSetFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const daemonSet = route.query.daemonSet
 
     // 获取daemonSet详情
+    const daemonSetDetail = ref({})
+
     const getDaemonSetDetailData = async() => {
       await getDaemonSetDetail({ namespace: namespace, daemonSet: daemonSet }).then(response => {
         if (response.code === 0) {
@@ -172,6 +170,11 @@ export default {
     getDaemonSetDetailData()
 
     // 加载关联pods
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const daemonSetPods = ref([])
+
     const getDaemonSetPodsData = async() => {
       const table = await getDaemonSetPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, daemonSet: daemonSet })
       if (table.code === 0) {
@@ -182,15 +185,6 @@ export default {
       }
     }
     getDaemonSetPodsData()
-
-    // 操作
-    const viewDaemonSet = async() => {
-      const result = await getDaemonSetRaw({ daemonSet: daemonSet, namespace: namespace })
-      if (result.code === 0) {
-        daemonSetFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -203,26 +197,60 @@ export default {
       getDaemonSetPodsData()
     }
 
+    // 编辑
+    const daemonSetFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const viewDaemonSet = async() => {
+      const result = await getDaemonSetRaw({ daemonSet: daemonSet, namespace: namespace })
+      if (result.code === 0) {
+        daemonSetFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该DaemonSet, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteDaemonSet({ namespace: namespace, daemonSet: daemonSet })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // data、查询相关
+      namespace,
       daemonSetDetail,
-      daemonSetFormat,
-      dialogFormVisible,
       daemonSetPods,
       // filter
       statusRsFilter,
       statusPodFilter,
       // 格式化日期
       formatDate,
-      // 操作
+      // 编辑
       viewDaemonSet,
+      daemonSetFormat,
+      dialogFormVisible,
       // 分页
       page,
       pageSize,
       total,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      // 删除
+      deleteFunc
     }
   }
 }
