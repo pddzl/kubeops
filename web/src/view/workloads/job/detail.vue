@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewJob">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -127,11 +127,12 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getJobDetail, getJobPods, getJobRaw } from '@/api/kubernetes/job'
+import { getJobDetail, getJobPods, getJobRaw, deleteJob } from '@/api/kubernetes/job'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter, statusRsFilter } from '@/mixin/filter.js'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'JobDetail',
   components: {
@@ -139,20 +140,17 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'status', 'pods'])
-    const jobDetail = ref({})
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const jobPods = ref([])
-    const jobFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const job = route.query.job
 
     // 加载job详情
+    const jobDetail = ref({})
+
     const getData = async() => {
       await getJobDetail({ namespace: namespace, job: job }).then(response => {
         if (response.code === 0) {
@@ -163,6 +161,11 @@ export default {
     getData()
 
     // 加载关联pods
+    const jobPods = ref([])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+
     const getJobPodsData = async() => {
       const table = await getJobPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, job: job })
       if (table.code === 0) {
@@ -174,15 +177,6 @@ export default {
     }
     getJobPodsData()
 
-    // 操作
-    const viewJob = async() => {
-      const result = await getJobRaw({ job: job, namespace: namespace })
-      if (result.code === 0) {
-        jobFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
-
     // 分页
     const handleSizeChange = (val) => {
       pageSize.value = val
@@ -192,6 +186,36 @@ export default {
     const handleCurrentChange = (val) => {
       page.value = val
       getJobPodsData()
+    }
+
+    // 编辑
+    const jobFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const viewJob = async() => {
+      const result = await getJobRaw({ job: job, namespace: namespace })
+      if (result.code === 0) {
+        jobFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Job, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteJob({ namespace: namespace, job: job })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
     }
 
     return {
@@ -213,7 +237,9 @@ export default {
       pageSize,
       total,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      // 删除
+      deleteFunc
     }
   }
 }

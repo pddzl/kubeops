@@ -27,6 +27,15 @@ export const getJobDetail = (data) => {
   })
 }
 
+// 删除job
+export const deleteJob = (data) => {
+  return service({
+    url: '/job/deleteJob',
+    method: 'post',
+    data
+  })
+}
+
 // 获取job关联pods
 export const getJobPods = (data) => {
   return service({
