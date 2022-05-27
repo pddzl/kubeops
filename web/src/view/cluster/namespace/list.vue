@@ -20,7 +20,7 @@
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button icon="view" size="small" type="text" @click="editNamespace(scope.row)">查看</el-button>
-            <el-button icon="delete" size="small" type="text" :disabled="scope.row.name === 'kube-system'" @click="deleteNamespace(scope.row)">删除</el-button>
+            <el-button icon="delete" size="small" type="text" :disabled="scope.row.name === 'kube-system'" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -47,24 +47,22 @@
 <script>
 import { ref } from 'vue'
 import { statusNsFilter } from '@/mixin/filter'
-import { getNamespaceList, getNamespaceRaw } from '@/api/kubernetes/namespace'
+import { getNamespaceList, getNamespaceRaw, deleteNamespace } from '@/api/kubernetes/namespace'
 import { formatDate } from '@/utils/format'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'Namespace',
   components: {
     VueCodeMirror
   },
   setup() {
-    // 响应式数据
+    // 加载namespace list
     const page = ref(1)
     const pageSize = ref(10)
     const total = ref(0)
     const tableData = ref([])
-    const dialogFormVisible = ref(false)
-    const namespaceFormat = ref({})
 
-    // 加载namespace数据
     const getTableData = async() => {
       const table = await getNamespaceList({ page: page.value, pageSize: pageSize.value })
       if (table.code === 0) {
@@ -75,16 +73,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const editNamespace = async(row) => {
-      // namespaceFormat.value = JSON.stringify(row)
-      const result = await getNamespaceRaw({ name: row.name })
-      if (result.code === 0) {
-        namespaceFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -97,8 +85,41 @@ export default {
       getTableData()
     }
 
+    // 编辑
+    const dialogFormVisible = ref(false)
+    const namespaceFormat = ref({})
+
+    const editNamespace = async(row) => {
+      const res = await getNamespaceRaw({ name: row.name })
+      if (res.code === 0) {
+        namespaceFormat.value = JSON.stringify(res.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Namespace, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteNamespace({ name: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
-      dialogFormVisible,
+      // data
+      tableData,
       // 分页
       page,
       pageSize,
@@ -107,17 +128,15 @@ export default {
       handleCurrentChange,
       // 日期处理
       formatDate,
-      // 数据
-      tableData,
       // filter
       statusNsFilter,
       // 操作
+      dialogFormVisible,
+      namespaceFormat,
       editNamespace,
-      namespaceFormat
+      // 删除
+      deleteFunc
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-</style>

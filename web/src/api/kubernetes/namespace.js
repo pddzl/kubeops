@@ -34,3 +34,12 @@ export const getNamespaceRaw = (data) => {
     data
   })
 }
+
+// 删除namespace
+export const deleteNamespace = (data) => {
+  return service({
+    url: '/namespace/deleteNamespace',
+    method: 'post',
+    data
+  })
+}

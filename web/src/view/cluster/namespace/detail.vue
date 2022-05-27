@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewNamespace">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'" @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -97,9 +97,10 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { formatDate } from '@/utils/format'
 import { statusNsFilter } from '@/mixin/filter'
-import { getNamespaceDetail, getNamespaceRaw } from '@/api/kubernetes/namespace'
+import { getNamespaceDetail, getNamespaceRaw, deleteNamespace } from '@/api/kubernetes/namespace'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'NamespaceDetail',
   components: {
@@ -107,15 +108,16 @@ export default {
     VueCodeMirror
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'resourceQuota', 'resourceLimit'])
-    const namespaceDetail = ref({})
-    const namespaceFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.name
 
     // 加载namespace详情
+    const namespaceDetail = ref({})
+
     const getData = async() => {
       await getNamespaceDetail({ name: namespace }).then(response => {
         if (response.code === 0) {
@@ -125,26 +127,52 @@ export default {
     }
     getData()
 
-    // 操作
+    // 编辑
+    const namespaceFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const viewNamespace = async() => {
-      const result = await getNamespaceRaw({ name: namespace })
-      if (result.code === 0) {
-        namespaceFormat.value = JSON.stringify(result.data)
+      const res = await getNamespaceRaw({ name: namespace })
+      if (res.code === 0) {
+        namespaceFormat.value = JSON.stringify(res.data)
       }
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Namespace, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteNamespace({ name: namespace })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // data
+      namespace,
       namespaceDetail,
-      namespaceFormat,
-      dialogFormVisible,
       // filter
       statusNsFilter,
-      // 函数
-      viewNamespace,
+      // time format
       formatDate,
+      // 编辑
+      dialogFormVisible,
+      namespaceFormat,
+      viewNamespace,
+      // 删除
+      deleteFunc
     }
   }
 }
