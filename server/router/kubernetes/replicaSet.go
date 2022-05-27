@@ -17,6 +17,7 @@ func (s *ReplicaSetRouter) InitReplicaSetRouter(Router *gin.RouterGroup) {
 		replicaSetRouter.POST("getReplicaSetRaw", ReplicaSetApi.GetReplicaSetRaw)           // 获取replicaSet in raw
 		replicaSetRouter.POST("getReplicaSetPods", ReplicaSetApi.GetReplicaSetPods)         // 获取replicaSet pods
 		replicaSetRouter.POST("getReplicaSetServices", ReplicaSetApi.GetReplicaSetServices) // 获取replicaSet services
+		replicaSetRouter.POST("deleteReplicaSet", ReplicaSetApi.DeleteReplicaSet)           // 删除replicaSet
 	}
 	{
 		replicaSetRouterWithoutRecord.POST("getReplicaSetList", ReplicaSetApi.GetReplicaSetList) // 获取所有replicaSet

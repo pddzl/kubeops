@@ -119,3 +119,22 @@ func (r *ReplicaSetApi) GetReplicaSetServices(c *gin.Context) {
 	}
 	response.OkWithDetailed(services, "获取成功", c)
 }
+
+// DeleteReplicaSet 删除 replicaSet
+func (r *ReplicaSetApi) DeleteReplicaSet(c *gin.Context) {
+	var replicaSetServices request.ReplicaSetCommon
+	_ = c.ShouldBindJSON(&replicaSetServices)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&replicaSetServices); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := replicaSetService.DeleteReplicaSet(replicaSetServices.NameSpace, replicaSetServices.ReplicaSet); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
