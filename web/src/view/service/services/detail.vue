@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="editServicesSet">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -44,7 +44,7 @@
           </div>
         </el-collapse-item>
         <el-collapse-item v-if="servicesDetail.spec" title="端口映射" name="ports">
-          <div class="detail-table">
+          <div class="info-table">
             <el-table :data="servicesDetail.spec.ports">
               <el-table-column label="名称" prop="name" />
               <el-table-column label="协议" prop="protocol" />
@@ -55,7 +55,7 @@
           </div>
         </el-collapse-item>
         <el-collapse-item title="Pods" name="pods">
-          <div class="detail-table">
+          <div class="info-table">
             <el-table :data="servicesPods">
               <el-table-column label="名称" prop="metadata.name" min-width="120">
                 <template #default="scope">
@@ -102,11 +102,12 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getServicesDetail, getServicesRaw, getServicesPods } from '@/api/kubernetes/services'
+import { getServicesDetail, getServicesRaw, getServicesPods, deleteServices } from '@/api/kubernetes/services'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter, statusPodFilter } from '@/mixin/filter.js'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ServicesDetail',
   components: {
@@ -114,20 +115,17 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'ports', 'pods'])
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const servicesPods = ref([])
-    const servicesDetail = ref({})
-    const servicesFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const service = route.query.service
 
     // 获取daemonSet详情
+    const servicesDetail = ref({})
+
     const getServicesDetailData = async() => {
       await getServicesDetail({ namespace: namespace, service: service }).then(response => {
         if (response.code === 0) {
@@ -138,6 +136,11 @@ export default {
     getServicesDetailData()
 
     // 加载关联pods
+    const servicesPods = ref([])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+
     const getServicesPodsData = async() => {
       const table = await getServicesPods({ page: page.value, pageSize: pageSize.value, namespace: namespace, service: service })
       if (table.code === 0) {
@@ -150,6 +153,9 @@ export default {
     getServicesPodsData()
 
     // 操作
+    const servicesFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const editServicesSet = async() => {
       const result = await getServicesRaw({ service: service, namespace: namespace })
       if (result.code === 0) {
@@ -169,12 +175,29 @@ export default {
       getServicesPodsData()
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Service, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteServices({ namespace: namespace, service: service })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // detail
       servicesDetail,
-      servicesFormat,
-      dialogFormVisible,
       servicesPods,
       // filter
       statusRsFilter,
@@ -182,20 +205,18 @@ export default {
       // 格式化日期
       formatDate,
       // 操作
+      servicesFormat,
+      dialogFormVisible,
       editServicesSet,
       // 分页
       page,
       pageSize,
       total,
       handleSizeChange,
-      handleCurrentChange
+      handleCurrentChange,
+      // 删除
+      deleteFunc
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.detail-table {
-  padding-right: 20px;
-}
-</style>
