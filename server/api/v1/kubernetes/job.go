@@ -74,6 +74,25 @@ func (j *JobApi) GetJobDetail(c *gin.Context) {
 	}
 }
 
+// DeleteJob 删除job
+func (j *JobApi) DeleteJob(c *gin.Context) {
+	var jobCommon request.JobCommon
+	_ = c.ShouldBindJSON(&jobCommon)
+	// 校验字段
+	validate := validator.New()
+	if err := validate.Struct(&jobCommon); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := jobService.DeleteJob(jobCommon.NameSpace, jobCommon.Job); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
 func (j *JobApi) GetJobPods(c *gin.Context) {
 	var job request.JobPods
 	_ = c.ShouldBindJSON(&job)

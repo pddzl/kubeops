@@ -16,6 +16,7 @@ func (j *JobRouter) InitJobRouter(Router *gin.RouterGroup) {
 		jobRouter.POST("getJobRaw", jobApi.GetJobRaw)       // 获取pod编排
 		jobRouter.POST("getJobDetail", jobApi.GetJobDetail) // 获取job详情
 		jobRouter.POST("getJobPods", jobApi.GetJobPods)     // 获取job关联的pods
+		jobRouter.POST("deleteJob", jobApi.DeleteJob)       // 删除job
 	}
 	{
 		jobRouterWithoutRecord.POST("getJobList", jobApi.GetJobList) // 获取所有job
