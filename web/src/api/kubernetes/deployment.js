@@ -35,3 +35,12 @@ export const getNewReplicaSet = (data) => {
     data
   })
 }
+
+// 删除deployment
+export const deleteDeployment = (data) => {
+  return service({
+    url: '/deployment/deleteDeployment',
+    method: 'post',
+    data
+  })
+}

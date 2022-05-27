@@ -5,7 +5,7 @@
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewDeployment">查看</el-button>
           <el-button icon="expand" size="small" type="warning" plain @click="openScaleDialog">伸缩</el-button>
-          <el-button :disabled="namespace === 'kube-system'" icon="delete" size="small" type="danger" plain>删除
+          <el-button :disabled="namespace === 'kube-system'" icon="delete" size="small" type="danger" plain @click="deleteFunc">删除
           </el-button>
         </el-affix>
       </div>
@@ -164,14 +164,14 @@
 <script>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDeploymentDetail, getDeploymentRaw, getNewReplicaSet } from '@/api/kubernetes/deployment'
+import { getDeploymentDetail, getDeploymentRaw, getNewReplicaSet, deleteDeployment } from '@/api/kubernetes/deployment'
 import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import { formatDate } from '@/utils/format'
 import { statusRsFilter } from '@/mixin/filter.js'
 import warningBar from '@/components/warningBar/warningBar.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'DeploymentDetail',
   components: {
@@ -190,6 +190,7 @@ export default {
 
     // 获取deployment详情
     const deploymentDetail = ref({})
+
     const getDeploymentDetailData = async() => {
       await getDeploymentDetail({ namespace: namespace, deployment: deployment }).then(response => {
         if (response.code === 0) {
@@ -201,6 +202,7 @@ export default {
 
     // 获取deployment关联的replicaset
     const newReplicaSet = ref({})
+
     const getNewReplicaSetData = async() => {
       await getNewReplicaSet({ namespace: namespace, deployment: deployment }).then(response => {
         if (response.code === 0) {
@@ -213,6 +215,7 @@ export default {
     // 查看编排
     const deploymentFormat = ref({})
     const dialogFormVisible = ref(false)
+
     const viewDeployment = async() => {
       const result = await getDeploymentRaw({ deployment: deployment, namespace: namespace })
       if (result.code === 0) {
@@ -257,20 +260,39 @@ export default {
       dialogScaleVisible.value = false
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Service, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteDeployment({ namespace: namespace, deployment: deployment })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
+      activeNames,
+      // 数据、查询相关
       deployment,
       namespace,
-      activeNames,
       deploymentDetail,
-      deploymentFormat,
-      dialogFormVisible,
       newReplicaSet,
       // status filter
       statusRsFilter,
       // 格式化日期
       formatDate,
       // 操作
+      deploymentFormat,
+      dialogFormVisible,
       viewDeployment,
       // 伸缩
       dialogScaleVisible,
@@ -279,7 +301,9 @@ export default {
       ActualNum,
       openScaleDialog,
       closeScaleDialog,
-      scaleFunc
+      scaleFunc,
+      // 删除
+      deleteFunc
     }
   }
 }

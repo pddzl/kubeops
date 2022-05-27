@@ -11,8 +11,7 @@ import (
 
 type DeploymentApi struct{}
 
-// 获取deployment list
-
+// GetDeploymentList 获取deployment list
 func (d *DeploymentApi) GetDeploymentList(c *gin.Context) {
 	var pageInfo request.ListParams
 	_ = c.ShouldBindJSON(&pageInfo)
@@ -38,8 +37,7 @@ func (d *DeploymentApi) GetDeploymentList(c *gin.Context) {
 	}
 }
 
-// 获取deployment in 编排
-
+// GetDeploymentRaw 获取deployment编排
 func (d *DeploymentApi) GetDeploymentRaw(c *gin.Context) {
 	var deploymentRaw request.DeploymentCommon
 	_ = c.ShouldBindJSON(&deploymentRaw)
@@ -59,8 +57,7 @@ func (d *DeploymentApi) GetDeploymentRaw(c *gin.Context) {
 	response.OkWithDetailed(info, "获取成功", c)
 }
 
-// 获取deployment detail
-
+// GetDeploymentDetail 获取deployment detail
 func (d *DeploymentApi) GetDeploymentDetail(c *gin.Context) {
 	var deploymentRaw request.DeploymentCommon
 	_ = c.ShouldBindJSON(&deploymentRaw)
@@ -80,8 +77,7 @@ func (d *DeploymentApi) GetDeploymentDetail(c *gin.Context) {
 	response.OkWithDetailed(detail, "获取成功", c)
 }
 
-// 获取deployment关联的replicaSet
-
+// GetNewReplicaSet 获取deployment关联的replicaSet
 func (d *DeploymentApi) GetNewReplicaSet(c *gin.Context) {
 	var deploymentCommon request.DeploymentCommon
 	_ = c.ShouldBindJSON(&deploymentCommon)
@@ -99,4 +95,23 @@ func (d *DeploymentApi) GetNewReplicaSet(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(newReplicaSet, "获取成功", c)
+}
+
+// DeleteDeployment 删除deployment
+func (d *DeploymentApi) DeleteDeployment(c *gin.Context) {
+	var deploymentCommon request.DeploymentCommon
+	_ = c.ShouldBindJSON(&deploymentCommon)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&deploymentCommon); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := deploymentService.DeleteDeployment(deploymentCommon.NameSpace, deploymentCommon.Deployment); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
 }

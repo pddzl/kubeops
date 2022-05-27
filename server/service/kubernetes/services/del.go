@@ -8,7 +8,5 @@ import (
 )
 
 func (s *ServicesService) DeleteService(namespace string, name string) error {
-	err := global.KOP_KUBERNETES.CoreV1().Services(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
-
-	return err
+	return global.KOP_KUBERNETES.CoreV1().Services(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
 }

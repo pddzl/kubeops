@@ -37,7 +37,7 @@
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
             <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'">删除
+            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteDeploymentFunc(scope.row)">删除
             </el-button>
           </template>
         </el-table-column>
@@ -82,11 +82,11 @@
 import { ref, reactive, watch } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getDeploymentList, getDeploymentRaw } from '@/api/kubernetes/deployment'
+import { getDeploymentList, getDeploymentRaw, deleteDeployment } from '@/api/kubernetes/deployment'
 import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import warningBar from '@/components/warningBar/warningBar.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'DeploymentList',
   components: {
@@ -94,25 +94,14 @@ export default {
     warningBar
   },
   setup() {
-    // 响应式数据
-    const namespace = ref([])
+    // search
     const searchInfo = reactive({
       namespace: ''
     })
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const tableData = ref([])
-    const deploymentFormat = ref({})
-    const dialogViewVisible = ref(false)
-    const dialogScaleVisible = ref(false)
-    const deploymentName = ref('')
-    const desiredNum = ref(0)
-    const ActualNum = ref(0)
-    const warningTitle = ref('')
-    const activeRow = ref({})
 
     // 加载namespace数据
+    const namespace = ref([])
+
     const getNamespace = async() => {
       const table = await getNamespaceOnlyName()
       if (table.code === 0) {
@@ -122,6 +111,11 @@ export default {
     getNamespace()
 
     // 加载pod数据
+    const tableData = ref([])
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+
     const getTableData = async() => {
       const table = await getDeploymentList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
       if (table.code === 0) {
@@ -133,7 +127,10 @@ export default {
     }
     getTableData()
 
-    // 操作
+    // 编辑
+    const deploymentFormat = ref({})
+    const dialogViewVisible = ref(false)
+
     const editDeployment = async(row) => {
       const result = await getDeploymentRaw({ deployment: row.name, namespace: row.namespace })
       if (result.code === 0) {
@@ -141,6 +138,14 @@ export default {
       }
       dialogViewVisible.value = true
     }
+
+    // 伸缩
+    const dialogScaleVisible = ref(false)
+    const deploymentName = ref('')
+    const desiredNum = ref(0)
+    const ActualNum = ref(0)
+    const warningTitle = ref('')
+    const activeRow = ref({})
 
     const openScaleDialog = async(row) => {
       deploymentName.value = row.name
@@ -192,23 +197,38 @@ export default {
       getTableData()
     }
 
-    // 重置
+    // 重置查询
     const onReset = () => {
       searchInfo.namespace = ''
     }
 
+    // 删除deployment
+    const deleteDeploymentFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Service, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteDeployment({ namespace: row.namespace, deployment: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 列表、查询相关
       namespace,
       searchInfo,
       tableData,
-      deploymentFormat,
-      dialogViewVisible,
-      dialogScaleVisible,
-      deploymentName,
-      desiredNum,
-      ActualNum,
-      warningTitle,
+      onSubmit,
+      onReset,
       // time format
       formatDate,
       // 分页
@@ -217,13 +237,21 @@ export default {
       total,
       handleSizeChange,
       handleCurrentChange,
-      // 查询
-      onSubmit,
-      onReset,
-      editDeployment,
+      // 伸缩
+      deploymentName,
+      desiredNum,
+      ActualNum,
+      warningTitle,
+      dialogScaleVisible,
       openScaleDialog,
       closeScaleDialog,
-      scaleFunc
+      scaleFunc,
+      // 编辑
+      dialogViewVisible,
+      deploymentFormat,
+      editDeployment,
+      // 删除deployment
+      deleteDeploymentFunc
     }
   }
 }
