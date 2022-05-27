@@ -73,3 +73,21 @@ func (s *SecretApi) GetSecretDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+func (s *SecretApi) DeleteSecret(c *gin.Context) {
+	var secret request.SecretCommon
+	_ = c.ShouldBindJSON(&secret)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&secret); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := SecretService.DeleteSecret(secret.Namespace, secret.Secret); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

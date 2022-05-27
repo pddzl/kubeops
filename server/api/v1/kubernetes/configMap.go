@@ -73,3 +73,22 @@ func (cm *ConfigMapApi) GetConfigMapDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+// DeleteConfigMap 删除configMap
+func (cm *ConfigMapApi) DeleteConfigMap(c *gin.Context) {
+	var configMap request.ConfigMapCommon
+	_ = c.ShouldBindJSON(&configMap)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&configMap); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := ConfigMapService.DeleteConfigMap(configMap.Namespace, configMap.ConfigMap); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

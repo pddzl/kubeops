@@ -15,6 +15,7 @@ func (cm *ConfigMapRouter) InitConfigMapRouter(Router *gin.RouterGroup) {
 	{
 		configMapRouter.POST("getConfigMapRaw", configMapApi.GetConfigMapRaw)       // 获取configMap编排
 		configMapRouter.POST("getConfigMapDetail", configMapApi.GetConfigMapDetail) // 获取configMap详情
+		configMapRouter.POST("deleteConfigMap", configMapApi.DeleteConfigMap)       // 删除configMap
 	}
 	{
 		configMapRouterWithoutRecord.POST("getConfigMapList", configMapApi.GetConfigMapList) // 获取所有configMap

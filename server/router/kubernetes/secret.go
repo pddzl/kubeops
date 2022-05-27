@@ -16,6 +16,7 @@ func (s *SecretRouter) InitSecretRouter(Router *gin.RouterGroup) {
 	{
 		secretRouter.POST("getSecretRaw", secretApi.GetSecretRaw)       // 获取secret编排
 		secretRouter.POST("getSecretDetail", secretApi.GetSecretDetail) // 获取secret详情
+		secretRouter.POST("deleteSecret", secretApi.DeleteSecret)       // 删除secret
 	}
 	{
 		secretRouterWithoutRecord.POST("getSecretList", secretApi.GetSecretList) // 获取所有secret
