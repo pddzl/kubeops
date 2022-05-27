@@ -6,7 +6,7 @@
           <el-button icon="view" size="small" type="primary" plain @click="viewReplicaSet">查看</el-button>
           <el-button icon="expand" size="small" type="warning" plain :disabled="namespace === 'kube-system'" @click="openScaleDialog">伸缩
           </el-button>
-          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'">删除
+          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'" @click="deleteFunc">删除
           </el-button>
         </el-affix>
       </div>
@@ -165,14 +165,14 @@
 <script>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
+import { getReplicaSetDetail, getReplicaSetPods, getReplicaSetServices, getReplicaSetRaw, deleteReplicaSet } from '@/api/kubernetes/replicaSet'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { statusPodFilter, statusRsFilter } from '@/mixin/filter.js'
 import { scale } from '@/api/kubernetes/scale'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
 import warningBar from '@/components/warningBar/warningBar.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ReplicaSetDetail',
   components: {
@@ -218,6 +218,17 @@ export default {
     }
     getReplicaSetPodsData()
 
+    // 分页
+    const handleSizeChange = (val) => {
+      pageSize.value = val
+      getReplicaSetPodsData()
+    }
+
+    const handleCurrentChange = (val) => {
+      page.value = val
+      getReplicaSetPodsData()
+    }
+
     // 加载replicaSet关联services
     const replicaSetServices = ref([])
 
@@ -239,17 +250,6 @@ export default {
         replicaSetFormat.value = JSON.stringify(result.data)
       }
       dialogViewVisible.value = true
-    }
-
-    // 分页
-    const handleSizeChange = (val) => {
-      pageSize.value = val
-      getReplicaSetPodsData()
-    }
-
-    const handleCurrentChange = (val) => {
-      page.value = val
-      getReplicaSetPodsData()
     }
 
     // 伸缩
@@ -292,6 +292,24 @@ export default {
       dialogScaleVisible.value = false
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该ReplicaSet, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteReplicaSet({ namespace: namespace, replicaSet: replicaSet })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
       // 折叠面板
       activeNames,
@@ -323,7 +341,9 @@ export default {
       ActualNum,
       openScaleDialog,
       closeScaleDialog,
-      scaleFunc
+      scaleFunc,
+      // 删除
+      deleteFunc
     }
   }
 }

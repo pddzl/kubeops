@@ -44,3 +44,12 @@ export const getReplicaSetServices = (data) => {
     data
   })
 }
+
+// 删除replicaSet
+export const deleteReplicaSet = (data) => {
+  return service({
+    url: '/replicaSet/deleteReplicaSet',
+    method: 'post',
+    data
+  })
+}

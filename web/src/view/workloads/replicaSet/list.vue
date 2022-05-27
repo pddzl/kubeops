@@ -35,7 +35,7 @@
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="viewReplicaSet(scope.row)">查看</el-button>
             <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'">删除</el-button>
+            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -79,11 +79,11 @@
 import { ref, reactive, watch } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getReplicaSetList, getReplicaSetRaw } from '@/api/kubernetes/replicaSet'
+import { getReplicaSetList, getReplicaSetRaw, deleteReplicaSet } from '@/api/kubernetes/replicaSet'
 import { scale } from '@/api/kubernetes/scale'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import warningBar from '@/components/warningBar/warningBar.vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ReplicaSetList',
   components: {
@@ -200,6 +200,26 @@ export default {
       dialogScaleVisible.value = false
     }
 
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该ReplicaSet, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteReplicaSet({ namespace: row.namespace, replicaSet: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
       // 表单数据相关
       namespace,
@@ -229,7 +249,9 @@ export default {
       activeRow,
       openScaleDialog,
       closeScaleDialog,
-      scaleFunc
+      scaleFunc,
+      // 删除
+      deleteFunc
     }
   }
 }

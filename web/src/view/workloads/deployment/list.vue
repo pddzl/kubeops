@@ -147,6 +147,7 @@ export default {
     const warningTitle = ref('')
     const activeRow = ref({})
 
+    // -> 打开对话框
     const openScaleDialog = async(row) => {
       deploymentName.value = row.name
       desiredNum.value = row.replicas
@@ -156,10 +157,12 @@ export default {
       dialogScaleVisible.value = true
     }
 
+    // -> 关闭对话框
     const closeScaleDialog = () => {
       dialogScaleVisible.value = false
     }
 
+    // -> 操作
     const scaleFunc = async() => {
       const res = await scale({ namespace: activeRow.value.namespace, name: activeRow.value.name, kind: 'deployment', num: desiredNum.value })
       if (res.code === 0) {
