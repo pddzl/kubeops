@@ -26,3 +26,12 @@ export const getIngressDetail = (data) => {
     data
   })
 }
+
+// 删除ingress
+export const deleteIngress = (data) => {
+  return service({
+    url: '/ingress/deleteIngress',
+    method: 'post',
+    data
+  })
+}

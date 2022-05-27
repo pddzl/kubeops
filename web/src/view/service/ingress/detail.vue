@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewIngress">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -65,10 +65,11 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getIngressDetail, getIngressRaw } from '@/api/kubernetes/ingress'
+import { getIngressDetail, getIngressRaw, deleteIngress } from '@/api/kubernetes/ingress'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ServicesDetail',
   components: {
@@ -76,19 +77,17 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'spec', 'rules'])
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const ingressDetail = ref({})
-    const ingressFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const ingress = route.query.ingress
 
-    // 获取daemonSet详情
+    // 获取ingress详情
+    const ingressDetail = ref({})
+
     const getIngressDetailData = async() => {
       await getIngressDetail({ namespace: namespace, ingress: ingress }).then(response => {
         if (response.code === 0) {
@@ -98,7 +97,10 @@ export default {
     }
     getIngressDetailData()
 
-    // 操作
+    // 编辑
+    const ingressFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const viewIngress = async() => {
       const result = await getIngressRaw({ ingress: ingress, namespace: namespace })
       if (result.code === 0) {
@@ -107,21 +109,38 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Ingress, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteIngress({ namespace: namespace, ingress: ingress })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // data
       ingressDetail,
-      ingressFormat,
-      dialogFormVisible,
       namespace,
       // 格式化日期
       formatDate,
-      // 操作
+      // 编辑
+      ingressFormat,
+      dialogFormVisible,
       viewIngress,
-      // 分页
-      page,
-      pageSize,
-      total
+      // 删除
+      deleteFunc
     }
   }
 }
