@@ -47,7 +47,7 @@
               @click="routerPod(scope.row, 'log')"
             >日志</el-button>
             <el-button icon="ArrowRight" type="text" size="small" @click="routerPod(scope.row, 'terminal')">终端</el-button>
-            <el-button icon="delete" type="text" size="small">删除</el-button>
+            <el-button icon="delete" type="text" size="small" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,29 +76,26 @@ import { useRouter } from 'vue-router'
 import { formatDate } from '@/utils/format'
 import { statusPodFilter } from '@/mixin/filter.js'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getPodList, getPodRaw } from '@/api/kubernetes/pod'
+import { getPodList, getPodRaw, deletePod } from '@/api/kubernetes/pod'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'Pod',
   components: {
     VueCodeMirror,
   },
   setup() {
-    // 响应式数据
-    const namespace = ref([])
+    // search
     const searchInfo = reactive({
       namespace: ''
     })
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const tableData = ref([])
-    const podFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const router = useRouter()
 
     // 加载namespace数据
+    const namespace = ref([])
+
     const getNamespace = async() => {
       const table = await getNamespaceOnlyName()
       if (table.code === 0) {
@@ -108,6 +105,11 @@ export default {
     getNamespace()
 
     // 加载pod数据
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const tableData = ref([])
+
     const getTableData = async() => {
       const table = await getPodList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
       if (table.code === 0) {
@@ -118,24 +120,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const viewPod = async(row) => {
-      const result = await getPodRaw({ pod: row.name, namespace: row.namespace })
-      if (result.code === 0) {
-        podFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
-
-    // 跳转日志/webssh页面
-    const routerPod = async(row, dest) => {
-      if (dest === 'log') {
-        router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})
-      } else if (dest === 'terminal') {
-        router.push({ name: 'pod_terminal', query: { pod: row.name, namespace: row.namespace }})
-      }
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -160,28 +144,72 @@ export default {
       searchInfo.namespace = ''
     }
 
+    // 编辑
+    const podFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const viewPod = async(row) => {
+      const result = await getPodRaw({ pod: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        podFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 跳转日志/webssh页面
+    const routerPod = async(row, dest) => {
+      if (dest === 'log') {
+        router.push({ name: 'pod_log', query: { pod: row.name, namespace: row.namespace }})
+      } else if (dest === 'terminal') {
+        router.push({ name: 'pod_terminal', query: { pod: row.name, namespace: row.namespace }})
+      }
+    }
+
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Pod, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deletePod({ namespace: row.namespace, pod: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
-      // 响应式数据
-      namespace,
+      // data、查询相关
       searchInfo,
+      namespace,
       tableData,
-      podFormat,
-      dialogFormVisible,
+      onSubmit,
+      onReset,
       // filter
       statusPodFilter,
       // time format
       formatDate,
+      // 编辑
+      podFormat,
+      dialogFormVisible,
+      viewPod,
       // 分页
       page,
       pageSize,
       total,
       handleSizeChange,
       handleCurrentChange,
-      // 查询
-      onSubmit,
-      onReset,
-      viewPod,
-      routerPod
+      // 路由
+      routerPod,
+      // 删除
+      deleteFunc
     }
   }
 }

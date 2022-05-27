@@ -6,7 +6,7 @@
           <el-button icon="view" size="small" type="primary" plain @click="viewPod">查看</el-button>
           <el-button icon="expand" size="small" type="primary" plain @click="routerPod('log')">日志</el-button>
           <el-button icon="expand" size="small" type="primary" plain @click="routerPod('terminal')">终端</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -139,10 +139,11 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { statusPodFilter } from '@/mixin/filter.js'
-import { getPodDetail, getPodRaw } from '@/api/kubernetes/pod'
+import { getPodDetail, getPodRaw, deletePod } from '@/api/kubernetes/pod'
 import { formatDate } from '@/utils/format'
 import Container from './components/container.vue'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'PodDetail',
   components: {
@@ -150,11 +151,10 @@ export default {
     VueCodeMirror
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'resource', 'conditions', 'controller', 'container', 'initContainers'])
-    const podDetail = ref({})
-    const dialogFormVisible = ref(false)
-    const podFormat = ref({})
 
+    // 路由
     const route = useRoute()
     const pod = route.query.pod
     const namespace = route.query.namespace
@@ -162,6 +162,8 @@ export default {
     const router = useRouter()
 
     // 加载pod详情
+    const podDetail = ref({})
+
     const getData = async() => {
       await getPodDetail({ pod: pod, namespace: namespace }).then(response => {
         if (response.code === 0) {
@@ -171,7 +173,10 @@ export default {
     }
     getData()
 
-    // 操作
+    // 查看编排
+    const dialogFormVisible = ref(false)
+    const podFormat = ref({})
+
     const viewPod = async() => {
       const result = await getPodRaw({ pod: pod, namespace: namespace })
       if (result.code === 0) {
@@ -180,7 +185,24 @@ export default {
       dialogFormVisible.value = true
     }
 
-    // 跳转日志/webssh页面
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Pod, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deletePod({ namespace: namespace, pod: pod })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
+    // 跳转日志、webssh页面
     const routerPod = async(dest) => {
       if (dest === 'log') {
         router.push({ name: 'pod_log', query: { pod: pod, namespace: namespace }})
@@ -190,17 +212,23 @@ export default {
     }
 
     return {
+      // 折叠面板
       activeNames,
+      // data
       namespace,
       podDetail,
+      // 查看编排
       podFormat,
       dialogFormVisible,
+      viewPod,
+      // time format
       formatDate,
       // filter
       statusPodFilter,
       // 操作
-      viewPod,
-      routerPod
+      routerPod,
+      // 删除
+      deleteFunc
     }
   }
 }

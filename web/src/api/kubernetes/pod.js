@@ -18,10 +18,19 @@ export const getPodDetail = (data) => {
   })
 }
 
-// 获取pod详情
+// 获取pod编排
 export const getPodRaw = (data) => {
   return service({
     url: '/pod/getPodRaw',
+    method: 'post',
+    data
+  })
+}
+
+// 删除pod
+export const deletePod = (data) => {
+  return service({
+    url: '/pod/deletePod',
     method: 'post',
     data
   })
