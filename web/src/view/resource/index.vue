@@ -106,6 +106,7 @@ export default {
         // 启用代码折叠相关功能:结束
         styleActiveLine: true // 光标行高亮
       })
+      editor.setSize('auto', '400px')
     })
     onBeforeUnmount(() => {
       if (editor !== null) {

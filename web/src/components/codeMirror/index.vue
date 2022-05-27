@@ -151,6 +151,7 @@ export default {
           editor.setValue(yaml.dump(JSON.parse(modelValue.value)))
         }
       }
+      editor.setSize('auto', '400px')
     })
     onBeforeUnmount(() => {
       if (editor !== null) {
