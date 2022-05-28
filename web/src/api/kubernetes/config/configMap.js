@@ -26,3 +26,12 @@ export const getConfigMapDetail = (data) => {
     data
   })
 }
+
+// 删除configMap
+export const deleteConfigMap = (data) => {
+  return service({
+    url: '/configMap/deleteConfigMap',
+    method: 'post',
+    data
+  })
+}
