@@ -26,3 +26,12 @@ export const getRoleDetail = (data) => {
     data
   })
 }
+
+// 删除role
+export const deleteRole = (data) => {
+  return service({
+    url: '/role/deleteRole',
+    method: 'post',
+    data
+  })
+}

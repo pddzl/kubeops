@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewRole">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -66,10 +66,11 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getRoleDetail, getRoleRaw } from '@/api/kubernetes/role'
+import { getRoleDetail, getRoleRaw, deleteRole } from '@/api/kubernetes/role'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'RoleDetail',
   components: {
@@ -77,16 +78,17 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'rules'])
-    const roleDetail = ref({})
-    const roleFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const role = route.query.role
 
     // 加载role详情
+    const roleDetail = ref({})
+
     const getData = async() => {
       await getRoleDetail({ namespace: namespace, role: role }).then(response => {
         if (response.code === 0) {
@@ -96,25 +98,50 @@ export default {
     }
     getData()
 
-    // 操作
+    // 编辑
+    const roleFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const viewRole = async() => {
-      const result = await getRoleRaw({ role: role, namespace: namespace })
-      if (result.code === 0) {
-        roleFormat.value = JSON.stringify(result.data)
+      const res = await getRoleRaw({ role: role, namespace: namespace })
+      if (res.code === 0) {
+        roleFormat.value = JSON.stringify(res.data)
       }
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Role, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteRole({ namespace: row.namespace, role: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
-      roleDetail,
-      formatDate,
-      dialogFormVisible,
+      // data
       namespace,
-      // 操作
+      roleDetail,
+      // time format
+      formatDate,
+      // 编辑
+      dialogFormVisible,
+      roleFormat,
       viewRole,
-      roleFormat
+      // 删除
+      deleteFunc
     }
   }
 }
