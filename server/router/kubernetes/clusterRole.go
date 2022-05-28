@@ -16,6 +16,7 @@ func (c *ClusterRoleRouter) InitClusterRoleRouter(Router *gin.RouterGroup) {
 	{
 		clusterRoleRouter.POST("getClusterRoleRaw", clusterRoleApi.GetClusterRoleRaw)       // 获取clusterRole编排
 		clusterRoleRouter.POST("getClusterRoleDetail", clusterRoleApi.GetClusterRoleDetail) // 获取clusterRole详情
+		clusterRoleRouter.POST("deleteClusterRole", clusterRoleApi.DeleteClusterRole)       // 删除clusterRole
 	}
 	{
 		clusterRoleRouterWithoutRecord.POST("getClusterRoleList", clusterRoleApi.GetClusterRoleList) // 获取所有clusterRole

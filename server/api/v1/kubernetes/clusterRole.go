@@ -74,3 +74,22 @@ func (cr *ClusterRoleApi) GetClusterRoleDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+// DeleteClusterRole 删除ClusterRole
+func (cr *ClusterRoleApi) DeleteClusterRole(c *gin.Context) {
+	var clusterRole k8sRequest.ClusterRoleCommon
+	_ = c.ShouldBindJSON(&clusterRole)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&clusterRole); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := clusterRoleService.DeleteClusterRole(clusterRole.ClusterRole); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
