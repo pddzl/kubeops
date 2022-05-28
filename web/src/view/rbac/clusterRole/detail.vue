@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewClusterRole">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -66,10 +66,11 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getClusterRoleDetail, getClusterRoleRaw } from '@/api/kubernetes/clusterRole'
+import { getClusterRoleDetail, getClusterRoleRaw, deleteClusterRole } from '@/api/kubernetes/clusterRole'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ClusterRoleDetail',
   components: {
@@ -77,15 +78,16 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'rules'])
-    const clusterRoleDetail = ref({})
-    const clusterRoleFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const clusterRole = route.query.clusterRole
 
     // 加载clusterRole详情
+    const clusterRoleDetail = ref({})
+
     const getData = async() => {
       await getClusterRoleDetail({ clusterRole: clusterRole }).then(response => {
         if (response.code === 0) {
@@ -95,7 +97,10 @@ export default {
     }
     getData()
 
-    // 操作
+    // 编辑
+    const clusterRoleFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const viewClusterRole = async() => {
       const result = await getClusterRoleRaw({ clusterRole: clusterRole })
       if (result.code === 0) {
@@ -104,15 +109,37 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该ClusterRole, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteClusterRole({ namespace: row.namespace, clusterRole: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // data
       clusterRoleDetail,
+      // time format
       formatDate,
-      dialogFormVisible,
       // 操作
+      dialogFormVisible,
+      clusterRoleFormat,
       viewClusterRole,
-      clusterRoleFormat
+      // 删除
+      deleteFunc
     }
   }
 }

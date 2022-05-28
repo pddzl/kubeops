@@ -26,3 +26,12 @@ export const getClusterRoleDetail = (data) => {
     data
   })
 }
+
+// 删除clusterRole
+export const deleteClusterRole = (data) => {
+  return service({
+    url: '/clusterRole/deleteClusterRole',
+    method: 'post',
+    data
+  })
+}
