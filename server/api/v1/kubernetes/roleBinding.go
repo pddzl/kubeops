@@ -72,3 +72,22 @@ func (r *RoleBindingApi) GetRoleBindingDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+// DeleteRoleBinding 删除roleBinding
+func (r *RoleBindingApi) DeleteRoleBinding(c *gin.Context) {
+	var roleBinding request.RoleBindingCommon
+	_ = c.ShouldBindJSON(&roleBinding)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&roleBinding); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := roleBindingService.DeleteRoleBinding(roleBinding.Namespace, roleBinding.RoleBinding); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

@@ -13,8 +13,9 @@ func (r *RoleBindingRouter) InitRoleBindingRouter(Router *gin.RouterGroup) {
 	roleBindingRouterWithoutRecord := Router.Group("roleBinding")
 	roleBindingApi := v1.ApiGroupApp.KubernetesApiGroup.RoleBindingApi
 	{
-		roleBindingRouter.POST("getRoleBindingRaw", roleBindingApi.GetRoleBindingRaw)       // 获取pod编排
+		roleBindingRouter.POST("getRoleBindingRaw", roleBindingApi.GetRoleBindingRaw)       // 获取oleBinding编排
 		roleBindingRouter.POST("getRoleBindingDetail", roleBindingApi.GetRoleBindingDetail) // 获取roleBinding详情
+		roleBindingRouter.POST("deleteRoleBinding", roleBindingApi.DeleteRoleBinding)       // 删除oleBinding
 	}
 	{
 		roleBindingRouterWithoutRecord.POST("getRoleBindingList", roleBindingApi.GetRoleBindingList) // 获取所有roleBinding
