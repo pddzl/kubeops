@@ -15,6 +15,7 @@ func (c *ClusterRoleBindingRouter) InitClusterRoleBindingRouter(Router *gin.Rout
 	{
 		clusterRoleBindingRouter.POST("getClusterRoleBindingRaw", clusterRoleBindingApi.GetClusterRoleBindingRaw)       // 获取clusterRoleBinding编排
 		clusterRoleBindingRouter.POST("getClusterRoleBindingDetail", clusterRoleBindingApi.GetClusterRoleBindingDetail) // 获取clusterRoleBinding详情
+		clusterRoleBindingRouter.POST("deleteClusterRoleBinding", clusterRoleBindingApi.DeleteClusterRoleBinding)       // 删除clusterRoleBinding
 	}
 	{
 		clusterRoleBindingRouterWithoutRecord.POST("getClusterRoleBindingList", clusterRoleBindingApi.GetClusterRoleBindingList) // 获取所有clusterRoleBinding

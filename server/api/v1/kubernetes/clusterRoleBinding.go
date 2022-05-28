@@ -74,3 +74,22 @@ func (cb *ClusterRoleBindingApi) GetClusterRoleBindingDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+// DeleteClusterRoleBinding 删除ClusterRoleBinding
+func (cb *ClusterRoleBindingApi) DeleteClusterRoleBinding(c *gin.Context) {
+	var clusterRoleBinding k8sRequest.ClusterRoleBindingCommon
+	_ = c.ShouldBindJSON(&clusterRoleBinding)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&clusterRoleBinding); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := ClusterRoleBindingService.DeleteClusterRoleBinding(clusterRoleBinding.ClusterRoleBinding); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
