@@ -26,3 +26,12 @@ export const getServiceAccountDetail = (data) => {
     data
   })
 }
+
+// 删除serviceAccount
+export const deleteServiceAccount = (data) => {
+  return service({
+    url: '/serviceAccount/deleteServiceAccount',
+    method: 'post',
+    data
+  })
+}
