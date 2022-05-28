@@ -26,3 +26,12 @@ export const getSecretDetail = (data) => {
     data
   })
 }
+
+// 删除secret
+export const deleteSecret = (data) => {
+  return service({
+    url: '/secret/deleteSecret',
+    method: 'post',
+    data
+  })
+}

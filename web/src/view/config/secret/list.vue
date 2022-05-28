@@ -32,7 +32,7 @@
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="viewSecret(scope.row)">查看</el-button>
-            <el-button icon="delete" type="text" size="small">删除</el-button>
+            <el-button icon="delete" type="text" size="small" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -60,27 +60,18 @@
 import { ref, reactive } from 'vue'
 import { formatDate } from '@/utils/format'
 import { getNamespaceOnlyName } from '@/api/kubernetes/namespace'
-import { getSecretList, getSecretRaw } from '@/api/kubernetes/config/secret'
+import { getSecretList, getSecretRaw, deleteSecret } from '@/api/kubernetes/config/secret'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'SecretList',
   components: {
     VueCodeMirror,
   },
   setup() {
-    // 响应式数据
+    // namespace list
     const namespace = ref([])
-    const searchInfo = reactive({
-      namespace: ''
-    })
-    const page = ref(1)
-    const pageSize = ref(10)
-    const total = ref(0)
-    const tableData = ref([])
-    const secretFormat = ref({})
-    const dialogFormVisible = ref(false)
 
-    // 加载namespace数据
     const getNamespace = async() => {
       const table = await getNamespaceOnlyName()
       if (table.code === 0) {
@@ -89,7 +80,15 @@ export default {
     }
     getNamespace()
 
-    // 加载secret数据
+    // secret list
+    const searchInfo = reactive({
+      namespace: ''
+    })
+    const page = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
+    const tableData = ref([])
+
     const getTableData = async() => {
       const table = await getSecretList({ page: page.value, pageSize: pageSize.value, ...searchInfo })
       if (table.code === 0) {
@@ -100,15 +99,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const viewSecret = async(row) => {
-      const result = await getSecretRaw({ secret: row.name, namespace: row.namespace })
-      if (result.code === 0) {
-        secretFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -128,18 +118,50 @@ export default {
       getTableData()
     }
 
-    // 重置
+    // 查询参数重置
     const onReset = () => {
       searchInfo.namespace = ''
     }
 
+    // 编辑
+    const secretFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const viewSecret = async(row) => {
+      const result = await getSecretRaw({ secret: row.name, namespace: row.namespace })
+      if (result.code === 0) {
+        secretFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该Secret, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteSecret({ namespace: row.namespace, secret: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // data、查询相关
       namespace,
       searchInfo,
       tableData,
-      secretFormat,
-      dialogFormVisible,
+      onSubmit,
+      onReset,
       // time format
       formatDate,
       // 分页
@@ -148,10 +170,12 @@ export default {
       total,
       handleSizeChange,
       handleCurrentChange,
-      // 查询
-      onSubmit,
-      onReset,
-      viewSecret
+      // 编辑
+      secretFormat,
+      dialogFormVisible,
+      viewSecret,
+      // 删除
+      deleteFunc
     }
   }
 }

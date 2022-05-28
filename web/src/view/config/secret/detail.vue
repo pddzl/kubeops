@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewSecret">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -35,10 +35,11 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getSecretDetail, getSecretRaw } from '@/api/kubernetes/config/secret'
+import { getSecretDetail, getSecretRaw, deleteSecret } from '@/api/kubernetes/config/secret'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'SecretDetail',
   components: {
@@ -46,16 +47,17 @@ export default {
     MetaData,
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'data'])
-    const secretDetail = ref({})
-    const secretFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const namespace = route.query.namespace
     const secret = route.query.secret
 
-    // 加载secret详情
+    // secret detail
+    const secretDetail = ref({})
+
     const getData = async() => {
       await getSecretDetail({ namespace: namespace, secret: secret }).then(response => {
         if (response.code === 0) {
@@ -65,15 +67,10 @@ export default {
     }
     getData()
 
-    const dataDecode = (str) => {
-      // const res = Buffer.from(str, 'base64')
-      // return res.toString()
-      // console.log(str)
-      return atob(str)
-      // console.log(decodeStr)
-    }
+    // 编辑
+    const secretFormat = ref({})
+    const dialogFormVisible = ref(false)
 
-    // 操作
     const viewSecret = async() => {
       const result = await getSecretRaw({ secret: secret, namespace: namespace })
       if (result.code === 0) {
@@ -82,17 +79,45 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该Secret, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteSecret({ namespace: namespace, secret: secret })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
+    // 解码
+    const dataDecode = (str) => {
+      return atob(str)
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
-      secretDetail,
-      formatDate,
-      dialogFormVisible,
+      // data
       namespace,
-      // 操作
-      viewSecret,
+      secretDetail,
+      // time format
+      formatDate,
+      // 编辑
+      dialogFormVisible,
       secretFormat,
-      dataDecode
+      viewSecret,
+      // 删除
+      deleteFunc,
+      // 解码
+      dataDecode,
     }
   }
 }
