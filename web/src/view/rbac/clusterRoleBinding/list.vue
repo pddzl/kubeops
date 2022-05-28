@@ -17,7 +17,7 @@
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="viewClusterRoleBinding(scope.row)">查看</el-button>
-            <el-button icon="delete" type="text" size="small">删除</el-button>
+            <el-button icon="delete" type="text" size="small" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,23 +44,21 @@
 <script>
 import { ref } from 'vue'
 import { formatDate } from '@/utils/format'
-import { getClusterRoleBindingList, getClusterRoleBindingRaw } from '@/api/kubernetes/clusterRoleBinding'
+import { getClusterRoleBindingList, getClusterRoleBindingRaw, deleteClusterRoleBinding } from '@/api/kubernetes/clusterRoleBinding'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ClusterRoleBindingList',
   components: {
     VueCodeMirror,
   },
   setup() {
-    // 响应式数据
+    // 加载clusterRoleBinding数据
     const page = ref(1)
     const pageSize = ref(10)
     const total = ref(0)
     const tableData = ref([])
-    const clusterRoleBindingFormat = ref({})
-    const dialogFormVisible = ref(false)
 
-    // 加载clusterRoleBinding数据
     const getTableData = async() => {
       const table = await getClusterRoleBindingList({ page: page.value, pageSize: pageSize.value })
       if (table.code === 0) {
@@ -71,15 +69,6 @@ export default {
       }
     }
     getTableData()
-
-    // 操作
-    const viewClusterRoleBinding = async(row) => {
-      const result = await getClusterRoleBindingRaw({ cluster_role_binding: row.name })
-      if (result.code === 0) {
-        clusterRoleBindingFormat.value = JSON.stringify(result.data)
-      }
-      dialogFormVisible.value = true
-    }
 
     // 分页
     const handleSizeChange = (val) => {
@@ -92,11 +81,41 @@ export default {
       getTableData()
     }
 
+    // 编辑
+    const clusterRoleBindingFormat = ref({})
+    const dialogFormVisible = ref(false)
+
+    const viewClusterRoleBinding = async(row) => {
+      const result = await getClusterRoleBindingRaw({ cluster_role_binding: row.name })
+      if (result.code === 0) {
+        clusterRoleBindingFormat.value = JSON.stringify(result.data)
+      }
+      dialogFormVisible.value = true
+    }
+
+    // 删除
+    const deleteFunc = async(row) => {
+      ElMessageBox.confirm('此操作将永久删除该ClusterRoleBinding, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteClusterRoleBinding({ cluster_role_binding: row.name })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+            const index = tableData.value.indexOf(row)
+            tableData.value.splice(index, 1)
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // data
       tableData,
-      clusterRoleBindingFormat,
-      dialogFormVisible,
       // time format
       formatDate,
       // 分页
@@ -105,7 +124,12 @@ export default {
       total,
       handleSizeChange,
       handleCurrentChange,
-      viewClusterRoleBinding
+      // 编辑
+      clusterRoleBindingFormat,
+      dialogFormVisible,
+      viewClusterRoleBinding,
+      // 删除
+      deleteFunc
     }
   }
 }

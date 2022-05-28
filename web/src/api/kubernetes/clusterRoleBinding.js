@@ -26,3 +26,12 @@ export const getClusterRoleBindingDetail = (data) => {
     data
   })
 }
+
+// 删除clusterRoleBinding
+export const deleteClusterRoleBinding = (data) => {
+  return service({
+    url: '/clusterRoleBinding/deleteClusterRoleBinding',
+    method: 'post',
+    data
+  })
+}

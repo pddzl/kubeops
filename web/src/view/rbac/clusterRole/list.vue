@@ -86,7 +86,7 @@ export default {
     const dialogFormVisible = ref(false)
 
     const viewClusterRole = async(row) => {
-      const result = await getClusterRoleRaw({ clusterRole: row.name, namespace: row.namespace })
+      const result = await getClusterRoleRaw({ clusterRole: row.name })
       if (result.code === 0) {
         clusterRoleFormat.value = JSON.stringify(result.data)
       }
@@ -101,7 +101,7 @@ export default {
         type: 'warning'
       })
         .then(async() => {
-          const res = await deleteClusterRole({ namespace: row.namespace, clusterRole: row.name })
+          const res = await deleteClusterRole({ clusterRole: row.name })
           if (res.code === 0) {
             ElMessage({
               type: 'success',

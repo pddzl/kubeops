@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewClusterRoleBinding">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain>删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
@@ -51,10 +51,11 @@
 <script>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getClusterRoleBindingDetail, getClusterRoleBindingRaw } from '@/api/kubernetes/clusterRoleBinding'
+import { getClusterRoleBindingDetail, getClusterRoleBindingRaw, deleteClusterRoleBinding } from '@/api/kubernetes/clusterRoleBinding'
 import VueCodeMirror from '@/components/codeMirror/index.vue'
 import { formatDate } from '@/utils/format'
 import MetaData from '@/components/kubernetes/detail/metadata.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
   name: 'ClusterRoleBindingDetail',
   components: {
@@ -62,15 +63,16 @@ export default {
     MetaData
   },
   setup() {
+    // 折叠面板
     const activeNames = ref(['metadata', 'role', 'subjects'])
-    const clusterRoleBindingDetail = ref({})
-    const clusterRoleBindingFormat = ref({})
-    const dialogFormVisible = ref(false)
 
+    // 路由
     const route = useRoute()
     const clusterRoleBinding = route.query.clusterRoleBinding
 
     // 加载clusterRoleBinding详情
+    const clusterRoleBindingDetail = ref({})
+
     const getData = async() => {
       await getClusterRoleBindingDetail({ cluster_role_binding: clusterRoleBinding }).then(response => {
         if (response.code === 0) {
@@ -80,7 +82,10 @@ export default {
     }
     getData()
 
-    // 操作
+    // 编辑
+    const clusterRoleBindingFormat = ref({})
+    const dialogFormVisible = ref(false)
+
     const viewClusterRoleBinding = async() => {
       const result = await getClusterRoleBindingRaw({ cluster_role_binding: clusterRoleBinding })
       if (result.code === 0) {
@@ -89,15 +94,37 @@ export default {
       dialogFormVisible.value = true
     }
 
+    // 删除
+    const deleteFunc = async() => {
+      ElMessageBox.confirm('此操作将永久删除该ClusterRoleBinding, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const res = await deleteClusterRoleBinding({ cluster_role_binding: clusterRoleBinding })
+          if (res.code === 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
+    }
+
     return {
-      // 响应式数据
+      // 折叠面板
       activeNames,
+      // data
       clusterRoleBindingDetail,
+      // time format
       formatDate,
-      dialogFormVisible,
-      // 操作
+      // 编辑
       viewClusterRoleBinding,
-      clusterRoleBindingFormat
+      clusterRoleBindingFormat,
+      dialogFormVisible,
+      // 删除
+      deleteFunc
     }
   }
 }
