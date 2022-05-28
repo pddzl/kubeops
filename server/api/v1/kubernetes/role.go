@@ -73,3 +73,21 @@ func (r *RoleApi) GetRoleDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+func (r *RoleApi) DeleteRole(c *gin.Context) {
+	var role request.RoleCommon
+	_ = c.ShouldBindJSON(&role)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&role); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := roleService.DeleteRole(role.Namespace, role.Role); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}

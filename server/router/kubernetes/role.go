@@ -15,6 +15,7 @@ func (role *RoleRouter) InitRoleRouter(Router *gin.RouterGroup) {
 	{
 		roleRouter.POST("getRoleRaw", roleApi.GetRoleRaw)       // 获取pod编排
 		roleRouter.POST("getRoleDetail", roleApi.GetRoleDetail) // 获取role详情
+		roleRouter.POST("deleteRole", roleApi.DeleteRole)       // 删除role
 	}
 	{
 		roleRouterWithoutRecord.POST("getRoleList", roleApi.GetRoleList) // 获取所有role
