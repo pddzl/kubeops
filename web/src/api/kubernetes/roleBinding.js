@@ -26,3 +26,12 @@ export const getRoleBindingDetail = (data) => {
     data
   })
 }
+
+// 删除roleBinding
+export const deleteRoleBinding = (data) => {
+  return service({
+    url: '/roleBinding/deleteRoleBinding',
+    method: 'post',
+    data
+  })
+}
