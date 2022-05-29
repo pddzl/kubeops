@@ -1,40 +1,13 @@
 <template>
   <div class="page">
     <div class="gva-card-box">
-      <div class="gva-card gva-top-card">
-        <div class="gva-top-card-left">
-          <div class="gva-top-card-left-title">早安，管理员，请开始一天的工作吧</div>
-          <div class="gva-top-card-left-dot">今日晴，0℃ - 10℃，天气寒冷，注意添加衣物。</div>
-          <div class="gva-top-card-left-rows">
-            <el-row v-auth="888">
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dasboard-icon">
-                    <sort />
-                  </el-icon>
-                  今日流量 (1231231)
-                </div>
-              </el-col>
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dasboard-icon">
-                    <avatar />
-                  </el-icon>
-                  总用户数 (24001)
-                </div>
-              </el-col>
-              <el-col :span="8" :xs="24" :sm="8">
-                <div class="flex-center">
-                  <el-icon class="dasboard-icon">
-                    <comment />
-                  </el-icon>
-                  好评率 (99%)
-                </div>
-              </el-col>
-            </el-row>
-          </div>
+      <div class="gva-card">
+        <div class="card-header">
+          <span>集群</span>
         </div>
-        <img src="@/assets/dashboard.png" class="gva-top-card-right" alt>
+        <div style="margin-top: 20px;">
+          <cluster-status />
+        </div>
       </div>
     </div>
     <div class="gva-card-box">
@@ -64,77 +37,60 @@
           </el-col>
         </el-row>
       </el-card>
-    <!-- <div class="quick-entrance-title"></div> -->
-    </div>
-    <div class="gva-card-box">
-      <div class="gva-card">
-        <div class="card-header">
-          <span>数据统计</span>
-        </div>
-        <div class="echart-box">
-          <el-row :gutter="20">
-            <el-col :xs="24" :sm="18">
-              <echarts-line />
-            </el-col>
-            <el-col :xs="24" :sm="6">
-              <dashboard-table />
-            </el-col>
-          </el-row>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import echartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
-import dashboardTable from '@/view/dashboard/dashboardTable/dashboardTable.vue'
+// import echartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
+// import dashboardTable from '@/view/dashboard/dashboardTable/dashboardTable.vue'
+import ClusterStatus from '@/view/dashboard/cluster/index.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const toolCards = ref([
   {
-    label: '用户管理',
+    label: '节点',
     icon: 'monitor',
-    name: 'user',
+    name: 'node',
     color: '#ff9c6e',
     bg: 'rgba(255, 156, 110,.3)'
   },
   {
-    label: '角色管理',
-    icon: 'setting',
-    name: 'authority',
+    label: '命名空间',
+    icon: 'box',
+    name: 'namespace',
     color: '#69c0ff',
     bg: 'rgba(105, 192, 255,.3)'
   },
   {
-    label: '菜单管理',
-    icon: 'menu',
-    name: 'menu',
+    label: '服务',
+    icon: 'iphone',
+    name: 'services',
     color: '#b37feb',
     bg: 'rgba(179, 127, 235,.3)'
   },
-  // {
-  //   label: '代码生成器',
-  //   icon: 'cpu',
-  //   name: 'autoCode',
-  //   color: '#ffd666',
-  //   bg: 'rgba(255, 214, 102,.3)'
-  // },
-  // {
-  //   label: '表单生成器',
-  //   icon: 'document-checked',
-  //   name: 'formCreate',
-  //   color: '#ff85c0',
-  //   bg: 'rgba(255, 133, 192,.3)'
-  // },
-  // {
-  //   label: '关于我们',
-  //   icon: 'user',
-  //   name: 'about',
-  //   color: '#5cdbd3',
-  //   bg: 'rgba(92, 219, 211,.3)'
-  // }
+  {
+    label: 'Deployment',
+    icon: 'van',
+    name: 'deployment',
+    color: '#ffd666',
+    bg: 'rgba(255, 214, 102,.3)'
+  },
+  {
+    label: 'DaemonSet',
+    icon: 'rank',
+    name: 'daemonSet',
+    color: '#ff85c0',
+    bg: 'rgba(255, 133, 192,.3)'
+  },
+  {
+    label: 'Pod',
+    icon: 'orange',
+    name: 'pod',
+    color: '#5cdbd3',
+    bg: 'rgba(92, 219, 211,.3)'
+  },
 ])
 
 const router = useRouter()
@@ -173,44 +129,6 @@ export default {
         overflow: hidden;
         box-shadow: 0 0 7px 1px rgba(0, 0, 0, 0.03);
     }
-    .gva-top-card {
-        height: 260px;
-        @include flex-center;
-        justify-content: space-between;
-        color: #777;
-        &-left {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-            &-title {
-                font-size: 22px;
-                color: #343844;
-            }
-            &-dot {
-                font-size: 14px;
-                color: #6B7687;
-                margin-top: 24px;
-            }
-            &-rows {
-                // margin-top: 15px;
-                margin-top: 18px;
-                color: #6B7687;
-                width: 600px;
-                align-items: center;
-            }
-            &-item{
-              +.gva-top-card-left-item{
-                margin-top: 24px;
-              }
-              margin-top: 14px;
-            }
-        }
-        &-right {
-            height: 600px;
-            width: 600px;
-            margin-top: 28px;
-        }
-    }
      ::v-deep(.el-card__header){
           padding:0;
           border-bottom: none;
@@ -219,13 +137,6 @@ export default {
           padding-bottom: 20px;
           border-bottom: 1px solid #e8e8e8;
         }
-    .quick-entrance-title {
-        height: 30px;
-        font-size: 22px;
-        color: #333;
-        width: 100%;
-        border-bottom: 1px solid #eee;
-    }
     .quick-entrance-items {
         @include flex-center;
         justify-content: center;
@@ -260,49 +171,11 @@ export default {
             }
         }
     }
-    .echart-box{
-      padding: 14px;
-    }
 }
-.dasboard-icon {
-    font-size: 20px;
-    color: rgb(85, 160, 248);
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-    @include flex-center;
-}
-.flex-center {
-    @include flex-center;
-}
-
 //小屏幕不显示右侧，将登陆框居中
 @media (max-width: 750px) {
     .gva-card {
         padding: 20px 10px !important;
-        .gva-top-card {
-            height: auto;
-            &-left {
-                &-title {
-                    font-size: 20px !important;
-                }
-                &-rows {
-                    margin-top: 15px;
-                    align-items: center;
-                }
-            }
-            &-right {
-                display: none;
-            }
-        }
-        .gva-middle-card {
-            &-item {
-                line-height: 20px;
-            }
-        }
-        .dasboard-icon {
-            font-size: 18px;
-        }
     }
 }
 </style>
