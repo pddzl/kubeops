@@ -5,7 +5,7 @@
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewDeployment">查看</el-button>
           <el-button icon="expand" size="small" type="warning" plain @click="openScaleDialog">伸缩</el-button>
-          <el-button :disabled="namespace === 'kube-system'" icon="delete" size="small" type="danger" plain @click="deleteFunc">删除
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除
           </el-button>
         </el-affix>
       </div>

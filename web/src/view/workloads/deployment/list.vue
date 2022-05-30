@@ -36,8 +36,8 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
             <el-button icon="view" type="text" size="small" @click="editDeployment(scope.row)">查看</el-button>
-            <el-button icon="expand" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="openScaleDialog(scope.row)">伸缩</el-button>
-            <el-button icon="delete" type="text" size="small" :disabled="scope.row.namespace === 'kube-system'" @click="deleteFunc(scope.row)">删除
+            <el-button icon="expand" type="text" size="small" @click="openScaleDialog(scope.row)">伸缩</el-button>
+            <el-button icon="delete" type="text" size="small" @click="deleteFunc(scope.row)">删除
             </el-button>
           </template>
         </el-table-column>

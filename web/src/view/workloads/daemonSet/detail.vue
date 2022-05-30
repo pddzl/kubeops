@@ -4,7 +4,7 @@
       <div class="button">
         <el-affix :offset="120">
           <el-button icon="view" size="small" type="primary" plain @click="viewDaemonSet">查看</el-button>
-          <el-button icon="delete" size="small" type="danger" plain :disabled="namespace === 'kube-system'" @click="deleteFunc">删除</el-button>
+          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
         </el-affix>
       </div>
     </div>
