@@ -2,8 +2,8 @@ package node
 
 import (
 	"context"
-	coreV1 "k8s.io/api/core/v1"
-	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"regexp"
 
 	"github.com/pddzl/kubeops/server/global"
@@ -13,12 +13,12 @@ import (
 
 func (n *NodeService) GetNodeList(info *request.PageInfo) ([]resourceNode.NodeBrief, int, error) {
 	// 获取node list
-	list, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metaV1.ListOptions{})
+	list, err := global.KOP_KUBERNETES.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		return nil, 0, err
 	}
 
-	var nodeList coreV1.NodeList
+	var nodeList corev1.NodeList
 	// 分页
 	end := info.PageSize * info.Page
 	offset := info.PageSize * (info.Page - 1)

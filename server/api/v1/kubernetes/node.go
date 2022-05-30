@@ -99,3 +99,25 @@ func (n *NodeApi) GetNodePods(c *gin.Context) {
 		}, "获取成功", c)
 	}
 }
+
+// GetNodeType 获取节点类型
+func (n *NodeApi) GetNodeType(c *gin.Context) {
+	chart, err := nodeService.GetNodeType()
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(chart, "获取成功", c)
+	}
+}
+
+// GetNodeStatus 获取节点状态
+func (n *NodeApi) GetNodeStatus(c *gin.Context) {
+	chart, err := nodeService.GetNodeStatus()
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(chart, "获取成功", c)
+	}
+}

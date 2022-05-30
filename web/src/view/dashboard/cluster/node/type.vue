@@ -5,13 +5,18 @@
 <script>
 import * as echarts from 'echarts'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { getNodeType } from '@/api/kubernetes/node.js'
 export default {
   name: 'PodStatus',
   setup() {
-    const data = [
-      { value: 1, name: 'Master' },
-      { value: 2, name: 'Slave' }
-    ]
+    const data = ref([])
+    const getData = async() => {
+      const res = await getNodeType()
+      if (res.code === 0) {
+        data.value = res.data
+      }
+    }
+
     const chart = ref(null)
     const echart = ref(null)
     const initChart = () => {
@@ -32,7 +37,7 @@ export default {
           trigger: 'item',
           formatter: '{a} <br/>{b}: {c} ({d}%)'
         },
-        color: ['#73c0de', '#e6e6fa'],
+        color: ['#73c0de', '#FFA07A'],
         series: [
           {
             name: '状态',
@@ -44,7 +49,7 @@ export default {
               position: 'inside',
               formatter: '{d}%'
             },
-            data: data,
+            data: data.value,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
@@ -59,6 +64,7 @@ export default {
 
     onMounted(async() => {
       await nextTick()
+      await getData()
       initChart()
     })
 

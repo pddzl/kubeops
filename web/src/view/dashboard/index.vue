@@ -42,8 +42,6 @@
 </template>
 
 <script setup>
-// import echartsLine from '@/view/dashboard/dashboardCharts/echartsLine.vue'
-// import dashboardTable from '@/view/dashboard/dashboardTable/dashboardTable.vue'
 import ClusterStatus from '@/view/dashboard/cluster/index.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'

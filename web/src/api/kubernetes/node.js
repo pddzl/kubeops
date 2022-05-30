@@ -35,3 +35,19 @@ export const getNodePods = (data) => {
     data
   })
 }
+
+// 获取node type
+export const getNodeType = () => {
+  return service({
+    url: '/node/getNodeType',
+    method: 'get',
+  })
+}
+
+// 获取node status
+export const getNodeStatus = () => {
+  return service({
+    url: '/node/getNodeStatus',
+    method: 'get',
+  })
+}
