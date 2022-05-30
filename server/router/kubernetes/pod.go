@@ -17,6 +17,7 @@ func (s *PodRouter) InitPodRouter(Router *gin.RouterGroup) {
 		podRouter.POST("getPodRaw", podApi.GetPodRaw)       // 获取pod in raw
 		podRouter.POST("getPodLog", podApi.GetPodLog)       // 获取pod日志
 		podRouter.POST("deletePod", podApi.DeletePod)       // 删除pod
+		podRouter.GET("getPodStatus", podApi.GetPodStatus)  // 获取pod状态
 	}
 	{
 		podRouterWithoutRecord.POST("getPodList", podApi.GetPodList)        // 获取所有pod

@@ -45,3 +45,10 @@ export const getPodLog = (data) => {
   })
 }
 
+// 获取pod状态
+export const getPodStatus = () => {
+  return service({
+    url: '/pod/getPodStatus',
+    method: 'get'
+  })
+}

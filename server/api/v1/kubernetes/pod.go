@@ -143,3 +143,14 @@ func (p *PodApi) GetPodTerminal(c *gin.Context) {
 		global.KOP_LOG.Error("terminal失败", zap.Error(err))
 	}
 }
+
+// GetPodStatus 获取pod状态
+func (p *PodApi) GetPodStatus(c *gin.Context) {
+	chart, err := podService.GetPodStatus()
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(chart, "获取成功", c)
+	}
+}
