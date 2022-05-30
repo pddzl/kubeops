@@ -5,13 +5,18 @@
 <script>
 import * as echarts from 'echarts'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { getNamespaceStatus } from '@/api/kubernetes/namespace.js'
 export default {
   name: 'NamespaceStatus',
   setup() {
-    const data = [
-      { value: 10, name: '正常' },
-      { value: 0, name: '异常' }
-    ]
+    const data = ref([])
+    const getData = async() => {
+      const res = await getNamespaceStatus()
+      if (res.code === 0) {
+        data.value = res.data
+      }
+    }
+
     const chart = ref(null)
     const echart = ref(null)
     const initChart = () => {
@@ -44,7 +49,7 @@ export default {
               position: 'inside',
               formatter: '{d}%'
             },
-            data: data,
+            data: data.value,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
@@ -59,6 +64,7 @@ export default {
 
     onMounted(async() => {
       await nextTick()
+      await getData()
       initChart()
     })
 

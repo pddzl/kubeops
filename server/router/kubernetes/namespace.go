@@ -16,6 +16,7 @@ func (n *NamespaceRouter) InitNamespaceRouter(Router *gin.RouterGroup) {
 		namespaceRouter.POST("getNamespaceDetail", namespaceApi.GetNamespaceDetail) // 获取namespace详情
 		namespaceRouter.POST("getNamespaceRaw", namespaceApi.GetNamespaceRaw)       // 获取namespace in raw
 		namespaceRouter.POST("deleteNamespace", namespaceApi.DeleteNamespace)       // 删除namespace
+		namespaceRouter.GET("getNamespaceStatus", namespaceApi.GetNamespaceStatus)  // 获取namespace状态
 	}
 	{
 		namespaceRouterWithoutRecord.POST("getNamespaceList", namespaceApi.GetNamespaceList)        // 获取所有namespace

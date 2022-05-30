@@ -43,3 +43,11 @@ export const deleteNamespace = (data) => {
     data
   })
 }
+
+// 获取namespace状态
+export const getNamespaceStatus = () => {
+  return service({
+    url: '/namespace/getNamespaceStatus',
+    method: 'get'
+  })
+}

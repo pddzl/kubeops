@@ -106,3 +106,14 @@ func (n *NamespaceApi) GetNamespaceRaw(c *gin.Context) {
 	}
 	response.OkWithDetailed(raw, "获取成功", c)
 }
+
+// GetNamespaceStatus 获取namespace状态
+func (n *NamespaceApi) GetNamespaceStatus(c *gin.Context) {
+	chart, err := namespaceService.GetNamespaceStatus()
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(chart, "获取成功", c)
+	}
+}
