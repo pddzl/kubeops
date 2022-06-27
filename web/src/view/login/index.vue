@@ -39,11 +39,54 @@ export default {
 </script>
 
 <script setup>
+import { captcha } from '@/api/user'
 import { reactive, ref } from 'vue'
 import { User, Lock } from '@element-plus/icons-vue'
 
 const loginRef = ref('null')
-const loginForm = reactive({ username: '', password: '', captcha: '' })
+const loginForm = reactive({ username: '', password: '', captcha: '', captchaId: '' })
+
+// 表单校验
+const checkUsername = (rule, value, callback) => {
+  if (value.length < 5) {
+    return callback(new Error('请输入正确的用户名'))
+  } else {
+    callback()
+  }
+}
+const checkPassword = (rule, value, callback) => {
+  if (value.length < 6) {
+    return callback(new Error('请输入正确的密码'))
+  } else {
+    callback()
+  }
+}
+
+const rules = reactive({
+  username: [{ validator: checkUsername, trigger: 'blur' }],
+  password: [{ validator: checkPassword, trigger: 'blur' }],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    {
+      message: '验证码格式不正确',
+      trigger: 'blur',
+    },
+  ],
+})
+
+// 获取验证码
+const picPath = ref('')
+
+const loginVerify = () => {
+  captcha({}).then((ele) => {
+    rules.captcha[1].max = ele.data.captchaLength
+    rules.captcha[1].min = ele.data.captchaLength
+    picPath.value = ele.data.picPath
+    loginForm.captchaId = ele.data.captchaId
+  })
+}
+loginVerify()
+
 </script>
 
 <style lang="scss" scoped>
