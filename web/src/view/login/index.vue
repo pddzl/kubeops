@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="login-window">
+    <div class="login-form">
       <div class="logo" />
-      <el-form ref="loginRef" :model="loginForm" status-icon>
+      <el-form ref="loginRef" :model="loginForm" status-icon :rules="rules" @keyup.enter="submitForm">
         <el-form-item prop="username">
           <el-input v-model.trim="loginForm.username" placeholder="账号" :prefix-icon="User" style="width: 300px" />
         </el-form-item>
@@ -25,9 +25,12 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="danger" style="width: 300px">登陆</el-button>
+          <el-button type="danger" style="width: 300px" @click="submitForm">登陆</el-button>
         </el-form-item>
       </el-form>
+    </div>
+    <div class="kop-footer">
+      <span>Copyright © 2021-2022 pddzl All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -41,10 +44,12 @@ export default {
 <script setup>
 import { captcha } from '@/api/user'
 import { reactive, ref } from 'vue'
+import { useUserStore } from '@/pinia/modules/user'
+import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 
 const loginRef = ref('null')
-const loginForm = reactive({ username: '', password: '', captcha: '', captchaId: '' })
+const loginForm = reactive({ username: 'admin', password: '123456', captcha: '', captchaId: '' })
 
 // 表单校验
 const checkUsername = (rule, value, callback) => {
@@ -87,18 +92,41 @@ const loginVerify = () => {
 }
 loginVerify()
 
+// 登陆
+const userStore = useUserStore()
+const login = async() => {
+  return await userStore.LoginIn(loginForm)
+}
+const submitForm = () => {
+  loginRef.value.validate(async(v) => {
+    if (v) {
+      const flag = await login()
+      if (!flag) {
+        loginVerify()
+      }
+    } else {
+      ElMessage({
+        type: 'error',
+        message: '请正确填写登录信息',
+        showClose: true,
+      })
+      loginVerify()
+      return false
+    }
+  })
+}
+
 </script>
 
 <style lang="scss" scoped>
 .container {
-  width: 100%;
   height: 100%;
   background-image: url('@/assets/login1.jpg');
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
-  .login-window {
+  .login-form {
     background-color: rgb(255, 255, 255);
     padding: 40px 40px 30px 40px;
     border-radius: 10px;
@@ -130,6 +158,11 @@ loginVerify()
         }
       }
     }
+  }
+  .kop-footer {
+    height: 40px;
+    position: fixed;
+    bottom: 0;
   }
 }
 </style>

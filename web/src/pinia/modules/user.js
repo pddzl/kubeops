@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
       if (res.code === 0) {
         setUserInfo(res.data.user)
         setToken(res.data.token)
-        // router.push({ name: userInfo.value.authority.defaultRouter })
+        router.push({ name: 'Dashboard' })
         loadingInstance.value.close()
         return true
       }
