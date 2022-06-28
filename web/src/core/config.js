@@ -3,7 +3,7 @@
  */
 
 const config = {
-  appName: 'KubeOps',
+  appName: 'KUBEOPS',
   appLogo: '@/assets/kop.png'
 }
 
