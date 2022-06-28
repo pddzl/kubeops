@@ -6,7 +6,7 @@ export default {
     register(app)
     console.log(`
       欢迎使用 KubeOps
-      当前版本:V1.0.0
+      当前版本:V2.0.0
     `)
   }
 }

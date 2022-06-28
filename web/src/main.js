@@ -5,8 +5,6 @@ import './style/element_visiable.scss'
 import './style/kop.scss'
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-// 引入kubeops前端初始化相关内容
-// import './core/kubeops'
 // 引入封装的router
 import router from '@/router/index'
 import '@/permission'
