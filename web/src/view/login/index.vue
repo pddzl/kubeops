@@ -1,71 +1,57 @@
 <template>
-  <div id="userLayout">
-    <div class="login_panle">
-      <div class="login_panle_form">
-        <div class="login_panle_form_title">
-          <img class="login_panle_form_title_logo" src="@/assets/kop.png" alt />
-          <p class="login_panle_form_title_p">{{ $KUBE_OPS.appName }}</p>
-        </div>
-        <el-form ref="loginForm" :model="loginFormData" :rules="rules" @keyup.enter="submitForm">
-          <el-form-item prop="username">
-            <el-input v-model="loginFormData.username" placeholder="请输入用户名">
-              <template #suffix>
-                <span class="input-icon">
-                  <el-icon>
-                    <user />
-                  </el-icon>
-                </span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model="loginFormData.password"
-              :type="lock === 'lock' ? 'password' : 'text'"
-              placeholder="请输入密码"
-            >
-              <template #suffix>
-                <span class="input-icon">
-                  <el-icon>
-                    <component :is="lock" @click="changeLock" />
-                  </el-icon>
-                </span>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="captcha">
-            <div class="vPicBox">
-              <el-input v-model="loginFormData.captcha" placeholder="请输入验证码" style="width: 60%" />
-              <div class="vPic">
-                <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
-              </div>
+  <div class="container">
+    <div class="login-form">
+      <div class="logo" />
+      <el-form ref="loginRef" :model="loginForm" status-icon :rules="rules" @keyup.enter="submitForm">
+        <el-form-item prop="username">
+          <el-input v-model.trim="loginForm.username" placeholder="账号" :prefix-icon="User" style="width: 300px" />
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            v-model.trim="loginForm.password"
+            type="password"
+            placeholder="密码"
+            show-password
+            :prefix-icon="Lock"
+            style="width: 300px"
+          />
+        </el-form-item>
+        <el-form-item>
+          <div class="vPicBox">
+            <el-input v-model="loginForm.captcha" placeholder="请输入验证码" style="width: 60%" />
+            <div class="vPic">
+              <img v-if="picPath" :src="picPath" alt="请输入验证码" @click="loginVerify()">
             </div>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" style="width: 46%" size="large" @click="checkInit">前往初始化</el-button>
-            <el-button type="primary" style="width: 46%; margin-left: 8%" size="large" @click="submitForm">登 录</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="danger" style="width: 300px" @click="submitForm">登陆</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="kop-footer">
+      <span>Copyright © 2021-2022 pddzl All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Login',
+  name: 'Login'
 }
 </script>
 
 <script setup>
 import { captcha } from '@/api/user'
-import { checkDB } from '@/api/initdb'
 import { reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/pinia/modules/user'
-const router = useRouter()
-// 验证函数
+import { ElMessage } from 'element-plus'
+import { User, Lock } from '@element-plus/icons-vue'
+
+const loginRef = ref('null')
+const loginForm = reactive({ username: 'admin', password: '123456', captcha: '', captchaId: '' })
+
+// 表单校验
 const checkUsername = (rule, value, callback) => {
   if (value.length < 5) {
     return callback(new Error('请输入正确的用户名'))
@@ -81,31 +67,6 @@ const checkPassword = (rule, value, callback) => {
   }
 }
 
-// 获取验证码
-const loginVerify = () => {
-  captcha({}).then((ele) => {
-    rules.captcha[1].max = ele.data.captchaLength
-    rules.captcha[1].min = ele.data.captchaLength
-    picPath.value = ele.data.picPath
-    loginFormData.captchaId = ele.data.captchaId
-  })
-}
-loginVerify()
-
-// 登录相关操作
-const lock = ref('lock')
-const changeLock = () => {
-  lock.value = lock.value === 'lock' ? 'unlock' : 'lock'
-}
-
-const loginForm = ref(null)
-const picPath = ref('')
-const loginFormData = reactive({
-  username: 'admin',
-  password: '123456',
-  captcha: '',
-  captchaId: '',
-})
 const rules = reactive({
   username: [{ validator: checkUsername, trigger: 'blur' }],
   password: [{ validator: checkPassword, trigger: 'blur' }],
@@ -118,12 +79,26 @@ const rules = reactive({
   ],
 })
 
+// 获取验证码
+const picPath = ref('')
+
+const loginVerify = () => {
+  captcha({}).then((ele) => {
+    rules.captcha[1].max = ele.data.captchaLength
+    rules.captcha[1].min = ele.data.captchaLength
+    picPath.value = ele.data.picPath
+    loginForm.captchaId = ele.data.captchaId
+  })
+}
+loginVerify()
+
+// 登陆
 const userStore = useUserStore()
 const login = async() => {
-  return await userStore.LoginIn(loginFormData)
+  return await userStore.LoginIn(loginForm)
 }
 const submitForm = () => {
-  loginForm.value.validate(async(v) => {
+  loginRef.value.validate(async(v) => {
     if (v) {
       const flag = await login()
       if (!flag) {
@@ -141,24 +116,53 @@ const submitForm = () => {
   })
 }
 
-// 跳转初始化
-const checkInit = async() => {
-  const res = await checkDB()
-  if (res.code === 0) {
-    if (res.data?.needInit) {
-      userStore.NeedInit()
-      router.push({ name: 'Init' })
-    } else {
-      ElMessage({
-        type: 'info',
-        message: '已配置数据库信息，无法初始化',
-      })
-    }
-  }
-}
-
 </script>
 
 <style lang="scss" scoped>
-@import "@/style/newLogin.scss";
+.container {
+  height: 100%;
+  background-image: url('@/assets/login.jpg');
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .login-form {
+    background-color: rgb(255, 255, 255);
+    padding: 40px 40px 30px 40px;
+    border-radius: 10px;
+    box-shadow: 2px 3px 7px rgb(0 0 0 / 20%);
+    .logo {
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      background-image: url('@/assets/logo.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      height: 20px;
+      width: 120px;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .vPicBox {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .vPic {
+        width: 33%;
+        height: 38px;
+        background: #ccc;
+        img {
+          width: 100%;
+          height: 100%;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+  .kop-footer {
+    height: 40px;
+    position: fixed;
+    bottom: 0;
+  }
+}
 </style>
