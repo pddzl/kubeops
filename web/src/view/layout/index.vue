@@ -5,7 +5,7 @@
       <el-aside class="main-cont main-left">
         <div class="tilte" :style="{background: backgroundColor}">
           <img alt class="logoimg" src="@/assets/kop.png">
-          <h2 v-if="isSider" class="tit-text" :style="{color:textColor}">{{ $KUBE_OPS.appName }}</h2>
+          <div v-if="isSider" class="tit-text" :style="{color:textColor}">{{ $KUBEOPS.appName }}</div>
         </div>
         <Aside class="aside" />
       </el-aside>
@@ -17,16 +17,13 @@
             class="topfix"
           >
             <el-row>
-              <!-- :xs="8" :sm="6" :md="4" :lg="3" :xl="1" -->
               <el-col>
                 <el-header class="header-cont">
                   <el-row class="pd-0">
                     <el-col :xs="2" :lg="1" :md="1" :sm="1" :xl="1" style="z-index:100">
                       <div class="menu-total" @click="totalCollapse">
-                        <el-icon v-if="isCollapse" size="24"><expand /></el-icon>
-                        <el-icon v-else size="24">
-                          <fold />
-                        </el-icon>
+                        <div v-if="isCollapse" class="gvaIcon gvaIcon-arrow-double-right" />
+                        <div v-else class="gvaIcon gvaIcon-arrow-double-left" />
                       </div>
                     </el-col>
                     <el-col :xs="10" :lg="14" :md="14" :sm="9" :xl="14" :pull="1">
@@ -34,7 +31,7 @@
                         <el-breadcrumb-item
                           v-for="item in matched.slice(1,matched.length)"
                           :key="item.path"
-                        >{{ route.params.title || item.meta.title }}</el-breadcrumb-item>
+                        >{{ fmtTitle(item.meta.title,route) }}</el-breadcrumb-item>
                       </el-breadcrumb>
                     </el-col>
                     <el-col :xs="12" :lg="9" :md="9" :sm="14" :xl="9">
@@ -82,11 +79,13 @@
           </div>
         </transition>
         <router-view v-if="reloadFlag" v-slot="{ Component }" v-loading="loadingFlag" element-loading-text="正在加载中" class="admin-box">
-          <transition mode="out-in" name="el-fade-in-linear">
-            <keep-alive :include="routerStore.keepAliveRouters">
-              <component :is="Component" />
-            </keep-alive>
-          </transition>
+          <div>
+            <transition mode="out-in" name="el-fade-in-linear">
+              <keep-alive :include="routerStore.keepAliveRouters">
+                <component :is="Component" />
+              </keep-alive>
+            </transition>
+          </div>
         </router-view>
         <BottomInfo />
         <setting />
@@ -106,7 +105,7 @@ export default {
 import Aside from '@/view/layout/aside/index.vue'
 import HistoryComponent from '@/view/layout/aside/historyComponent/history.vue'
 import Search from '@/view/layout/search/search.vue'
-import BottomInfo from '@/view/layout/bottomInfo/bottomInfo.vue'
+import BottomInfo from '@/view/layout/bottomInfo/index.vue'
 import CustomPic from '@/components/customPic/index.vue'
 import Setting from './setting/index.vue'
 import { setUserAuthority } from '@/api/user'
@@ -115,6 +114,7 @@ import { computed, ref, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/pinia/modules/user'
 import { useRouterStore } from '@/pinia/modules/router'
+import { fmtTitle } from '@/utils/fmtRouterTitle'
 
 const router = useRouter()
 const route = useRoute()
@@ -123,6 +123,7 @@ const routerStore = useRouterStore()
 const isCollapse = ref(false)
 const isSider = ref(true)
 const isMobile = ref(false)
+
 const initPage = () => {
   const screenWidth = document.body.clientWidth
   if (screenWidth < 1000) {
@@ -161,6 +162,9 @@ onMounted(() => {
       emitter.emit('mobile', isMobile.value)
     })()
   }
+  if (userStore.loadingInstance) {
+    userStore.loadingInstance.close()
+  }
 })
 
 const userStore = useUserStore()
@@ -195,20 +199,26 @@ const changeUserAuth = async(id) => {
     emitter.emit('closeAllPage')
     setTimeout(() => {
       window.location.reload()
-    }, 1)
+    }, 50)
   }
 }
 
 const reloadFlag = ref(true)
+let reloadTimer = null
 const reload = async() => {
-  if (route.meta.keepAlive) {
-    reloadFlag.value = false
-    await nextTick()
-    reloadFlag.value = true
-  } else {
-    const title = route.meta.title
-    router.push({ name: 'Reload', params: { title }})
+  if (reloadTimer) {
+    window.clearTimeout(reloadTimer)
   }
+  reloadTimer = window.setTimeout(async() => {
+    if (route.meta.keepAlive) {
+      reloadFlag.value = false
+      await nextTick()
+      reloadFlag.value = true
+    } else {
+      const title = route.meta.title
+      router.push({ name: 'Reload', params: { title }})
+    }
+  }, 400)
 }
 
 const isShadowBg = ref(false)

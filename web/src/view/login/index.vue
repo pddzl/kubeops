@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="login-form">
-      <div class="logo" />
+      <p style="text-align: center; font-size: 20px; margin-bottom: 20px;">{{ $KUBEOPS.appName }}</p>
       <el-form ref="loginRef" :model="loginForm" status-icon :rules="rules" @keyup.enter="submitForm">
         <el-form-item prop="username">
           <el-input v-model.trim="loginForm.username" placeholder="账号" :prefix-icon="User" style="width: 300px" />
@@ -121,36 +121,36 @@ const submitForm = () => {
 <style lang="scss" scoped>
 .container {
   height: 100%;
-  background-image: url('@/assets/login.jpg');
+  background-image: url('@/assets/login-background.jpg');
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
   .login-form {
-    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.844);
     padding: 40px 40px 30px 40px;
     border-radius: 10px;
     box-shadow: 2px 3px 7px rgb(0 0 0 / 20%);
-    .logo {
-      box-sizing: border-box;
-      margin-bottom: 20px;
-      background-image: url('@/assets/logo.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      height: 20px;
-      width: 120px;
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+    // .logo {
+    //   box-sizing: border-box;
+    //   margin-bottom: 20px;
+    //   background-image: url('@/assets/logo.png');
+    //   background-size: cover;
+    //   background-repeat: no-repeat;
+    //   height: 20px;
+    //   width: 120px;
+    //   position: relative;
+    //   left: 50%;
+    //   transform: translateX(-50%);
+    // }
     .vPicBox {
       display: flex;
       justify-content: space-between;
       width: 100%;
       .vPic {
         width: 33%;
-        height: 38px;
-        background: #ccc;
+        height: 32px;
+        background: rgb(204, 204, 204);
         img {
           width: 100%;
           height: 100%;
@@ -163,6 +163,7 @@ const submitForm = () => {
     height: 40px;
     position: fixed;
     bottom: 0;
+    font-size: 16px;
   }
 }
 </style>

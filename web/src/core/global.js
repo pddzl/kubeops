@@ -14,5 +14,5 @@ export const register = (app) => {
   for (const iconName in ElIconModules) {
     app.component(iconName, ElIconModules[iconName])
   }
-  app.config.globalProperties.$KUBE_OPS = config
+  app.config.globalProperties.$KUBEOPS = config
 }

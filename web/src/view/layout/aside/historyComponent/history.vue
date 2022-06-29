@@ -5,7 +5,7 @@
       :closable="!(historys.length === 1 && $route.name === defaultRouter)"
       type="card"
       @contextmenu.prevent="openContextMenu($event)"
-      @tab-click="changeTab"
+      @tab-change="changeTab"
       @tab-remove="removeTab"
     >
       <el-tab-pane
@@ -18,26 +18,18 @@
       >
         <template #label>
           <span
+            :tab="item"
             :style="{
               color: activeValue === name(item) ? userStore.activeColor : '#333',
             }"
-          >
-            <i
-              class="dot"
-              :style="{
-                backgroundColor:
-                  activeValue === name(item) ? userStore.activeColor : '#ddd',
-              }"
-            />
-            {{ item.meta.title }}
-            <!-- <span
-              v-if="['namespace_detail', 'node_detail'].includes(item.name)"
-            >{{ item.query.name }}</span>
-            <span
-              v-else-if="['pod_detail', 'pod_log', 'pod_terminal'].includes(item.name)"
-            >{{ item.query.pod }}</span>
-            <span v-else-if="'replicaSet_detail' === item.name">{{ item.query.replicaSet }}</span> -->
-          </span>
+          ><i
+             class="dot"
+             :style="{
+               backgroundColor:
+                 activeValue === name(item) ? userStore.activeColor : '#ddd',
+             }"
+           />
+            {{ fmtTitle(item.meta.title,item) }}</span>
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -67,6 +59,7 @@ import { emitter } from '@/utils/bus.js'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/pinia/modules/user'
+import { fmtTitle } from '@/utils/fmtRouterTitle'
 
 const route = useRoute()
 const router = useRouter()
@@ -96,7 +89,7 @@ const defaultRouter = computed(() => userStore.userInfo.authority.defaultRouter)
 const openContextMenu = (e) => {
   if (
     historys.value.length === 1 &&
-    route.name === defaultRouter.value
+        route.name === defaultRouter.value
   ) {
     return false
   }
@@ -203,45 +196,6 @@ const isSame = (route1, route2) => {
 }
 const setTab = (route) => {
   if (!historys.value.some((item) => isSame(item, route))) {
-    if (route.name === 'namespace_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'namespace_detail')
-    }
-    if (route.name === 'node_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'node_detail')
-    }
-    if (route.name === 'pod_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'pod_detail')
-    }
-    if (route.name === 'pod_log') {
-      historys.value = historys.value.filter(element => element.name !== 'pod_log')
-    }
-    if (route.name === 'pod_terminal') {
-      historys.value = historys.value.filter(element => element.name !== 'pod_terminal')
-    }
-    if (route.name === 'replicaSet_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'replicaSet_detail')
-    }
-    if (route.name === 'deployment_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'deployment_detail')
-    }
-    if (route.name === 'daemonSet_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'daemonSet_detail')
-    }
-    if (route.name === 'services_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'services_detail')
-    }
-    if (route.name === 'ingress_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'ingress_detail')
-    }
-    if (route.name === 'job_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'job_detail')
-    }
-    if (route.name === 'serviceAccount_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'serviceAccount_detail')
-    }
-    if (route.name === 'role_detail') {
-      historys.value = historys.value.filter(element => element.name !== 'role_detail')
-    }
     const obj = {}
     obj.name = route.name
     obj.meta = { ...route.meta }
@@ -252,8 +206,18 @@ const setTab = (route) => {
   }
   window.sessionStorage.setItem('activeValue', getFmtString(route))
 }
-const changeTab = (component) => {
-  const tab = component.instance.attrs.tab
+
+const historyMap = ref({})
+
+watch(() => historys.value, () => {
+  historyMap.value = {}
+  historys.value.forEach((item) => {
+    historyMap.value[getFmtString(item)] = item
+  })
+})
+
+const changeTab = (name) => {
+  const tab = historyMap.value[name]
   router.push({
     name: tab.name,
     query: tab.query,
@@ -286,7 +250,7 @@ const removeTab = (tab) => {
   historys.value.splice(index, 1)
 }
 
-watch(contextMenuVisible, () => {
+watch(() => contextMenuVisible.value, () => {
   if (contextMenuVisible.value) {
     document.body.addEventListener('click', () => {
       contextMenuVisible.value = false
@@ -298,7 +262,7 @@ watch(contextMenuVisible, () => {
   }
 })
 
-watch(route, (to, now) => {
+watch(() => route, (to, now) => {
   if (to.name === 'Login' || to.name === 'Reload') {
     return
   }
@@ -306,6 +270,12 @@ watch(route, (to, now) => {
   setTab(to)
   sessionStorage.setItem('historys', JSON.stringify(historys.value))
   activeValue.value = window.sessionStorage.getItem('activeValue')
+}, { deep: true })
+
+watch(() => historys.value, () => {
+  sessionStorage.setItem('historys', JSON.stringify(historys.value))
+}, {
+  deep: true
 })
 
 const initPage = () => {
@@ -334,7 +304,7 @@ const initPage = () => {
     },
   ]
   historys.value =
-    JSON.parse(sessionStorage.getItem('historys')) || initHistorys
+      JSON.parse(sessionStorage.getItem('historys')) || initHistorys
   if (!window.sessionStorage.getItem('activeValue')) {
     activeValue.value = getFmtString(route)
   } else {
