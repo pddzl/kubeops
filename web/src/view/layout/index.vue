@@ -114,7 +114,7 @@ import { computed, ref, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/pinia/modules/user'
 import { useRouterStore } from '@/pinia/modules/router'
-import { fmtTitle } from '@/utils/fmtRouterTitle'
+import { fmtTitle } from '@/utils/fmtRouterB'
 
 const router = useRouter()
 const route = useRoute()
@@ -140,7 +140,6 @@ const initPage = () => {
     isCollapse.value = false
   }
 }
-
 initPage()
 
 const loadingFlag = ref(false)

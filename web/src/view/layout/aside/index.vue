@@ -123,8 +123,6 @@ const selectMenuItem = (index, _, ele, aaa) => {
  if (index.indexOf('http://') > -1 || index.indexOf('https://') > -1) {
    window.open(index)
  } else {
-   console.log('index', index)
-   console.log(router.options.routes)
    router.push({ name: index, query, params })
  }
 }
