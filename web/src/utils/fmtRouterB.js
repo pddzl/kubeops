@@ -1,6 +1,4 @@
 export const fmtTitle = (title, now) => {
-  console.log('title', title)
-  console.log('now', now)
   const reg = /\$\{(.+?)\}/
   const reg_g = /\$\{(.+?)\}/g
   const result = title.match(reg_g)
@@ -15,7 +13,7 @@ export const fmtTitle = (title, now) => {
   const reg_title = /.*详情/
   const reg_now = /.*_detail/
   if (title.match(reg_title) && now.name.match(reg_now)) {
-    return `${title} / ${now.query.name}`
+    return `${title.slice(0, -2)} / ${now.query.name}`
   } else {
     return title
   }
