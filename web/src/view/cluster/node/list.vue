@@ -55,8 +55,8 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
-            <el-button icon="view" size="small" type="text" @click="viewNode(scope.row)">查看</el-button>
-            <el-button icon="delete" size="small" type="text" @click="deleteNode(scope.row)">删除</el-button>
+            <el-button icon="view" size="small" type="primary" link @click="viewNode(scope.row)">查看</el-button>
+            <el-button icon="delete" size="small" type="primary" link @click="deleteNode(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

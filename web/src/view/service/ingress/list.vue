@@ -40,8 +40,8 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="scope">
-            <el-button icon="view" type="text" size="small" @click="viewIngress(scope.row)">查看</el-button>
-            <el-button icon="delete" type="text" size="small" @click="deleteFunc(scope.row)">删除</el-button>
+            <el-button icon="view" type="primary" link size="small" @click="viewIngress(scope.row)">查看</el-button>
+            <el-button icon="delete" type="primary" link size="small" @click="deleteFunc(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

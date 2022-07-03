@@ -20,22 +20,10 @@
 }
 
 .detail-operation {
-  margin-bottom: 10px;
-  background-color: #fff;
-  padding: 10px;
-  .button {
-    float: right;
-    // .el-button:not(:last-child) {
-    //   margin-right: 20px;
-    // }
-  }
-}
-.detail-operation:after {
-      content: "020";
-      display: block;
-      height: 0;
-      clear: both;
-      visibility: hidden;
+  position: fixed;
+  top: 125px;
+  right: 55px;
+  z-index: 5 !important;
 }
 
 // 详情页

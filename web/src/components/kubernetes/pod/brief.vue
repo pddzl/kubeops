@@ -21,9 +21,9 @@
     </el-table-column>
     <el-table-column fixed="right" label="操作" width="220">
       <template #default="scope">
-        <el-button icon="tickets" type="text" size="small" @click="routerPod(scope.row, 'log')">日志</el-button>
-        <el-button icon="ArrowRight" type="text" size="small" @click="routerPod(scope.row, 'terminal')">终端</el-button>
-        <el-button icon="delete" type="text" size="small">删除</el-button>
+        <el-button icon="tickets" type="primary" link size="small" @click="routerPod(scope.row, 'log')">日志</el-button>
+        <el-button icon="ArrowRight" type="primary" link size="small" @click="routerPod(scope.row, 'terminal')">终端</el-button>
+        <el-button icon="delete" type="primary" link size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>

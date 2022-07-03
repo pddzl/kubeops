@@ -1,14 +1,10 @@
 <template>
   <div>
     <div class="detail-operation">
-      <div class="button">
-        <el-affix :offset="120">
-          <el-button icon="view" size="small" type="primary" plain @click="viewPod">查看</el-button>
-          <el-button icon="expand" size="small" type="primary" plain @click="routerPod('log')">日志</el-button>
-          <el-button icon="expand" size="small" type="primary" plain @click="routerPod('terminal')">终端</el-button>
-          <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
-        </el-affix>
-      </div>
+      <el-button icon="view" size="small" type="primary" plain @click="viewPod">查看</el-button>
+      <el-button icon="expand" size="small" type="primary" plain @click="routerPod('log')">日志</el-button>
+      <el-button icon="expand" size="small" type="primary" plain @click="routerPod('terminal')">终端</el-button>
+      <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
     </div>
     <div class="kop-collapse">
       <el-collapse v-model="activeNames">
@@ -37,7 +33,7 @@
                 <p>标签</p>
                 <div class="content">
                   <span v-for="(label, index) in podDetail.metadata.labels" :key="index" class="shadow">{{ index }}: {{
-                      label
+                    label
                   }}</span>
                 </div>
               </div>
