@@ -28,7 +28,7 @@ func main() {
 	initialize.Timer()
 	initialize.DBList()
 	if global.KOP_DB != nil {
-		//initialize.RegisterTables(global.KOP_DB) // 初始化表
+		initialize.RegisterTables(global.KOP_DB) // 初始化表
 		// 程序结束前关闭数据库链接
 		db, _ := global.KOP_DB.DB()
 		defer db.Close()
