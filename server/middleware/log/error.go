@@ -1,6 +1,8 @@
 package log
 
 import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -8,9 +10,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/pddzl/kubeops/server/global"
-	"go.uber.org/zap"
 )
 
 // GinRecovery recover掉项目可能出现的panic，并使用zap记录相关日志
@@ -31,27 +31,17 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 
 				httpRequest, _ := httputil.DumpRequest(c.Request, false)
 				if brokenPipe {
-					global.KOP_LOG.Error(c.Request.URL.Path,
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
+					global.TD27_LOG.Debug(c.Request.URL.Path, zap.Any("error", err), zap.String("request", string(httpRequest)))
 					// If the connection is dead, we can't write a status to it.
-					_ = c.Error(err.(error)) // nolint: errcheck
+					c.Error(err.(error))
 					c.Abort()
 					return
 				}
 
 				if stack {
-					global.KOP_LOG.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-						zap.String("stack", string(debug.Stack())),
-					)
+					global.TD27_LOG.Debug("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)), zap.String("stack", string(debug.Stack())))
 				} else {
-					global.KOP_LOG.Error("[Recovery from panic]",
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
-					)
+					global.TD27_LOG.Debug("[Recovery from panic]", zap.Any("error", err), zap.String("request", string(httpRequest)))
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}

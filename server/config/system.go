@@ -1,12 +1,9 @@
 package config
 
 type System struct {
-	Env           string `mapstructure:"env" json:"env" yaml:"env"`                                 // 环境值
-	Addr          int    `mapstructure:"addr" json:"addr" yaml:"addr"`                              // 端口值
-	DbType        string `mapstructure:"db-type" json:"dbType" yaml:"db-type"`                      // 数据库类型:mysql(默认)|sqlite
-	OssType       string `mapstructure:"oss-type" json:"ossType" yaml:"oss-type"`                   // Oss类型
-	UseMultipoint bool   `mapstructure:"use-multipoint" json:"useMultipoint" yaml:"use-multipoint"` // 多点登录拦截
-	UseRedis      bool   `mapstructure:"use-redis" json:"useRedis" yaml:"use-redis"`                // 使用redis
-	LimitCountIP  int    `mapstructure:"iplimit-count" json:"iplimitCount" yaml:"iplimit-count"`
-	LimitTimeIP   int    `mapstructure:"iplimit-time" json:"iplimitTime" yaml:"iplimit-time"`
+	Env           string `mapstructure:"env" json:"env" yaml:"env"`                                  // 环境值
+	Host          string `mapstructure:"host" json:"host" yaml:"host"`                               // IP地址
+	Port          int    `mapstructure:"port" json:"port" yaml:"port"`                               // 端口号
+	Stack         bool   `mapstructure:"stack" json:"stack" yaml:"stack"`                            // 是否开启日志栈
+	UseMultipoint bool   `mapstructure:"use-multipoint" json:"use-multipoint" yaml:"use-multipoint"` // 多点登录拦截
 }

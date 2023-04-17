@@ -1,12 +1,11 @@
 package global
 
 import (
-	"time"
-
 	"gorm.io/gorm"
+	"time"
 )
 
-type KOP_MODEL struct {
+type TD27_MODEL struct {
 	ID        uint           `gorm:"primarykey"` // 主键ID
 	CreatedAt time.Time      // 创建时间
 	UpdatedAt time.Time      // 更新时间

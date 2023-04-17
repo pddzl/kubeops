@@ -1,8 +1,9 @@
 package utils
 
-func Contains(s []string, v string) bool {
-	for _, value := range s {
-		if value == v {
+// IsContain slice contain
+func IsContain(list []string, item string) bool {
+	for _, value := range list {
+		if value == item {
 			return true
 		}
 	}

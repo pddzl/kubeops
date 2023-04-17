@@ -1,36 +1,26 @@
 package main
 
 import (
+	"go.uber.org/zap"
+	"os"
+
 	"github.com/pddzl/kubeops/server/core"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/initialize"
-	"go.uber.org/zap"
 )
 
-//go:generate go env -w GO111MODULE=on
-//go:generate go env -w GOPROXY=https://goproxy.cn,direct
-//go:generate go mod tidy
-//go:generate go mod download
-
-// @title Swagger Example API
-// @version 0.0.1
-// @description This is a sample Server pets
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name x-token
-// @BasePath /
 func main() {
-	global.KOP_VP = core.Viper() // 初始化Viper
-	global.KOP_LOG = core.Zap()  // 初始化zap日志库
-	zap.ReplaceGlobals(global.KOP_LOG)
-	global.KOP_DB = initialize.Gorm()                                         // gorm连接数据库
-	global.KOP_KUBERNETES, global.KUBERNETES_CONFIG = initialize.Kubernetes() // 初始化kubernetes api
-	initialize.Timer()
-	initialize.DBList()
-	if global.KOP_DB != nil {
-		//initialize.RegisterTables(global.KOP_DB) // 初始化表
+	global.TD27_VP = core.Viper() // 初始化viper
+	global.TD27_LOG = core.Zap()  // 初始化zap日志
+	zap.ReplaceGlobals(global.TD27_LOG)
+	global.TD27_DB = initialize.Gorm() // gorm连接数据库
+	if global.TD27_DB == nil {
+		global.TD27_LOG.Error("mysql连接失败，退出程序")
+		os.Exit(127)
+	} else {
+		initialize.RegisterTables(global.TD27_DB) // 初始化表
 		// 程序结束前关闭数据库链接
-		db, _ := global.KOP_DB.DB()
+		db, _ := global.TD27_DB.DB()
 		defer db.Close()
 	}
 	core.RunServer()

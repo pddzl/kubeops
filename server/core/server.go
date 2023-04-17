@@ -7,62 +7,44 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/initialize"
-	"github.com/pddzl/kubeops/server/service/system"
 )
 
 func RunServer() {
-	if global.KOP_CONFIG.System.UseMultipoint || global.KOP_CONFIG.System.UseRedis {
-		// 初始化redis服务
+	if global.TD27_CONFIG.System.UseMultipoint {
 		initialize.Redis()
 	}
 
-	// 从db加载jwt数据
-	if global.KOP_DB != nil {
-		system.LoadAll()
-	}
-
-	// Create context that listens for the interrupt signal from the OS.
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
-	address := fmt.Sprintf(":%d", global.KOP_CONFIG.System.Addr)
+	addr := fmt.Sprintf("%s:%d", global.TD27_CONFIG.System.Host, global.TD27_CONFIG.System.Port)
 	router := initialize.Routers()
-	router.Static("/form-generator", "./resource/page")
-	srv := &http.Server{
-		Addr:           address,
+	srv := http.Server{
+		Addr:           addr,
 		Handler:        router,
-		ReadTimeout:    300 * time.Second,
-		WriteTimeout:   300 * time.Second,
+		ReadTimeout:    120 * time.Second,
+		WriteTimeout:   120 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	// Initializing the server in a goroutine so that
-	// it won't block the graceful shutdown handling below
 	go func() {
+		// 服务连接
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			global.KOP_LOG.Info(fmt.Sprintf("listen: %s", err))
+			global.TD27_LOG.Error("listen", zap.Error(err))
 		}
 	}()
 
-	// Listen for the interrupt signal.
-	<-ctx.Done()
+	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	global.TD27_LOG.Info("Shutdown Server ...")
 
-	// Restore default behavior on the interrupt signal and notify user of shutdown.
-	stop()
-	global.KOP_LOG.Info("shutting down gracefully, press Ctrl+C again to force")
-
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		global.KOP_LOG.Error("Server forced to shutdown: ", zap.Error(err))
-		os.Exit(1)
+		global.TD27_LOG.Error("Server Shutdown", zap.Error(err))
 	}
-	global.KOP_LOG.Info("Server exiting")
+	global.TD27_LOG.Info("Server exiting")
 }
