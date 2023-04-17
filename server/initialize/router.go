@@ -27,8 +27,8 @@ func Routers() *gin.Engine {
 	global.KOP_LOG.Info("register swagger handler")
 	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// 路由组
-	systemRouter := router.RouterGroupApp.System
+	// 系统路由组
+	systemRouter := router.RouterGroupApp.SystemRouterGroup
 
 	PublicGroup := Router.Group("")
 	{
@@ -51,6 +51,15 @@ func Routers() *gin.Engine {
 		systemRouter.InitApiRouter(PrivateGroup)
 		systemRouter.InitCasbinRouter(PublicGroup)
 		systemRouter.InitJwtRouter(PublicGroup)
+	}
+
+	// k8s路由
+	k8sRouter := router.RouterGroupApp.K8sRouterGroup
+
+	K8sGroup := Router.Group("/k8s")
+	K8sGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
+	{
+		k8sRouter.InitNodeRouter(K8sGroup)
 	}
 
 	global.KOP_LOG.Info("router register success")
