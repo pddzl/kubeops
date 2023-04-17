@@ -18,7 +18,7 @@ type UserService struct{}
 func (us *UserService) Login(u *systemModel.UserModel) (userInter *systemModel.UserModel, err error) {
 	var userModel systemModel.UserModel
 	u.Password = utils.MD5V([]byte(u.Password))
-	err = global.TD27_DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&userModel).Error
+	err = global.KOP_DB.Where("username = ? AND password = ?", u.Username, u.Password).First(&userModel).Error
 	if err != nil {
 		return nil, errors.New("用户不存在或密码不正确")
 	}
@@ -29,7 +29,7 @@ func (us *UserService) Login(u *systemModel.UserModel) (userInter *systemModel.U
 }
 
 func (us *UserService) GetUserInfo(userId uint) (userResults systemRes.UserResult, err error) {
-	err = global.TD27_DB.Table("sys_user").Select("sys_user.created_at,sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("inner join sys_role on sys_user.role_model_id = sys_role.id").Where("sys_user.id = ?", userId).Scan(&userResults).Error
+	err = global.KOP_DB.Table("sys_user").Select("sys_user.created_at,sys_user.id,sys_user.username,sys_user.phone,sys_user.email,sys_user.active,sys_user.role_model_id,sys_role.role_name").Joins("inner join sys_role on sys_user.role_model_id = sys_role.id").Where("sys_user.id = ?", userId).Scan(&userResults).Error
 	return
 }
 
@@ -38,7 +38,7 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemRes.UserResu
 	var userResults []systemRes.UserResult
 	var total int64
 
-	db := global.TD27_DB.Model(&systemModel.UserModel{})
+	db := global.KOP_DB.Model(&systemModel.UserModel{})
 
 	// 分页
 	err := db.Count(&total).Error
@@ -58,14 +58,14 @@ func (us *UserService) GetUsers(pageInfo request.PageInfo) ([]systemRes.UserResu
 
 // DeleteUser 删除用户
 func (us *UserService) DeleteUser(id uint) (err error) {
-	return global.TD27_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.UserModel{}).Error
+	return global.KOP_DB.Where("id = ?", id).Unscoped().Delete(&systemModel.UserModel{}).Error
 }
 
 // AddUser 添加用户
 func (us *UserService) AddUser(user systemReq.AddUser) (err error) {
-	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
+	err = global.KOP_DB.Where("id = ?", user.RoleModelID).First(&systemModel.RoleModel{}).Error
 	if err != nil {
-		global.TD27_LOG.Error("添加用户 -> 查询role", zap.Error(err))
+		global.KOP_LOG.Error("添加用户 -> 查询role", zap.Error(err))
 		return err
 	}
 
@@ -77,7 +77,7 @@ func (us *UserService) AddUser(user systemReq.AddUser) (err error) {
 	userModel.Active = user.Active
 	userModel.RoleModelID = user.RoleModelID
 
-	return global.TD27_DB.Create(&userModel).Error
+	return global.KOP_DB.Create(&userModel).Error
 }
 
 // EditUser 编辑用户
@@ -85,17 +85,17 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemRes.UserResult,
 	var userModel systemModel.UserModel
 	var userResult systemRes.UserResult
 	// 用户是否存在
-	err := global.TD27_DB.Where("id = ?", user.Id).First(&userModel).Error
+	err := global.KOP_DB.Where("id = ?", user.Id).First(&userModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> 查询Id", zap.Error(err))
+		global.KOP_LOG.Error("编辑用户 -> 查询Id", zap.Error(err))
 		return nil, err
 	}
 
 	// 角色是否存在
 	var roleModel systemModel.RoleModel
-	err = global.TD27_DB.Where("id = ?", user.RoleModelID).First(&roleModel).Error
+	err = global.KOP_DB.Where("id = ?", user.RoleModelID).First(&roleModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
+		global.KOP_LOG.Error("编辑用户 -> 查询role", zap.Error(err))
 		return nil, err
 	}
 
@@ -106,9 +106,9 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemRes.UserResult,
 	updateV["phone"] = user.Phone
 	updateV["email"] = user.Email
 
-	err = global.TD27_DB.Model(&userModel).Updates(updateV).Error
+	err = global.KOP_DB.Model(&userModel).Updates(updateV).Error
 	if err != nil {
-		global.TD27_LOG.Error("编辑用户 -> update", zap.Error(err))
+		global.KOP_LOG.Error("编辑用户 -> update", zap.Error(err))
 		return nil, err
 	}
 
@@ -126,25 +126,25 @@ func (us *UserService) EditUser(user systemReq.EditUser) (*systemRes.UserResult,
 // ModifyPass 修改用户密码
 func (us *UserService) ModifyPass(mp systemReq.ModifyPass) (err error) {
 	var userModel systemModel.UserModel
-	err = global.TD27_DB.Where("id = ? and password = ?", mp.Id, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error
+	err = global.KOP_DB.Where("id = ? and password = ?", mp.Id, utils.MD5V([]byte(mp.OldPassword))).First(&userModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("修改用户密码 -> 查询用户", zap.Error(err))
+		global.KOP_LOG.Error("修改用户密码 -> 查询用户", zap.Error(err))
 		return err
 	}
-	return global.TD27_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error
+	return global.KOP_DB.Model(&userModel).Update("password", utils.MD5V([]byte(mp.NewPassword))).Error
 }
 
 // SwitchActive 切换启用状态
 func (us *UserService) SwitchActive(sa systemReq.SwitchActive) (err error) {
 	var userModel systemModel.UserModel
-	err = global.TD27_DB.Where("id = ?", sa.Id).First(&userModel).Error
+	err = global.KOP_DB.Where("id = ?", sa.Id).First(&userModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("切换启用状态 -> 查询用户", zap.Error(err))
+		global.KOP_LOG.Error("切换启用状态 -> 查询用户", zap.Error(err))
 		return err
 	}
 	if sa.Active {
-		return global.TD27_DB.Model(&userModel).Update("active", true).Error
+		return global.KOP_DB.Model(&userModel).Update("active", true).Error
 	} else {
-		return global.TD27_DB.Model(&userModel).Update("active", false).Error
+		return global.KOP_DB.Model(&userModel).Update("active", false).Error
 	}
 }

@@ -16,14 +16,14 @@ var LumberjackLogs = new(lumberjackLogs)
 // GetWriteSyncer 获取 zapcore.WriteSyncer
 func (l *lumberjackLogs) GetWriteSyncer(level string) zapcore.WriteSyncer {
 	fileWriter := &lumberjack.Logger{
-		Filename:   path.Join(global.TD27_CONFIG.Zap.Director, level+".log"),
-		MaxSize:    global.TD27_CONFIG.RotateLogs.MaxSize,
-		MaxBackups: global.TD27_CONFIG.RotateLogs.MaxBackups,
-		MaxAge:     global.TD27_CONFIG.RotateLogs.MaxAge,
-		Compress:   global.TD27_CONFIG.RotateLogs.Compress,
+		Filename:   path.Join(global.KOP_CONFIG.Zap.Director, level+".log"),
+		MaxSize:    global.KOP_CONFIG.RotateLogs.MaxSize,
+		MaxBackups: global.KOP_CONFIG.RotateLogs.MaxBackups,
+		MaxAge:     global.KOP_CONFIG.RotateLogs.MaxAge,
+		Compress:   global.KOP_CONFIG.RotateLogs.Compress,
 	}
 
-	if global.TD27_CONFIG.Zap.LogInConsole {
+	if global.KOP_CONFIG.Zap.LogInConsole {
 		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(fileWriter))
 	}
 	return zapcore.AddSync(fileWriter)

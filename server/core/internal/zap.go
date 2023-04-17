@@ -14,7 +14,7 @@ var Zap = new(_zap)
 
 // CustomTimeEncoder 自定义日志输出时间格式
 func (z *_zap) CustomTimeEncoder(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-	encoder.AppendString(global.TD27_CONFIG.Zap.Prefix + t.Format("2006/01/02 - 15:04:05.000"))
+	encoder.AppendString(global.KOP_CONFIG.Zap.Prefix + t.Format("2006/01/02 - 15:04:05.000"))
 }
 
 // GetEncoderConfig 获取zapcore.EncoderConfig
@@ -25,9 +25,9 @@ func (z *_zap) GetEncoderConfig() zapcore.EncoderConfig {
 		TimeKey:        "time",
 		NameKey:        "logger",
 		CallerKey:      "caller",
-		StacktraceKey:  global.TD27_CONFIG.Zap.StacktraceKey,
+		StacktraceKey:  global.KOP_CONFIG.Zap.StacktraceKey,
 		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    global.TD27_CONFIG.Zap.ZapEncodeLevel(),
+		EncodeLevel:    global.KOP_CONFIG.Zap.ZapEncodeLevel(),
 		EncodeTime:     z.CustomTimeEncoder,
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.FullCallerEncoder,
@@ -36,7 +36,7 @@ func (z *_zap) GetEncoderConfig() zapcore.EncoderConfig {
 
 // GetEncoder 获取 zapcore.Encoder
 func (z *_zap) GetEncoder() zapcore.Encoder {
-	if global.TD27_CONFIG.Zap.Format == "json" {
+	if global.KOP_CONFIG.Zap.Format == "json" {
 		return zapcore.NewJSONEncoder(z.GetEncoderConfig())
 	}
 	return zapcore.NewConsoleEncoder(z.GetEncoderConfig())
@@ -91,7 +91,7 @@ func (z *_zap) GetLevelPriority(level zapcore.Level) zap.LevelEnablerFunc {
 // GetZapCores 根据配置文件的Level获取 []zapcore.Core
 func (z *_zap) GetZapCores() []zapcore.Core {
 	cores := make([]zapcore.Core, 0, 7)
-	for level := global.TD27_CONFIG.Zap.TransportLevel(); level <= zapcore.FatalLevel; level++ {
+	for level := global.KOP_CONFIG.Zap.TransportLevel(); level <= zapcore.FatalLevel; level++ {
 		cores = append(cores, z.GetEncoderCore(level, z.GetLevelPriority(level)))
 	}
 	return cores

@@ -3,7 +3,7 @@ package system
 import "github.com/pddzl/kubeops/server/global"
 
 type ApiModel struct {
-	global.TD27_MODEL
+	global.KOP_MODEL
 	Path        string `json:"path" gorm:"not null;comment:api路径" validate:"required"`             // api路径
 	Description string `json:"description" gorm:"not null;comment:api中文描述" validate:"required"`    // api中文描述
 	ApiGroup    string `json:"api_group" gorm:"not null;comment:api组" validate:"required"`         // api组

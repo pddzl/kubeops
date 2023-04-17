@@ -6,15 +6,19 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 
 	"github.com/pddzl/kubeops/server/config"
 )
 
 var (
-	TD27_VP                  *viper.Viper
-	TD27_CONFIG              config.Server
-	TD27_LOG                 *zap.Logger
-	TD27_DB                  *gorm.DB
-	TD27_REDIS               *redis.Client
-	TD27_Concurrency_Control = &singleflight.Group{}
+	KOP_VP                  *viper.Viper
+	KOP_CONFIG              config.Server
+	KOP_LOG                 *zap.Logger
+	KOP_DB                  *gorm.DB
+	KOP_REDIS               *redis.Client
+	KOP_Concurrency_Control = &singleflight.Group{}
+	KOP_K8S_Client          *kubernetes.Clientset
+	KOP_K8S_CONFIG          *rest.Config
 )

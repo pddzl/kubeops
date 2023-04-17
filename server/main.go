@@ -10,18 +10,25 @@ import (
 )
 
 func main() {
-	global.TD27_VP = core.Viper() // 初始化viper
-	global.TD27_LOG = core.Zap()  // 初始化zap日志
-	zap.ReplaceGlobals(global.TD27_LOG)
-	global.TD27_DB = initialize.Gorm() // gorm连接数据库
-	if global.TD27_DB == nil {
-		global.TD27_LOG.Error("mysql连接失败，退出程序")
+	global.KOP_VP = core.Viper() // 初始化viper
+	global.KOP_LOG = core.Zap()  // 初始化zap日志
+	zap.ReplaceGlobals(global.KOP_LOG)
+	global.KOP_DB = initialize.Gorm() // gorm连接数据库
+	if global.KOP_DB == nil {
+		global.KOP_LOG.Error("mysql连接失败，退出程序")
 		os.Exit(127)
 	} else {
-		initialize.RegisterTables(global.TD27_DB) // 初始化表
+		initialize.RegisterTables(global.KOP_DB) // 初始化表
 		// 程序结束前关闭数据库链接
-		db, _ := global.TD27_DB.DB()
+		db, _ := global.KOP_DB.DB()
 		defer db.Close()
 	}
+
+	global.KOP_K8S_Client, global.KOP_K8S_CONFIG = initialize.K8sConnect()
+	if global.KOP_K8S_Client == nil {
+		global.KOP_LOG.Error("k8s连接失败，退出程序")
+		os.Exit(128)
+	}
+
 	core.RunServer()
 }

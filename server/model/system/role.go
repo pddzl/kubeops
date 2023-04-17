@@ -3,7 +3,7 @@ package system
 import "github.com/pddzl/kubeops/server/global"
 
 type RoleModel struct {
-	global.TD27_MODEL
+	global.KOP_MODEL
 	RoleName string `json:"roleName" gorm:"unique"`
 	//Users    []*UserModel `json:"users"`
 	Menus []*MenuModel `json:"menus" gorm:"many2many:role_menus;"`

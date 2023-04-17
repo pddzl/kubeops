@@ -25,8 +25,8 @@ func NewWriter(w logger.Writer) *writer {
 
 // Printf 格式化打印日志
 func (w *writer) Printf(message string, data ...interface{}) {
-	if global.TD27_CONFIG.Mysql.LogZap {
-		global.TD27_LOG.Info(fmt.Sprintf(message+"\n", data...))
+	if global.KOP_CONFIG.Mysql.LogZap {
+		global.KOP_LOG.Info(fmt.Sprintf(message+"\n", data...))
 	} else {
 		w.Writer.Printf(message, data...)
 	}
@@ -51,7 +51,7 @@ func gormConfig() *gorm.Config {
 
 // Gorm 初始化数据库并产生数据库全局变量
 func Gorm() *gorm.DB {
-	m := global.TD27_CONFIG.Mysql
+	m := global.KOP_CONFIG.Mysql
 	if m.Dbname == "" {
 		return nil
 	}
@@ -66,7 +66,7 @@ func Gorm() *gorm.DB {
 		SkipInitializeWithVersion: false, // 根据版本自动配置
 	}
 	if db, err := gorm.Open(mysql.New(mysqlConfig), gormConfig()); err != nil {
-		global.TD27_LOG.Error("mysql连接失败", zap.Error(err))
+		global.KOP_LOG.Error("mysql连接失败", zap.Error(err))
 		return nil
 	} else {
 		sqlDB, _ := db.DB()
@@ -87,8 +87,8 @@ func RegisterTables(db *gorm.DB) {
 	)
 
 	if err != nil {
-		global.TD27_LOG.Error("register table failed", zap.Error(err))
+		global.KOP_LOG.Error("register table failed", zap.Error(err))
 		os.Exit(0)
 	}
-	global.TD27_LOG.Info("register table success")
+	global.KOP_LOG.Info("register table success")
 }

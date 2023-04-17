@@ -9,4 +9,5 @@ type Server struct {
 	Redis      Redis      `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	Cors       CORS       `mapstructure:"cors" json:"cors" yaml:"cors"` // 跨域配置
+	K8s        K8s        `mapstructure:"k8s" json:"k8s" yaml:"k8s"`
 }

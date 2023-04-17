@@ -30,20 +30,20 @@ func getTreeMap(menuListFormat []systemModel.MenuModel, menuList []systemModel.M
 func (ms *MenuService) GetMenus(userId uint) ([]systemModel.MenuModel, error) {
 	// 查找用户
 	var userModel systemModel.UserModel
-	err := global.TD27_DB.Where("id = ?", userId).First(&userModel).Error
+	err := global.KOP_DB.Where("id = ?", userId).First(&userModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 用户查询 -> %v", err)
 	}
 
 	// 查找用户对应角色
 	var roleModel systemModel.RoleModel
-	err = global.TD27_DB.Where("id = ?", userModel.RoleModelID).First(&roleModel).Error
+	err = global.KOP_DB.Where("id = ?", userModel.RoleModelID).First(&roleModel).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 角色查询 -> %v", err)
 	}
 
 	var menuModels []systemModel.MenuModel
-	err = global.TD27_DB.Preload("Roles").Find(&menuModels).Error
+	err = global.KOP_DB.Preload("Roles").Find(&menuModels).Error
 	if err != nil {
 		return nil, fmt.Errorf("GetMenus 菜单查询 -> %v", err)
 	}
@@ -84,8 +84,8 @@ func (ms *MenuService) AddMenu(menuRaw systemReq.Menu) bool {
 	menuModel.Meta.Affix = menuRaw.Meta.Affix
 	menuModel.Meta.KeepAlive = menuRaw.Meta.KeepAlive
 
-	if err := global.TD27_DB.Create(&menuModel).Error; err != nil {
-		global.TD27_LOG.Error("创建menu失败", zap.Error(err))
+	if err := global.KOP_DB.Create(&menuModel).Error; err != nil {
+		global.KOP_LOG.Error("创建menu失败", zap.Error(err))
 		return false
 	}
 
@@ -96,7 +96,7 @@ func (ms *MenuService) EditMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	var menuModel systemModel.MenuModel
 	var metaData systemModel.Meta
 
-	if errors.Is(global.TD27_DB.Where("id = ?", menuRaw.Id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+	if errors.Is(global.KOP_DB.Where("id = ?", menuRaw.Id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
 	}
 
@@ -106,7 +106,7 @@ func (ms *MenuService) EditMenu(menuRaw systemReq.EditMenuReq) (err error) {
 	metaData.Affix = menuRaw.Meta.Affix
 	metaData.KeepAlive = menuRaw.Meta.KeepAlive
 
-	err = global.TD27_DB.Model(&menuModel).Updates(map[string]interface{}{
+	err = global.KOP_DB.Model(&menuModel).Updates(map[string]interface{}{
 		"pid":       menuRaw.Pid,
 		"name":      menuRaw.Name,
 		"path":      menuRaw.Path,
@@ -120,10 +120,10 @@ func (ms *MenuService) EditMenu(menuRaw systemReq.EditMenuReq) (err error) {
 
 func (ms *MenuService) DeleteMenu(id uint) (err error) {
 	var menuModel systemModel.MenuModel
-	if errors.Is(global.TD27_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
+	if errors.Is(global.KOP_DB.Where("id = ?", id).First(&menuModel).Error, gorm.ErrRecordNotFound) {
 		return errors.New("菜单不存在")
 	}
-	err = global.TD27_DB.Unscoped().Select("Roles").Delete(&menuModel).Error
+	err = global.KOP_DB.Unscoped().Select("Roles").Delete(&menuModel).Error
 
 	return err
 }
@@ -131,9 +131,9 @@ func (ms *MenuService) DeleteMenu(id uint) (err error) {
 // GetElTreeMenus 获取所有menu
 func (ms *MenuService) GetElTreeMenus(roleId uint) ([]systemModel.MenuModel, []uint, error) {
 	var menuModels []systemModel.MenuModel
-	err := global.TD27_DB.Find(&menuModels).Error
+	err := global.KOP_DB.Find(&menuModels).Error
 	if err != nil {
-		global.TD27_LOG.Error("GetElTreeMenus 查询menus", zap.Error(err))
+		global.KOP_LOG.Error("GetElTreeMenus 查询menus", zap.Error(err))
 		return nil, nil, err
 	}
 
@@ -147,9 +147,9 @@ func (ms *MenuService) GetElTreeMenus(roleId uint) ([]systemModel.MenuModel, []u
 	getTreeMap(menuListFormat, menuModels)
 
 	var roleModel systemModel.RoleModel
-	err = global.TD27_DB.Where("id = ?", roleId).Preload("Menus").First(&roleModel).Error
+	err = global.KOP_DB.Where("id = ?", roleId).Preload("Menus").First(&roleModel).Error
 	if err != nil {
-		global.TD27_LOG.Error("GetElTreeMenus 查询role", zap.Error(err))
+		global.KOP_LOG.Error("GetElTreeMenus 查询role", zap.Error(err))
 		return nil, nil, err
 	}
 

@@ -18,7 +18,7 @@ func (ua *UserApi) GetUserInfo(c *gin.Context) {
 	userInfo, err := utils.GetUserInfo(c)
 	if err != nil {
 		response.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取失败!", zap.Error(err))
+		global.KOP_LOG.Error("获取失败!", zap.Error(err))
 	}
 
 	if user, err := userService.GetUserInfo(userInfo.ID); err != nil {
@@ -35,7 +35,7 @@ func (ua *UserApi) GetUsers(c *gin.Context) {
 
 	if list, total, err := userService.GetUsers(pageInfo); err != nil {
 		response.FailWithMessage("获取失败", c)
-		global.TD27_LOG.Error("获取users失败", zap.Error(err))
+		global.KOP_LOG.Error("获取users失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(response.PageResult{
 			Page:     pageInfo.Page,
@@ -55,13 +55,13 @@ func (ua *UserApi) DeleteUser(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(&cId); err != nil {
 		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		global.KOP_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if err := userService.DeleteUser(cId.ID); err != nil {
 		response.FailWithMessage("删除失败", c)
-		global.TD27_LOG.Error("删除失败", zap.Error(err))
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("删除成功", c)
 	}
@@ -76,13 +76,13 @@ func (ua *UserApi) AddUser(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(&addUser); err != nil {
 		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		global.KOP_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if err := userService.AddUser(addUser); err != nil {
 		response.FailWithMessage("添加失败", c)
-		global.TD27_LOG.Error("添加失败", zap.Error(err))
+		global.KOP_LOG.Error("添加失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("添加成功", c)
 	}
@@ -97,13 +97,13 @@ func (ua *UserApi) EditUser(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(&editUser); err != nil {
 		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		global.KOP_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if user, err := userService.EditUser(editUser); err != nil {
 		response.FailWithMessage("编辑失败", c)
-		global.TD27_LOG.Error("编辑失败", zap.Error(err))
+		global.KOP_LOG.Error("编辑失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(user, "编辑成功", c)
 	}
@@ -118,13 +118,13 @@ func (ua *UserApi) ModifyPass(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(&mp); err != nil {
 		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		global.KOP_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if err := userService.ModifyPass(mp); err != nil {
 		response.FailWithMessage("修改失败", c)
-		global.TD27_LOG.Error("修改失败", zap.Error(err))
+		global.KOP_LOG.Error("修改失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("修改成功", c)
 	}
@@ -139,13 +139,13 @@ func (ua *UserApi) SwitchActive(c *gin.Context) {
 	validate := validator.New()
 	if err := validate.Struct(&sa); err != nil {
 		response.FailWithMessage("请求参数错误", c)
-		global.TD27_LOG.Error("请求参数错误", zap.Error(err))
+		global.KOP_LOG.Error("请求参数错误", zap.Error(err))
 		return
 	}
 
 	if err := userService.SwitchActive(sa); err != nil {
 		response.FailWithMessage("切换失败", c)
-		global.TD27_LOG.Error("切换失败", zap.Error(err))
+		global.KOP_LOG.Error("切换失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("切换成功", c)
 	}

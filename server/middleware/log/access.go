@@ -17,7 +17,7 @@ func GinLogger() gin.HandlerFunc {
 		c.Next()
 
 		cost := time.Since(start)
-		global.TD27_LOG.Info(
+		global.KOP_LOG.Info(
 			path,
 			zap.Int("status", c.Writer.Status()),
 			zap.String("method", c.Request.Method),
