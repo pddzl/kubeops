@@ -1,27 +1,17 @@
-<template>
-  <div id="app">
-    <router-view />
-  </div>
-</template>
+<script lang="ts" setup>
+import { useTheme } from "@/hooks/useTheme"
+import zhCn from "element-plus/lib/locale/lang/zh-cn"
 
-<script>
-export default {
-  name: 'App'
-}
+const { initTheme } = useTheme()
+
+/** 初始化主题 */
+initTheme()
+/** 将 Element Plus 的语言设置为中文 */
+const locale = zhCn
 </script>
 
-<style lang="scss">
-// 引入初始化样式
-@import '@/style/main.scss';
-@import '@/style/base.scss';
-@import '@/style/mobile.scss';
-#app {
-  background: #eee;
-  height: 100vh;
-  overflow: hidden;
-  font-weight: 400 !important;
-}
-.el-button{
-  font-weight: 400 !important;
-}
-</style>
+<template>
+  <ElConfigProvider :locale="locale">
+    <router-view />
+  </ElConfigProvider>
+</template>
