@@ -11,6 +11,7 @@ import (
 
 type NodeApi struct{}
 
+// GetNodes 获取节点列表
 func (na *NodeApi) GetNodes(c *gin.Context) {
 	var info request.PageInfo
 
@@ -32,5 +33,17 @@ func (na *NodeApi) GetNodes(c *gin.Context) {
 			Page:     info.Page,
 			PageSize: info.PageSize,
 		}, "获取成功", c)
+	}
+}
+
+// GetNodeDetail 获取某个节点详情
+func (na *NodeApi) GetNodeDetail(c *gin.Context) {
+	name := c.Query("name")
+
+	if detail, err := nodeService.GetNodeDetail(name); err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }

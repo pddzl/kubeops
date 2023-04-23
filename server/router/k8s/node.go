@@ -12,6 +12,7 @@ func (nr *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	nodeApi := api.ApiGroupApp.K8sApiGroup.NodeApi
 	{
 		nodeRouter.POST("getNodes", nodeApi.GetNodes)
+		nodeRouter.GET("getNodeDetail", nodeApi.GetNodeDetail)
 	}
 	return nodeRouter
 }

@@ -14,11 +14,11 @@
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column label="名称" prop="name">
-            <!-- <template #default="scope">
-              <router-link :to="{ name: 'node_detail', query: { name: scope.row.name } }">
+            <template #default="scope">
+              <router-link :to="{ name: 'NodeDetail', query: { name: scope.row.name } }">
                 <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
               </router-link>
-            </template> -->
+            </template>
           </el-table-column>
           <el-table-column prop="internalIP" label="内部IP" />
           <el-table-column prop="roles" label="角色">
