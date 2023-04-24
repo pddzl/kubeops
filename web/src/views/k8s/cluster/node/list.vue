@@ -72,7 +72,7 @@ import { usePagination } from "@/hooks/usePagination"
 import { type NodeData, getNodesApi } from "@/api/k8s/node"
 
 defineOptions({
-  name: "Node"
+  name: "NodeList"
 })
 
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()

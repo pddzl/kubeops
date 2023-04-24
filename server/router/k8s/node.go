@@ -13,6 +13,7 @@ func (nr *NodeRouter) InitNodeRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	{
 		nodeRouter.POST("getNodes", nodeApi.GetNodes)
 		nodeRouter.GET("getNodeDetail", nodeApi.GetNodeDetail)
+		nodeRouter.POST("getNodePods", nodeApi.GetNodePods)
 	}
 	return nodeRouter
 }

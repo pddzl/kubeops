@@ -6,6 +6,7 @@ import (
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/common/response"
+	k8sRequest "github.com/pddzl/kubeops/server/model/k8s/request"
 	"go.uber.org/zap"
 )
 
@@ -45,5 +46,29 @@ func (na *NodeApi) GetNodeDetail(c *gin.Context) {
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(detail, "获取成功", c)
+	}
+}
+
+func (na *NodeApi) GetNodePods(c *gin.Context) {
+	var node k8sRequest.NodePods
+	_ = c.ShouldBindJSON(&node)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&node); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	pods, total, err := nodeService.GetNodePods(node.NodeName, node.PageInfo)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(response.PageResult{
+			List:     pods,
+			Total:    total,
+			Page:     node.Page,
+			PageSize: node.PageSize,
+		}, "获取成功", c)
 	}
 }

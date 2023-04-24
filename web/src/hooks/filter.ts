@@ -17,3 +17,15 @@ const nodeStatus: Record<status, string> = {
 export const nodeStatusFilter = (status: status) => {
   return nodeStatus[status] || "Unknown"
 }
+
+// Pod
+
+type podStatus = "Running"
+
+const podStatusMap: Record<podStatus, string> = {
+  Running: "success"
+}
+
+export const PodStatusFilter = (status: podStatus) => {
+  return podStatusMap[status] || "info"
+}

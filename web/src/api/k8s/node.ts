@@ -61,3 +61,32 @@ export function getNodeDetail(params: { name: string }) {
     params
   })
 }
+
+export interface NodePods {
+  metadata: {
+    name: string
+    namespace: string
+    creationTimestamp: string
+  }
+  status: string
+  nodeName: string
+}
+
+export interface NodePodsPageInfo {
+  list: NodePods[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+interface nodePodsData extends PageInfo {
+  node_name: string
+}
+
+export function getNodePods(data: nodePodsData) {
+  return request<IApiResponseData<NodePodsPageInfo>>({
+    url: "/k8s/node/getNodePods",
+    method: "post",
+    data
+  })
+}
