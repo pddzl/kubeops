@@ -29,3 +29,15 @@ const podStatusMap: Record<podStatus, string> = {
 export const PodStatusFilter = (status: podStatus) => {
   return podStatusMap[status] || "info"
 }
+
+// namespace
+
+type namespaceStatus = "Active"
+
+const namespaceStatusMap = {
+  Active: "success"
+}
+
+export const NamespaceStatusFilter = (status: namespaceStatus) => {
+  return namespaceStatusMap[status] || "info"
+}

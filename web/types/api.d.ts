@@ -5,7 +5,7 @@ interface IApiResponseData<T> {
   msg: string
 }
 
-/** 请求ID */ 
+/** 请求ID */
 interface reqId {
   id: number
 }

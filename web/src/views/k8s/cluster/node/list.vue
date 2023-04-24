@@ -73,7 +73,7 @@ import { ref } from "vue"
 import { nodeStatusTypeFilter, nodeStatusFilter } from "@/hooks/filter"
 import { usePagination } from "@/hooks/usePagination"
 import { type NodeData, getNodesApi } from "@/api/k8s/node"
-import { getResourceRaw } from "@/api/k8s/resource"
+import { getResourceRawApi } from "@/api/k8s/resource"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 
 defineOptions({
@@ -119,7 +119,7 @@ const handleCurrentChange = (value: number) => {
 const dialogFormVisible = ref(false)
 let nodeFormat: string
 const viewNode = async (name: string) => {
-  const result = await getResourceRaw({ name: name, resource: "nodes" })
+  const result = await getResourceRawApi({ name: name, resource: "nodes" })
   if (result.code === 0) {
     nodeFormat = JSON.stringify(result.data)
   }
