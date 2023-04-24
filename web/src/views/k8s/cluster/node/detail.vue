@@ -192,8 +192,7 @@
       </el-collapse>
     </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
-      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-      <!-- <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" /> -->
+      <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -203,11 +202,12 @@ import { ref } from "vue"
 import { useRoute } from "vue-router"
 // import { type NodeDetail, getNodeDetail, getNodeRaw, getNodePods } from "@/api/k8s/node"
 import { type NodePods, getNodeDetail, getNodePods } from "@/api/k8s/node"
+import { getResourceRaw } from "@/api/k8s/resource"
 // import { statusPodFilter } from "@/mixin/filter.js"
 import { formatDateTime } from "@/utils/index"
 import MetaData from "@/components/k8s/metadata.vue"
 import PodBrief from "@/components/k8s/pod_brief.vue"
-// import VueCodeMirror from "@/components/codeMirror/index.vue"
+import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { usePagination } from "@/hooks/usePagination"
 
 defineOptions({
@@ -218,7 +218,6 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const activeNames = ref(["metadata", "spec", "nodeInfo", "allocated", "status", "pods"])
 const nodeDetail = ref<any>({})
-// const nodeFormat = {}
 const dialogFormVisible = ref(false)
 const nodePods = ref<NodePods[]>([])
 
@@ -260,11 +259,12 @@ const handleCurrentChange = (value: number) => {
 }
 
 // 操作
+let nodeFormat: string
 const viewNode = async () => {
-  // const res = await getNodeRaw({ name: nodeName })
-  // if (res.code === 0) {
-  //   nodeFormat.value = JSON.stringify(res.data)
-  // }
+  const res = await getResourceRaw({ name: nodeName, resource: "nodes" })
+  if (res.code === 0) {
+    nodeFormat = JSON.stringify(res.data)
+  }
   dialogFormVisible.value = true
 }
 </script>

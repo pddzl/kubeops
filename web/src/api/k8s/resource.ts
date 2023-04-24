@@ -1,0 +1,9 @@
+import { request } from "@/utils/service"
+
+export function getResourceRaw(data: { name: string; resource: string }) {
+  return request<IApiResponseData<any>>({
+    url: "/k8s/resource/getResourceRaw",
+    method: "post",
+    data
+  })
+}

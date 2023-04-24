@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="pods">
+  <el-table :data="props.pods">
     <el-table-column label="名称" min-width="140">
       <!-- <template #default="scope">
         <router-link

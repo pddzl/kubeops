@@ -43,8 +43,8 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
-              <el-button icon="view" size="small" type="primary" link @click="viewNode(scope.row)">查看</el-button>
-              <el-button icon="delete" size="small" type="primary" link @click="deleteNode(scope.row)">删除</el-button>
+              <el-button icon="view" size="small" type="primary" link @click="viewNode(scope.row.name)">查看</el-button>
+              <el-button icon="delete" size="small" type="primary" link :disabled="true">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -62,6 +62,9 @@
         />
       </div>
     </el-card>
+    <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
+      <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
+    </el-dialog>
   </div>
 </template>
 
@@ -70,6 +73,8 @@ import { ref } from "vue"
 import { nodeStatusTypeFilter, nodeStatusFilter } from "@/hooks/filter"
 import { usePagination } from "@/hooks/usePagination"
 import { type NodeData, getNodesApi } from "@/api/k8s/node"
+import { getResourceRaw } from "@/api/k8s/resource"
+import VueCodeMirror from "@/components/codeMirror/index.vue"
 
 defineOptions({
   name: "NodeList"
@@ -108,5 +113,16 @@ const handleSizeChange = (value: number) => {
 const handleCurrentChange = (value: number) => {
   changeCurrentPage(value)
   getTableData()
+}
+
+// 操作
+const dialogFormVisible = ref(false)
+let nodeFormat: string
+const viewNode = async (name: string) => {
+  const result = await getResourceRaw({ name: name, resource: "nodes" })
+  if (result.code === 0) {
+    nodeFormat = JSON.stringify(result.data)
+  }
+  dialogFormVisible.value = true
 }
 </script>
