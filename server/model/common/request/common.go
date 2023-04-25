@@ -10,3 +10,8 @@ type PageInfo struct {
 	Page     int `json:"page" validate:"required"`     // 页码
 	PageSize int `json:"pageSize" validate:"required"` // 每页大小
 }
+
+// GetByName find by name
+type GetByName struct {
+	Name string `json:"name" from:"name" validate:"required"`
+}

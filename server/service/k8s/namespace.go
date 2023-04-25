@@ -11,6 +11,7 @@ import (
 
 type NamespaceService struct{}
 
+// GetNamespaceList 获取namepsace list
 func (nss *NamespaceService) GetNamespaceList(info request.PageInfo) ([]k8sResponse.NamespaceBrief, int, error) {
 	// 获取namespace list
 	list, err := global.KOP_K8S_Client.CoreV1().Namespaces().List(context.TODO(), metaV1.ListOptions{})
@@ -45,4 +46,36 @@ func (nss *NamespaceService) GetNamespaceList(info request.PageInfo) ([]k8sRespo
 	}
 
 	return namespaceBriefList, total, nil
+}
+
+// GetNamespaceDetail 获取某个namespace详情
+func (nss *NamespaceService) GetNamespaceDetail(name string) (*resourceNamespace.NamespaceDetail, error) {
+	// 获取namespace原生数据
+	namespace, err := global.KOP_K8S_Client.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// 处理namespace数据
+	var namespaceDetail resourceNamespace.NamespaceDetail
+	// metadata
+	namespaceDetail.Metadata = api.NewObjectMeta(namespace.ObjectMeta)
+	// status
+	namespaceDetail.Status = string(namespace.Status.Phase)
+
+	// resourceQuotaList
+	resourceQuotaList, err := getResourceQuotas(name)
+	if err != nil {
+		return nil, err
+	}
+	namespaceDetail.ResourceQuotaList = resourceQuotaList
+
+	// resourceLimits
+	resourceLimits, err := getLimitRanges(*namespace)
+	if err != nil {
+		return nil, err
+	}
+	namespaceDetail.ResourceLimits = resourceLimits
+
+	return &namespaceDetail, nil
 }

@@ -12,7 +12,7 @@ import (
 type NamespaceApi struct{}
 
 // GetNamespaces 获取集群所有namespace
-func (n *NamespaceApi) GetNamespaces(c *gin.Context) {
+func (na *NamespaceApi) GetNamespaces(c *gin.Context) {
 	var pageInfo request.PageInfo
 	_ = c.ShouldBindJSON(&pageInfo)
 	// 校验
@@ -33,5 +33,17 @@ func (n *NamespaceApi) GetNamespaces(c *gin.Context) {
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
 		}, "获取成功", c)
+	}
+}
+
+// GetNamespaceDetail 获取指定namespace详情
+func (na *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
+	var byName request.GetByName
+	_ = c.ShouldBindJSON(&byName)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&byName); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
 	}
 }
