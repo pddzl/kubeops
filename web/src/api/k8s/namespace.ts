@@ -12,3 +12,12 @@ export function getNamespacesApi(data: PageInfo) {
     data
   })
 }
+
+// 获取某个命名空间详情
+export function getNamespaceDetailApi(params: { name: string }) {
+  return request<IApiResponseData<any>>({
+    url: "/k8s/namespace/getNamespaceDetail",
+    method: "get",
+    params
+  })
+}

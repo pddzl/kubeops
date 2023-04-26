@@ -12,6 +12,7 @@ func (nr *NamespaceRouter) InitNamespaceRouter(Router *gin.RouterGroup) (R gin.I
 	namespaceApi := api.ApiGroupApp.K8sApiGroup.NamespaceApi
 	{
 		namespaceRouter.POST("getNamespaces", namespaceApi.GetNamespaces)
+		namespaceRouter.GET("getNamespaceDetail", namespaceApi.GetNamespaceDetail)
 	}
 	return namespaceRouter
 }

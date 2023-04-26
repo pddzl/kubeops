@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
+	"github.com/pddzl/kubeops/server/model/k8s"
 	k8sResponse "github.com/pddzl/kubeops/server/model/k8s/response"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -49,33 +50,32 @@ func (nss *NamespaceService) GetNamespaceList(info request.PageInfo) ([]k8sRespo
 }
 
 // GetNamespaceDetail 获取某个namespace详情
-func (nss *NamespaceService) GetNamespaceDetail(name string) (*resourceNamespace.NamespaceDetail, error) {
+func (nss *NamespaceService) GetNamespaceDetail(name string) (*k8sResponse.NamespaceDetail, error) {
 	// 获取namespace原生数据
 	namespace, err := global.KOP_K8S_Client.CoreV1().Namespaces().Get(context.TODO(), name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
 
-	// 处理namespace数据
-	var namespaceDetail resourceNamespace.NamespaceDetail
-	// metadata
-	namespaceDetail.Metadata = api.NewObjectMeta(namespace.ObjectMeta)
-	// status
+	var namespaceDetail k8sResponse.NamespaceDetail
+	namespaceDetail.Metadata = k8s.NewObjectMeta(namespace.ObjectMeta)
+
 	namespaceDetail.Status = string(namespace.Status.Phase)
 
-	// resourceQuotaList
-	resourceQuotaList, err := getResourceQuotas(name)
+	resourceQuotaList, err := global.KOP_K8S_Client.CoreV1().ResourceQuotas(name).List(context.Background(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
-	namespaceDetail.ResourceQuotaList = resourceQuotaList
 
-	// resourceLimits
-	resourceLimits, err := getLimitRanges(*namespace)
-	if err != nil {
-		return nil, err
+	for _, rq := range resourceQuotaList.Items {
+		var resourceQuota k8sResponse.ResourceQuota
+
+		resourceQuota.Name = rq.Name
+		resourceQuota.Hard = rq.Status.Hard
+		resourceQuota.Used = rq.Status.Used
+		// append
+		namespaceDetail.ResourceQuotas = append(namespaceDetail.ResourceQuotas, resourceQuota)
 	}
-	namespaceDetail.ResourceLimits = resourceLimits
 
 	return &namespaceDetail, nil
 }

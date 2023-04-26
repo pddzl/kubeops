@@ -14,11 +14,11 @@
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column label="名称">
-            <!-- <template #default="scope">
-              <router-link :to="{ name: 'namespace_detail', query: { name: scope.row.name } }">
+            <template #default="scope">
+              <router-link :to="{ name: 'NamespaceDetail', query: { name: scope.row.name } }">
                 <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
               </router-link>
-            </template> -->
+            </template>
           </el-table-column>
           <el-table-column label="状态">
             <template #default="scope">

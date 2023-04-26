@@ -38,12 +38,11 @@ func (na *NamespaceApi) GetNamespaces(c *gin.Context) {
 
 // GetNamespaceDetail 获取指定namespace详情
 func (na *NamespaceApi) GetNamespaceDetail(c *gin.Context) {
-	var byName request.GetByName
-	_ = c.ShouldBindJSON(&byName)
-	// 校验
-	validate := validator.New()
-	if err := validate.Struct(&byName); err != nil {
-		response.FailWithMessage(err.Error(), c)
-		return
+	name := c.Query("name")
+
+	if detail, err := namespaceService.GetNamespaceDetail(name); err != nil {
+		response.FailWithMessage("获取失败", c)
+	} else {
+		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
