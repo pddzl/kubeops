@@ -1,8 +1,10 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" size="small" type="primary" plain @click="viewNamespace">查看</el-button>
-      <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc">删除</el-button>
+      <el-button icon="view" size="small" type="primary" plain @click="viewResource">查看</el-button>
+      <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc" :disabled="testDel()"
+        >删除</el-button
+      >
     </div>
     <div class="kop-collapse">
       <el-collapse v-model="activeNames">
@@ -95,9 +97,11 @@
 import { ref } from "vue"
 import { useRoute } from "vue-router"
 import { NamespaceStatusFilter } from "@/hooks/filter"
-import { getNamespaceDetailApi } from "@/api/k8s/namespace"
+import { getNamespaceDetailApi, deleteNamespaceApi } from "@/api/k8s/namespace"
 import MetaData from "@/components/k8s/metadata.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
+import { getResourceRawApi } from "@/api/k8s/resource"
+import { ElMessage, ElMessageBox } from "element-plus"
 
 defineOptions({
   name: "NamespaceDetail"
@@ -109,6 +113,14 @@ const activeNames = ref(["metadata", "spec", "resourceQuota", "resourceLimit"])
 // 路由
 const route = useRoute()
 const namespace = route.query.name as string
+
+const testDel = (): boolean => {
+  if (namespace === "default") {
+    return true
+  }
+  const regex = new RegExp("kube-")
+  return regex.test(namespace)
+}
 
 // 加载namespace详情
 const namespaceDetail = ref<any>({})
@@ -123,31 +135,31 @@ const getData = async () => {
 getData()
 
 // 编辑
-const namespaceFormat = ref({})
+let namespaceFormat: string
 const dialogFormVisible = ref(false)
 
-const viewNamespace = async () => {
-  const res = await getNamespaceRaw({ name: namespace })
+const viewResource = async () => {
+  const res = await getResourceRawApi({ name: namespace, resource: "namespaces" })
   if (res.code === 0) {
-    namespaceFormat.value = JSON.stringify(res.data)
+    namespaceFormat = JSON.stringify(res.data)
   }
   dialogFormVisible.value = true
 }
 
 // 删除
 const deleteFunc = async () => {
-  // ElMessageBox.confirm("此操作将永久删除该Namespace, 是否继续?", "提示", {
-  //   confirmButtonText: "确定",
-  //   cancelButtonText: "取消",
-  //   type: "warning"
-  // }).then(async () => {
-  //   const res = await deleteNamespace({ name: namespace })
-  //   if (res.code === 0) {
-  //     ElMessage({
-  //       type: "success",
-  //       message: "删除成功!"
-  //     })
-  //   }
-  // })
+  ElMessageBox.confirm("此操作将永久删除该Namespace, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning"
+  }).then(async () => {
+    const res = await deleteNamespaceApi({ name: namespace })
+    if (res.code === 0) {
+      ElMessage({
+        type: "success",
+        message: "删除成功!"
+      })
+    }
+  })
 }
 </script>

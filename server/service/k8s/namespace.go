@@ -2,17 +2,19 @@ package k8s
 
 import (
 	"context"
+	"errors"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/request"
 	"github.com/pddzl/kubeops/server/model/k8s"
 	k8sResponse "github.com/pddzl/kubeops/server/model/k8s/response"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strings"
 )
 
 type NamespaceService struct{}
 
-// GetNamespaceList 获取namepsace list
+// GetNamespaceList 获取namespace list
 func (nss *NamespaceService) GetNamespaceList(info request.PageInfo) ([]k8sResponse.NamespaceBrief, int, error) {
 	// 获取namespace list
 	list, err := global.KOP_K8S_Client.CoreV1().Namespaces().List(context.TODO(), metaV1.ListOptions{})
@@ -92,4 +94,12 @@ func (nss *NamespaceService) GetNamespaceDetail(name string) (*k8sResponse.Names
 	}
 
 	return &namespaceDetail, nil
+}
+
+// DeleteNamespace 删除namespace
+func (nss *NamespaceService) DeleteNamespace(name string) error {
+	if strings.HasPrefix(name, "kube-") || name == "default" {
+		return errors.New("不允许删除")
+	}
+	return global.KOP_K8S_Client.CoreV1().Namespaces().Delete(context.TODO(), name, metaV1.DeleteOptions{})
 }

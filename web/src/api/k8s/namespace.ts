@@ -21,3 +21,13 @@ export function getNamespaceDetailApi(params: { name: string }) {
     params
   })
 }
+
+// 删除命名空间
+// 获取某个命名空间详情
+export function deleteNamespaceApi(data: { name: string }) {
+  return request<IApiResponseData<null>>({
+    url: "/k8s/namespace/deleteNamespace",
+    method: "post",
+    data
+  })
+}
