@@ -45,31 +45,39 @@
           </div>
         </el-collapse-item>
         <el-collapse-item
-          v-if="namespaceDetail.resourceLimits && namespaceDetail.resourceLimits.length > 0"
+          v-if="Array.isArray(namespaceDetail.limitRanges) && namespaceDetail.limitRanges.length > 0"
           title="资源限制"
           name="resourceLimit"
         >
-          <div v-for="(rLimit, keyRl) in namespaceDetail.resourceLimits" :key="keyRl" style="margin-right: 20px">
+          <div
+            v-for="(rLimit, keyRl) in namespaceDetail.limitRanges"
+            :key="keyRl"
+            style="margin-right: 20px; margin-bottom: 20px"
+          >
             <div style="margin-bottom: 10px">
               <el-tag size="small">{{ rLimit.name }}</el-tag>
             </div>
             <el-table :data="rLimit.limits">
               <el-table-column label="类型" align="center" prop="type" />
               <el-table-column label="max" align="center">
-                <el-table-column label="cpu" align="center" prop="max.cpu" />
-                <el-table-column label="memory" align="center" prop="max.memory" />
+                <template #default="scope">
+                  {{ scope.row.max }}
+                </template>
               </el-table-column>
               <el-table-column label="min" align="center">
-                <el-table-column label="cpu" align="center" prop="min.cpu" />
-                <el-table-column label="memory" align="center" prop="min.memory" />
+                <template #default="scope">
+                  {{ scope.row.min }}
+                </template>
               </el-table-column>
               <el-table-column label="default" align="center">
-                <el-table-column label="cpu" align="center" prop="default.cpu" />
-                <el-table-column label="memory" align="center" prop="default.memory" />
+                <template #default="scope">
+                  {{ scope.row.default }}
+                </template>
               </el-table-column>
               <el-table-column label="defaultRequest" align="center">
-                <el-table-column label="cpu" align="center" prop="defaultRequest.cpu" />
-                <el-table-column label="memory" align="center" prop="defaultRequest.memory" />
+                <template #default="scope">
+                  {{ scope.row.defaultRequest }}
+                </template>
               </el-table-column>
             </el-table>
           </div>

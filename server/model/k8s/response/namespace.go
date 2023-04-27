@@ -17,10 +17,16 @@ type NamespaceDetail struct {
 	Metadata       k8s.ObjectMeta  `json:"metadata"`
 	Status         string          `json:"status"`
 	ResourceQuotas []ResourceQuota `json:"resourceQuotas"`
+	LimitRanges    []LimitRange    `json:"limitRanges"`
 }
 
 type ResourceQuota struct {
 	Name string              `json:"name"`
 	Hard coreV1.ResourceList `json:"hard"`
 	Used coreV1.ResourceList `json:"used"`
+}
+
+type LimitRange struct {
+	Name   string                  `json:"name"`
+	Limits []coreV1.LimitRangeItem `json:"limits"`
 }

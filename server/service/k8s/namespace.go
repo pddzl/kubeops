@@ -62,6 +62,7 @@ func (nss *NamespaceService) GetNamespaceDetail(name string) (*k8sResponse.Names
 
 	namespaceDetail.Status = string(namespace.Status.Phase)
 
+	// resourceQuota
 	resourceQuotaList, err := global.KOP_K8S_Client.CoreV1().ResourceQuotas(name).List(context.Background(), metaV1.ListOptions{})
 	if err != nil {
 		return nil, err
@@ -75,6 +76,19 @@ func (nss *NamespaceService) GetNamespaceDetail(name string) (*k8sResponse.Names
 		resourceQuota.Used = rq.Status.Used
 		// append
 		namespaceDetail.ResourceQuotas = append(namespaceDetail.ResourceQuotas, resourceQuota)
+	}
+
+	// limitRange
+	limitRangeList, err := global.KOP_K8S_Client.CoreV1().LimitRanges(name).List(context.Background(), metaV1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, lr := range limitRangeList.Items {
+		var limitRange k8sResponse.LimitRange
+		limitRange.Name = lr.Name
+		limitRange.Limits = lr.Spec.Limits
+		namespaceDetail.LimitRanges = append(namespaceDetail.LimitRanges, limitRange)
 	}
 
 	return &namespaceDetail, nil
