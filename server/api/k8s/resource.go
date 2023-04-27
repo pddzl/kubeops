@@ -20,7 +20,7 @@ func (ra *ResourceApi) GetResourceRaw(c *gin.Context) {
 		return
 	}
 
-	if raw, err := resourceService.GetResourceRaw(resource.Name, resource.Resource); err != nil {
+	if raw, err := resourceService.GetResourceRaw(resource.Name, resource.Resource, resource.Namespace); err != nil {
 		response.FailWithMessage("获取失败", c)
 	} else {
 		response.OkWithDetailed(raw, "获取成功", c)
