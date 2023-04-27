@@ -4,4 +4,5 @@ type ServiceGroup struct {
 	NodeService
 	ResourceService
 	NamespaceService
+	PodService
 }

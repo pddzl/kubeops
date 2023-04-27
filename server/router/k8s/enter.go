@@ -4,4 +4,5 @@ type RouterGroup struct {
 	NodeRouter
 	ResourceRouter
 	NamespaceRouter
+	PodRouter
 }
