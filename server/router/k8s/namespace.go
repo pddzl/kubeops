@@ -14,6 +14,7 @@ func (nr *NamespaceRouter) InitNamespaceRouter(Router *gin.RouterGroup) (R gin.I
 		namespaceRouter.POST("getNamespaces", namespaceApi.GetNamespaces)
 		namespaceRouter.GET("getNamespaceDetail", namespaceApi.GetNamespaceDetail)
 		namespaceRouter.DELETE("deleteNamespace", namespaceApi.DeleteNamespace)
+		namespaceRouter.GET("getNamespaceName", namespaceApi.GetNamespaceName)
 	}
 	return namespaceRouter
 }

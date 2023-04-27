@@ -65,3 +65,14 @@ func (na *NamespaceApi) DeleteNamespace(c *gin.Context) {
 		response.OkWithMessage("删除成功", c)
 	}
 }
+
+// GetNamespaceName 获取集群所有namespace（只包括name）
+func (na *NamespaceApi) GetNamespaceName(c *gin.Context) {
+	list, err := namespaceService.GetNamespaceName()
+	if err != nil {
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+		return
+	}
+	response.OkWithDetailed(list, "获取成功", c)
+}

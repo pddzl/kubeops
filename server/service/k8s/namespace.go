@@ -103,3 +103,20 @@ func (nss *NamespaceService) DeleteNamespace(name string) error {
 	}
 	return global.KOP_K8S_Client.CoreV1().Namespaces().Delete(context.TODO(), name, metaV1.DeleteOptions{})
 }
+
+// GetNamespaceName 获取命名空间名称
+func (nss *NamespaceService) GetNamespaceName() ([]string, error) {
+	// 获取namespace list
+	list, err := global.KOP_K8S_Client.CoreV1().Namespaces().List(context.TODO(), metaV1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	var nameList []string
+	// 处理namespace原始数据
+	for _, ns := range list.Items {
+		// append
+		nameList = append(nameList, ns.Name)
+	}
+	return nameList, nil
+}
