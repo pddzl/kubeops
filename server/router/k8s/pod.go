@@ -12,6 +12,7 @@ func (pr *PodRouter) InitPodRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 	podApi := api.ApiGroupApp.K8sApiGroup.PodApi
 	{
 		podRouter.POST("getPods", podApi.GetPods)
+		podRouter.POST("getPodDetail", podApi.GetPodDetail)
 	}
 	return podRouter
 }

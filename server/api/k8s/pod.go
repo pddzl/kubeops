@@ -23,8 +23,8 @@ func (pa *PodApi) GetPods(c *gin.Context) {
 	}
 
 	if list, total, err := podService.GetPods(info.Namespace, info.Page, info.PageSize); err != nil {
-		global.KOP_LOG.Error("获取失败", zap.Error(err))
 		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(response.PageResult{
 			List:     list,
@@ -37,5 +37,19 @@ func (pa *PodApi) GetPods(c *gin.Context) {
 
 // GetPodDetail 获取pod detail
 func (pa *PodApi) GetPodDetail(c *gin.Context) {
-	//name := c.Query("name")
+	var pdReq k8sRequest.PodDetailReq
+	_ = c.ShouldBindJSON(&pdReq)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&pdReq); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if detail, err := podService.GetPodDetail(pdReq.Namespace, pdReq.Name); err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(detail, "获取成功", c)
+	}
 }

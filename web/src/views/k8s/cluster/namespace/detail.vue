@@ -1,10 +1,8 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" size="small" type="primary" plain @click="viewResource">查看</el-button>
-      <el-button icon="delete" size="small" type="danger" plain @click="deleteFunc" :disabled="testDel()"
-        >删除</el-button
-      >
+      <el-button icon="view" type="primary" plain @click="viewResource">查看</el-button>
+      <el-button icon="delete" type="danger" plain @click="deleteFunc" :disabled="testDel()">删除</el-button>
     </div>
     <div class="kop-collapse">
       <el-collapse v-model="activeNames">
