@@ -20,11 +20,11 @@
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column label="名称" min-width="220">
-            <!-- <template #default="scope">
-              <router-link :to="{ name: 'pod_detail', query: { pod: scope.row.name, namespace: scope.row.namespace } }">
+            <template #default="scope">
+              <router-link :to="{ name: 'PodDetail', query: { pod: scope.row.name, namespace: scope.row.namespace } }">
                 <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
               </router-link>
-            </template> -->
+            </template>
           </el-table-column>
           <el-table-column label="命名空间" prop="namespace" min-width="120" />
           <el-table-column label="状态" min-width="100">
@@ -85,7 +85,7 @@ import { PodStatusFilter } from "@/hooks/filter"
 import { getNamespaceNameApi } from "@/api/k8s/namespace"
 import { type PodData, getPodsApi } from "@/api/k8s/pod"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
-import { ElMessage, ElMessageBox } from "element-plus"
+import { ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
 import { getResourceRawApi } from "@/api/k8s/resource"
 
@@ -188,15 +188,15 @@ const deleteFunc = async (row) => {
     cancelButtonText: "取消",
     type: "warning"
   }).then(async () => {
-    const res = await deletePod({ namespace: row.namespace, pod: row.name })
-    if (res.code === 0) {
-      ElMessage({
-        type: "success",
-        message: "删除成功!"
-      })
-      const index = tableData.value.indexOf(row)
-      tableData.value.splice(index, 1)
-    }
+    // const res = await deletePod({ namespace: row.namespace, pod: row.name })
+    // if (res.code === 0) {
+    //   ElMessage({
+    //     type: "success",
+    //     message: "删除成功!"
+    //   })
+    //   const index = tableData.value.indexOf(row)
+    //   tableData.value.splice(index, 1)
+    // }
   })
 }
 </script>

@@ -25,3 +25,17 @@ export function getPodsApi(data: reqData) {
     data
   })
 }
+
+interface reqDetailData {
+  namespace: string
+  name: string
+}
+
+// 获取pod详情
+export function getPodDetailApi(data: reqDetailData) {
+  return request<IApiResponseData<any>>({
+    url: "/k8s/pod/getPodDetail",
+    method: "post",
+    data
+  })
+}
