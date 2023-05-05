@@ -2,7 +2,6 @@ package k8s
 
 import (
 	"context"
-	"fmt"
 	"github.com/pddzl/kubeops/server/global"
 	modelK8s "github.com/pddzl/kubeops/server/model/k8s"
 	coreV1 "k8s.io/api/core/v1"
@@ -49,27 +48,69 @@ func (ps *PodService) GetPods(namespace string, page int, pageSize int) ([]model
 }
 
 // GetPodDetail 获取指定pod详情
-func (ps *PodService) GetPodDetail(namespace string, name string) (interface{}, error) {
+func (ps *PodService) GetPodDetail(namespace string, name string) (*modelK8s.PodDetail, error) {
 	podDetailRaw, err := global.KOP_K8S_Client.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
 	if err != nil {
 		return nil, nil
 	}
 
-	//for _, vol := range podDetailRaw.Spec.Volumes {
-	//	fmt.Println("1", vol)
-	//	if vol.ConfigMap != nil {
-	//		fmt.Println("a", vol.ConfigMap.Name)
-	//		return vol.ConfigMap, nil
-	//	}
-	//}
+	var podDetail modelK8s.PodDetail
 
-	//return podDetailRaw, err
+	// metadata
+	podDetail.MetaData = modelK8s.NewObjectMeta(podDetailRaw.ObjectMeta)
 
-	for _, volume := range podDetailRaw.Spec.Volumes {
-		fmt.Println("Volume Name: ", volume.Name)
-		fmt.Println("Volume Type: ", volume.VolumeSource.ConfigMap.Name, volume.VolumeSource.Projected.Sources)
-		fmt.Println("-------------")
+	// spec
+	podDetail.Spec.NodeName = podDetailRaw.Spec.NodeName
+	podDetail.Spec.RestartPolicy = string(podDetailRaw.Spec.RestartPolicy)
+	podDetail.Spec.ServiceAccountName = podDetailRaw.Spec.ServiceAccountName
+
+	// spec -> container
+	for _, value := range podDetailRaw.Spec.Containers {
+		var container modelK8s.Container
+		container.Name = value.Name
+		container.Image = value.Image
+		container.SecurityContext = value.SecurityContext
+		container.LivenessProbe = value.LivenessProbe
+		container.ReadinessProbe = value.ReadinessProbe
+		container.StartupProbe = value.StartupProbe
+		// volume
+		for _, volume := range value.VolumeMounts {
+			var volumeMount modelK8s.VolumeMount
+			volumeMount.Name = volume.Name
+			volumeMount.ReadOnly = volume.ReadOnly
+			volumeMount.MountPath = volume.MountPath
+			for _, specV := range podDetailRaw.Spec.Volumes {
+				if volume.Name == specV.Name {
+					if specV.VolumeSource.ConfigMap != nil {
+						volumeMount.VolumeType = "configMap"
+					} else if specV.VolumeSource.Secret != nil {
+						volumeMount.VolumeType = "secret"
+					} else if specV.VolumeSource.EmptyDir != nil {
+						volumeMount.VolumeType = "emptyDir"
+					} else if specV.VolumeSource.Projected != nil {
+						volumeMount.VolumeType = "projected"
+					} else if specV.VolumeSource.HostPath != nil {
+						volumeMount.VolumeType = "hostPath"
+					} // ...待续
+				}
+			}
+			container.VolumeMounts = append(container.VolumeMounts, volumeMount)
+		}
+		// status
+		for _, status := range podDetailRaw.Status.ContainerStatuses {
+			if status.Name == value.Name {
+				container.Status = status
+			}
+		}
+
+		podDetail.Spec.Containers = append(podDetail.Spec.Containers, container)
 	}
 
-	return nil, err
+	// status
+	podDetail.Status.Phase = string(podDetailRaw.Status.Phase)
+	podDetail.Status.PodIP = podDetailRaw.Status.PodIP
+	podDetail.Status.QOSClass = string(podDetailRaw.Status.QOSClass)
+	podDetail.Status.Conditions = podDetailRaw.Status.Conditions
+
+	return &podDetail, err
 }
