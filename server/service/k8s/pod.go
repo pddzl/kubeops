@@ -64,8 +64,21 @@ func (ps *PodService) GetPodDetail(namespace string, name string) (*modelK8s.Pod
 	podDetail.Spec.RestartPolicy = string(podDetailRaw.Spec.RestartPolicy)
 	podDetail.Spec.ServiceAccountName = podDetailRaw.Spec.ServiceAccountName
 
-	// spec -> container
-	for _, value := range podDetailRaw.Spec.Containers {
+	// spec -> initContainer | container
+	podDetail.Spec.InitContainers = extractContainerInfo(podDetailRaw.Spec.InitContainers, podDetailRaw)
+	podDetail.Spec.Containers = extractContainerInfo(podDetailRaw.Spec.Containers, podDetailRaw)
+
+	// status
+	podDetail.Status.Phase = string(podDetailRaw.Status.Phase)
+	podDetail.Status.PodIP = podDetailRaw.Status.PodIP
+	podDetail.Status.QOSClass = string(podDetailRaw.Status.QOSClass)
+	podDetail.Status.Conditions = podDetailRaw.Status.Conditions
+
+	return &podDetail, err
+}
+
+func extractContainerInfo(containerList []coreV1.Container, pod *coreV1.Pod) (containers []modelK8s.Container) {
+	for _, value := range containerList {
 		var container modelK8s.Container
 		container.Name = value.Name
 		container.Image = value.Image
@@ -79,7 +92,7 @@ func (ps *PodService) GetPodDetail(namespace string, name string) (*modelK8s.Pod
 			volumeMount.Name = volume.Name
 			volumeMount.ReadOnly = volume.ReadOnly
 			volumeMount.MountPath = volume.MountPath
-			for _, specV := range podDetailRaw.Spec.Volumes {
+			for _, specV := range pod.Spec.Volumes {
 				if volume.Name == specV.Name {
 					if specV.VolumeSource.ConfigMap != nil {
 						volumeMount.VolumeType = "configMap"
@@ -97,20 +110,12 @@ func (ps *PodService) GetPodDetail(namespace string, name string) (*modelK8s.Pod
 			container.VolumeMounts = append(container.VolumeMounts, volumeMount)
 		}
 		// status
-		for _, status := range podDetailRaw.Status.ContainerStatuses {
+		for _, status := range pod.Status.ContainerStatuses {
 			if status.Name == value.Name {
-				container.Status = status
+				container.Status = &status
 			}
 		}
-
-		podDetail.Spec.Containers = append(podDetail.Spec.Containers, container)
+		containers = append(containers, container)
 	}
-
-	// status
-	podDetail.Status.Phase = string(podDetailRaw.Status.Phase)
-	podDetail.Status.PodIP = podDetailRaw.Status.PodIP
-	podDetail.Status.QOSClass = string(podDetailRaw.Status.QOSClass)
-	podDetail.Status.Conditions = podDetailRaw.Status.Conditions
-
-	return &podDetail, err
+	return
 }

@@ -28,6 +28,7 @@ type PodDetail struct {
 }
 
 type spec struct {
+	InitContainers     []Container `json:"initContainers,omitempty"`
 	Containers         []Container `json:"containers"`
 	RestartPolicy      string      `json:"restartPolicy,omitempty"`
 	ServiceAccountName string      `json:"serviceAccountName,omitempty"`
@@ -44,7 +45,7 @@ type Container struct {
 	ReadinessProbe  *coreV1.Probe           `json:"readinessProbe,omitempty"`
 	StartupProbe    *coreV1.Probe           `json:"startupProbe,omitempty"`
 	SecurityContext *coreV1.SecurityContext `json:"securityContext,omitempty"`
-	Status          coreV1.ContainerStatus  `json:"status"`
+	Status          *coreV1.ContainerStatus `json:"status,omitempty"`
 }
 
 type VolumeMount struct {
