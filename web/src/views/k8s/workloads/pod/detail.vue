@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" type="primary" plain @click="viewPod">查看</el-button>
+      <el-button icon="view" type="primary" plain @click="viewOrch(pod, namespace)">查看</el-button>
       <el-button icon="expand" type="primary" plain @click="routerPod('log')">日志</el-button>
       <el-button icon="expand" type="primary" plain @click="routerPod('terminal')">终端</el-button>
       <el-button icon="delete" type="danger" plain @click="deleteFunc">删除</el-button>
@@ -153,6 +153,7 @@ import { formatDateTime } from "@/utils/index"
 import Container from "./components/container.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { ElMessage, ElMessageBox } from "element-plus"
+import { getResourceRawApi } from "@/api/k8s/resource"
 
 // 折叠面板
 const activeNames = ref(["metadata", "resource", "conditions", "controller", "container", "initContainers"])
@@ -176,16 +177,16 @@ const getData = async () => {
 }
 getData()
 
-// 查看编排
+// 编辑
 const dialogFormVisible = ref(false)
-const podFormat = ref({})
+const podFormat = ref<string>("")
 
-const viewPod = async () => {
-  // const result = await getPodRaw({ pod: pod, namespace: namespace })
-  // if (result.code === 0) {
-  //   podFormat.value = JSON.stringify(result.data)
-  // }
-  // dialogFormVisible.value = true
+const viewOrch = async (name: string, namespace: string) => {
+  const result = await getResourceRawApi({ name: name, resource: "pods", namespace: namespace })
+  if (result.code === 0) {
+    podFormat.value = JSON.stringify(result.data)
+  }
+  dialogFormVisible.value = true
 }
 
 const deleteFunc = async () => {
