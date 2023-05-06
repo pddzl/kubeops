@@ -82,6 +82,8 @@ func extractContainerInfo(containerList []coreV1.Container, pod *coreV1.Pod) (co
 		var container modelK8s.Container
 		container.Name = value.Name
 		container.Image = value.Image
+		container.Command = value.Command
+		container.Args = value.Args
 		container.SecurityContext = value.SecurityContext
 		container.LivenessProbe = value.LivenessProbe
 		container.ReadinessProbe = value.ReadinessProbe

@@ -36,10 +36,10 @@ type spec struct {
 }
 
 type Container struct {
-	Name  string `json:"name"`
-	Image string `json:"image,omitempty"`
-	//Command         []string                `json:"command,omitempty"`
-	//Args            []string                `json:"args,omitempty"`
+	Name            string                  `json:"name"`
+	Image           string                  `json:"image,omitempty"`
+	Command         []string                `json:"command,omitempty"`
+	Args            []string                `json:"args,omitempty"`
 	VolumeMounts    []VolumeMount           `json:"volumeMounts,omitempty"`
 	LivenessProbe   *coreV1.Probe           `json:"livenessProbe,omitempty"`
 	ReadinessProbe  *coreV1.Probe           `json:"readinessProbe,omitempty"`
