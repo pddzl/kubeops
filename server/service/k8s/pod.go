@@ -1,9 +1,11 @@
 package k8s
 
 import (
+	"bytes"
 	"context"
 	"github.com/pddzl/kubeops/server/global"
 	modelK8s "github.com/pddzl/kubeops/server/model/k8s"
+	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -120,4 +122,24 @@ func extractContainerInfo(containerList []coreV1.Container, pod *coreV1.Pod) (co
 		containers = append(containers, container)
 	}
 	return
+}
+
+// GetPodLog 获取pod日志
+func (ps *PodService) GetPodLog(namespace string, pod string, container string, lines int64, follow bool) (string, error) {
+	req := global.KOP_K8S_Client.CoreV1().Pods(namespace).GetLogs(pod, &coreV1.PodLogOptions{Container: container, Follow: follow, TailLines: &lines})
+
+	readCloser, err := req.Stream(context.Background())
+	if err != nil {
+		return "", err
+	}
+	defer readCloser.Close()
+
+	// 读取日志内容
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, readCloser)
+	if err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }

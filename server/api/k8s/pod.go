@@ -53,3 +53,15 @@ func (pa *PodApi) GetPodDetail(c *gin.Context) {
 		response.OkWithDetailed(detail, "获取成功", c)
 	}
 }
+
+func (pa *PodApi) GetPodLog(c *gin.Context) {
+	var plReq k8sRequest.PodLogReq
+	_ = c.ShouldBindJSON(&plReq)
+
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&plReq); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+}
