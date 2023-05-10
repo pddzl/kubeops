@@ -50,8 +50,8 @@ func (ps *PodService) GetPods(namespace string, page int, pageSize int) ([]model
 }
 
 // GetPodDetail 获取指定pod详情
-func (ps *PodService) GetPodDetail(namespace string, name string) (*modelK8s.PodDetail, error) {
-	podDetailRaw, err := global.KOP_K8S_Client.CoreV1().Pods(namespace).Get(context.TODO(), name, metaV1.GetOptions{})
+func (ps *PodService) GetPodDetail(namespace string, pod string) (*modelK8s.PodDetail, error) {
+	podDetailRaw, err := global.KOP_K8S_Client.CoreV1().Pods(namespace).Get(context.TODO(), pod, metaV1.GetOptions{})
 	if err != nil {
 		return nil, nil
 	}
@@ -145,6 +145,6 @@ func (ps *PodService) GetPodLog(namespace string, pod string, container string, 
 }
 
 // DeletePod 删除pod
-func (ps *PodService) DeletePod(namespace string, name string) error {
-	return global.KOP_K8S_Client.CoreV1().Pods(namespace).Delete(context.TODO(), name, metaV1.DeleteOptions{})
+func (ps *PodService) DeletePod(namespace string, pod string) error {
+	return global.KOP_K8S_Client.CoreV1().Pods(namespace).Delete(context.TODO(), pod, metaV1.DeleteOptions{})
 }

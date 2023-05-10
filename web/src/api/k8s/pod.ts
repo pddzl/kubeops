@@ -26,13 +26,13 @@ export function getPodsApi(data: reqData) {
   })
 }
 
-interface reqDetailData {
+interface reqPod {
   namespace: string
-  name: string
+  pod: string
 }
 
 // 获取pod详情
-export function getPodDetailApi(data: reqDetailData) {
+export function getPodDetailApi(data: reqPod) {
   return request<IApiResponseData<any>>({
     url: "/k8s/pod/getPodDetail",
     method: "post",
@@ -40,9 +40,7 @@ export function getPodDetailApi(data: reqDetailData) {
   })
 }
 
-interface reqPodLog {
-  namespace: string
-  pod: string
+interface reqPodLog extends reqPod {
   container?: string
   lines: number
   follow?: boolean
@@ -52,6 +50,15 @@ interface reqPodLog {
 export function getPodLogApi(data: reqPodLog) {
   return request<IApiResponseData<string>>({
     url: "/k8s/pod/getPodLog",
+    method: "post",
+    data
+  })
+}
+
+// 删除
+export function deletePodApi(data: reqPod) {
+  return request<IApiResponseData<null>>({
+    url: "/k8s/pod/deletePod",
     method: "post",
     data
   })

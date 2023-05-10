@@ -173,7 +173,7 @@
 import { ref, reactive } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { PodStatusFilter } from "@/hooks/filter.js"
-import { getPodDetailApi, getPodLogApi } from "@/api/k8s/pod"
+import { getPodDetailApi, getPodLogApi, deletePodApi } from "@/api/k8s/pod"
 import { formatDateTime } from "@/utils/index"
 import Container from "./components/container.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
@@ -195,7 +195,7 @@ const podDetail = ref<any>({})
 const containers = ref<string[]>([])
 
 const getData = async () => {
-  await getPodDetailApi({ name: pod, namespace: namespace }).then((res) => {
+  await getPodDetailApi({ pod: pod, namespace: namespace }).then((res) => {
     if (res.code === 0) {
       podDetail.value = res.data
       res.data.spec.containers.forEach((element: { name: string }) => {
@@ -268,13 +268,13 @@ const deleteFunc = async () => {
     cancelButtonText: "取消",
     type: "warning"
   }).then(async () => {
-    // const res = await deletePod({ namespace: namespace, pod: pod })
-    // if (res.code === 0) {
-    //   ElMessage({
-    //     type: "success",
-    //     message: "删除成功!"
-    //   })
-    // }
+    const res = await deletePodApi({ namespace: namespace, pod: pod })
+    if (res.code === 0) {
+      ElMessage({
+        type: "success",
+        message: "删除成功!"
+      })
+    }
   })
 }
 

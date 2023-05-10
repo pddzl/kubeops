@@ -46,7 +46,7 @@ func (pa *PodApi) GetPodDetail(c *gin.Context) {
 		return
 	}
 
-	if detail, err := podService.GetPodDetail(pdReq.Namespace, pdReq.Name); err != nil {
+	if detail, err := podService.GetPodDetail(pdReq.Namespace, pdReq.Pod); err != nil {
 		response.FailWithMessage("获取失败", c)
 		global.KOP_LOG.Error("获取失败", zap.Error(err))
 	} else {
@@ -86,7 +86,7 @@ func (pa *PodApi) DeletePod(c *gin.Context) {
 		return
 	}
 
-	if err := podService.DeletePod(pdReq.Namespace, pdReq.Name); err != nil {
+	if err := podService.DeletePod(pdReq.Namespace, pdReq.Pod); err != nil {
 		response.FailWithMessage("删除失败", c)
 		global.KOP_LOG.Error("删除失败", zap.Error(err))
 	} else {
