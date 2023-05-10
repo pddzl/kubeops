@@ -221,6 +221,7 @@ const viewOrch = async (name: string, namespace: string) => {
 // 查看日志
 const dialogLogVisible = ref(false)
 const podLogList = ref<string[]>([])
+let podLogRaw: string
 const lines = ref([20, 50, 100, 200, 500])
 const searchInfo = reactive({ namespace: namespace, pod: pod, container: "", lines: 50 })
 
@@ -233,6 +234,7 @@ const viewLog = async () => {
 const getPodLogData = async () => {
   const podData = await getPodLogApi({ ...searchInfo })
   if (podData.code === 0) {
+    podLogRaw = podData.data
     podLogList.value = podData.data.split("\n")
   }
 }
@@ -244,6 +246,19 @@ const onSubmit = () => {
 const onReset = () => {
   searchInfo.container = ""
   searchInfo.lines = 50
+}
+
+// 下载pod日志
+const donwloadLog = () => {
+  const url = window.URL.createObjectURL(new Blob([podLogRaw]))
+  const a = document.createElement("a")
+  a.style.display = "none"
+  a.href = url
+  a.setAttribute("download", `${pod}.txt`)
+  document.body.appendChild(a)
+  a.click()
+  window.URL.revokeObjectURL(a.href)
+  document.body.removeChild(a)
 }
 
 // 删除pod
