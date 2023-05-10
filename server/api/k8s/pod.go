@@ -37,7 +37,7 @@ func (pa *PodApi) GetPods(c *gin.Context) {
 
 // GetPodDetail 获取pod detail
 func (pa *PodApi) GetPodDetail(c *gin.Context) {
-	var pdReq k8sRequest.PodDetailReq
+	var pdReq k8sRequest.PodReq
 	_ = c.ShouldBindJSON(&pdReq)
 	// 校验
 	validate := validator.New()
@@ -54,6 +54,7 @@ func (pa *PodApi) GetPodDetail(c *gin.Context) {
 	}
 }
 
+// GetPodLog 获取pod日志
 func (pa *PodApi) GetPodLog(c *gin.Context) {
 	var plReq k8sRequest.PodLogReq
 	_ = c.ShouldBindJSON(&plReq)
@@ -71,5 +72,24 @@ func (pa *PodApi) GetPodLog(c *gin.Context) {
 		global.KOP_LOG.Error("获取pod日志失败", zap.Error(err))
 	} else {
 		response.OkWithDetailed(log, "获取成功", c)
+	}
+}
+
+// DeletePod 删除pod
+func (pa *PodApi) DeletePod(c *gin.Context) {
+	var pdReq k8sRequest.PodReq
+	_ = c.ShouldBindJSON(&pdReq)
+	// 校验
+	validate := validator.New()
+	if err := validate.Struct(&pdReq); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+
+	if err := podService.DeletePod(pdReq.Namespace, pdReq.Name); err != nil {
+		response.FailWithMessage("删除失败", c)
+		global.KOP_LOG.Error("删除失败", zap.Error(err))
+	} else {
+		response.OkWithMessage("删除成功", c)
 	}
 }

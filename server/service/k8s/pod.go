@@ -143,3 +143,8 @@ func (ps *PodService) GetPodLog(namespace string, pod string, container string, 
 
 	return buf.String(), nil
 }
+
+// DeletePod 删除pod
+func (ps *PodService) DeletePod(namespace string, name string) error {
+	return global.KOP_K8S_Client.CoreV1().Pods(namespace).Delete(context.TODO(), name, metaV1.DeleteOptions{})
+}

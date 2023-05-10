@@ -8,8 +8,7 @@ type PodListReq struct {
 	Namespace string `json:"namespace"`
 }
 
-// PodDetailReq 获取pod详情
-type PodDetailReq struct {
+type PodReq struct {
 	Namespace string `json:"namespace" validate:"required"`
 	Name      string `json:"name" validate:"required"`
 }
