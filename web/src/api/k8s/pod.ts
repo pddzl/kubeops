@@ -39,3 +39,20 @@ export function getPodDetailApi(data: reqDetailData) {
     data
   })
 }
+
+interface reqPodLog {
+  namespace: string
+  pod: string
+  container?: string
+  lines: number
+  follow?: boolean
+}
+
+// 获取pod日志
+export function getPodLogApi(data: reqPodLog) {
+  return request<IApiResponseData<string>>({
+    url: "/k8s/pod/getPodLog",
+    method: "post",
+    data
+  })
+}

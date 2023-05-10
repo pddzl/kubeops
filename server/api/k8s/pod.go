@@ -64,4 +64,12 @@ func (pa *PodApi) GetPodLog(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
+
+	log, err := podService.GetPodLog(plReq.Namespace, plReq.Pod, plReq.Container, int64(plReq.Lines), plReq.Follow)
+	if err != nil {
+		response.FailWithMessage("获取失败", c)
+		global.KOP_LOG.Error("获取pod日志失败", zap.Error(err))
+	} else {
+		response.OkWithDetailed(log, "获取成功", c)
+	}
 }

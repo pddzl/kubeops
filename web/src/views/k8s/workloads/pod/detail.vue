@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="detail-operation">
       <el-button icon="view" type="primary" plain @click="viewOrch(pod, namespace)">查看</el-button>
-      <el-button icon="expand" type="primary" plain @click="routerPod('log')">日志</el-button>
+      <el-button icon="expand" type="primary" plain @click="viewLog">日志</el-button>
       <el-button icon="expand" type="primary" plain @click="routerPod('terminal')">终端</el-button>
       <el-button icon="delete" type="danger" plain @click="deleteFunc">删除</el-button>
     </div>
@@ -138,17 +138,42 @@
       </el-collapse>
     </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
-      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+    </el-dialog>
+    <el-dialog v-model="dialogLogVisible" title="查看日志" width="90%">
+      <div>
+        <el-form ref="searchForm" :inline="true" :model="searchInfo">
+          <el-form-item label="容器">
+            <el-select v-model="searchInfo.container" clearable placeholder="请选择">
+              <el-option v-for="item in containers" :key="item" :label="item" :value="item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="行数">
+            <el-select v-model="searchInfo.lines" clearable placeholder="请选择">
+              <el-option v-for="item in lines" :key="item" :label="item" :value="item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
+            <el-button icon="refresh" @click="onReset">重置</el-button>
+            <el-button type="primary" plain icon="download" @click="donwloadLog">下载日志</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="log">
+        <p v-for="(log, key) in podLogList" :key="key" style="color: #b7c4d1">
+          {{ log }}
+        </p>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { PodStatusFilter } from "@/hooks/filter.js"
-import { getPodDetailApi } from "@/api/k8s/pod"
+import { getPodDetailApi, getPodLogApi } from "@/api/k8s/pod"
 import { formatDateTime } from "@/utils/index"
 import Container from "./components/container.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
@@ -167,17 +192,21 @@ const router = useRouter()
 
 // 加载pod详情
 const podDetail = ref<any>({})
+const containers = ref<string[]>([])
 
 const getData = async () => {
   await getPodDetailApi({ name: pod, namespace: namespace }).then((res) => {
     if (res.code === 0) {
       podDetail.value = res.data
+      res.data.spec.containers.forEach((element: { name: string }) => {
+        containers.value.push(element.name)
+      })
     }
   })
 }
 getData()
 
-// 编辑
+// 查看编排
 const dialogFormVisible = ref(false)
 const podFormat = ref<string>("")
 
@@ -189,6 +218,35 @@ const viewOrch = async (name: string, namespace: string) => {
   dialogFormVisible.value = true
 }
 
+// 查看日志
+const dialogLogVisible = ref(false)
+const podLogList = ref<string[]>([])
+const lines = ref([20, 50, 100, 200, 500])
+const searchInfo = reactive({ namespace: namespace, pod: pod, container: "", lines: 50 })
+
+const viewLog = async () => {
+  await getPodLogData()
+  searchInfo.container = containers.value[0]
+  dialogLogVisible.value = true
+}
+
+const getPodLogData = async () => {
+  const podData = await getPodLogApi({ ...searchInfo })
+  if (podData.code === 0) {
+    podLogList.value = podData.data.split("\n")
+  }
+}
+
+const onSubmit = () => {
+  getPodLogData()
+}
+
+const onReset = () => {
+  searchInfo.container = ""
+  searchInfo.lines = 50
+}
+
+// 删除pod
 const deleteFunc = async () => {
   ElMessageBox.confirm("此操作将永久删除该Pod, 是否继续?", "提示", {
     confirmButtonText: "确定",
@@ -214,3 +272,13 @@ const routerPod = async (dest) => {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.log {
+  padding-left: 15px;
+  background-color: #242e42;
+  border-radius: 4px;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+</style>
