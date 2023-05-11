@@ -202,7 +202,7 @@ const deleteFunc = async (row) => {
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper1 {
+.search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
     padding-bottom: 2px;
