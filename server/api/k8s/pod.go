@@ -1,12 +1,15 @@
 package k8s
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/websocket"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/model/common/response"
 	k8sRequest "github.com/pddzl/kubeops/server/model/k8s/request"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 type PodApi struct{}
@@ -91,5 +94,34 @@ func (pa *PodApi) DeletePod(c *gin.Context) {
 		global.KOP_LOG.Error("删除失败", zap.Error(err))
 	} else {
 		response.OkWithMessage("删除成功", c)
+	}
+}
+
+var upGrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+// GetPodWebSSH pod WebSSH
+func (pa *PodApi) GetPodWebSSH(c *gin.Context) {
+	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		global.KOP_LOG.Error(fmt.Sprintf("初始化websocket失败 %s", c.Errors))
+	}
+	defer ws.Close()
+
+	session, err := podService.NewTerminalSession(ws)
+	if err != nil {
+		global.KOP_LOG.Error(fmt.Sprintf("初始化session失败 %s", c.Errors))
+	}
+
+	namespace, _ := c.GetQuery("namespace")
+	pod, _ := c.GetQuery("pod")
+	container, _ := c.GetQuery("container")
+
+	err = podService.GetPodWebSSH(namespace, pod, container, global.KOP_K8S_CONFIG, session)
+	if err != nil {
+		global.KOP_LOG.Error("terminal失败", zap.Error(err))
 	}
 }

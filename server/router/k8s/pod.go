@@ -15,6 +15,7 @@ func (pr *PodRouter) InitPodRouter(Router *gin.RouterGroup) (R gin.IRoutes) {
 		podRouter.POST("getPodDetail", podApi.GetPodDetail)
 		podRouter.POST("getPodLog", podApi.GetPodLog)
 		podRouter.POST("deletePod", podApi.DeletePod)
+		podRouter.GET("getPodWebSSH", podApi.GetPodWebSSH)
 	}
 	return podRouter
 }

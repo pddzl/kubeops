@@ -9,7 +9,7 @@ import (
 	"github.com/pddzl/kubeops/server/global"
 )
 
-func K8sConnect() (clientSet *kubernetes.Clientset, config *rest.Config) {
+func K8sConnect() (*kubernetes.Clientset, *rest.Config) {
 	// client in pod
 	config, err := rest.InClusterConfig()
 
@@ -17,14 +17,14 @@ func K8sConnect() (clientSet *kubernetes.Clientset, config *rest.Config) {
 		config, err = clientcmd.BuildConfigFromFlags("", global.KOP_CONFIG.K8s.KubeConfig)
 		if err != nil {
 			global.KOP_LOG.Error("k8s connect failed", zap.Error(err))
-			return
+			return nil, nil
 		}
 	}
 
-	clientSet, err = kubernetes.NewForConfig(config)
+	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		global.KOP_LOG.Error("k8s clientSet", zap.Error(err))
 	}
 
-	return
+	return clientSet, config
 }
