@@ -16,6 +16,11 @@ var (
 // CasbinHandler 拦截器
 func CasbinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// websocket跳过验证
+		if c.IsWebsocket() {
+			c.Next()
+			return
+		}
 		if global.KOP_CONFIG.System.Env != "develop" {
 			waitUse, _ := utils.GetClaims(c)
 			//获取请求的PATH

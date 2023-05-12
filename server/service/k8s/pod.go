@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pddzl/kubeops/server/global"
 	modelK8s "github.com/pddzl/kubeops/server/model/k8s"
-	"go.uber.org/zap"
 	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -248,7 +247,7 @@ func (t *TerminalSession) Next() *remotecommand.TerminalSize {
 // Called in a loop from remotecommand as long as the process is running
 func (t *TerminalSession) Read(p []byte) (int, error) {
 	_, message, err := t.wsConn.ReadMessage()
-	global.KOP_LOG.Info("message", zap.String("ms", string(message)))
+	//global.KOP_LOG.Info("message", zap.String("ms", string(message)))
 	if err != nil {
 		return copy(p, END_OF_TRANSMISSION), err
 	}

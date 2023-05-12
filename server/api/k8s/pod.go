@@ -97,14 +97,15 @@ func (pa *PodApi) DeletePod(c *gin.Context) {
 	}
 }
 
-var upGrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
 // GetPodWebSSH pod WebSSH
 func (pa *PodApi) GetPodWebSSH(c *gin.Context) {
+	var upGrader = websocket.Upgrader{
+		// 跨域
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+		Subprotocols: []string{c.Request.Header.Get("Sec-Websocket-Protocol")}, //设置Sec-Websocket-Protocol
+	}
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		global.KOP_LOG.Error(fmt.Sprintf("初始化websocket失败 %s", c.Errors))
