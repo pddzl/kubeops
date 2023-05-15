@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" type="primary" plain @click="viewOrch(pod, namespace)">查看</el-button>
+      <el-button icon="view" type="primary" plain @click="viewOrchFunc(pod, namespace)">查看</el-button>
       <el-button icon="expand" type="primary" plain @click="viewLog">日志</el-button>
       <el-button icon="expand" type="primary" plain @click="routerPod()">终端</el-button>
       <el-button icon="delete" type="danger" plain @click="deleteFunc">删除</el-button>
@@ -138,7 +138,7 @@
       </el-collapse>
     </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
-      <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+      <vue-code-mirror v-model:modelValue="formatData" :readOnly="true" />
     </el-dialog>
     <el-dialog v-model="dialogLogVisible" title="查看日志" width="90%">
       <div>
@@ -178,7 +178,7 @@ import { formatDateTime } from "@/utils/index"
 import Container from "./components/container.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { ElMessage, ElMessageBox } from "element-plus"
-import { getResourceRawApi } from "@/api/k8s/resource"
+import { useOrch } from "@/hooks/useOrch"
 
 // 折叠面板
 const activeNames = ref(["metadata", "resource", "conditions", "controller", "container", "initContainers"])
@@ -208,13 +208,10 @@ getData()
 
 // 查看编排
 const dialogFormVisible = ref(false)
-const podFormat = ref<string>("")
-
-const viewOrch = async (name: string, namespace: string) => {
-  const result = await getResourceRawApi({ name: name, resource: "pods", namespace: namespace })
-  if (result.code === 0) {
-    podFormat.value = JSON.stringify(result.data)
-  }
+let formatData: string
+const viewOrchFunc = async (name: string, namespace: string) => {
+  const { viewOrch } = useOrch()
+  formatData = await viewOrch(name, "pods", namespace)
   dialogFormVisible.value = true
 }
 

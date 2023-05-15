@@ -30,7 +30,7 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作">
             <template #default="scope">
-              <el-button icon="view" type="primary" link size="small" @click="viewResource(scope.row.name)"
+              <el-button icon="view" type="primary" link size="small" @click="viewOrchFunc(scope.row.name)"
                 >查看</el-button
               >
               <el-button icon="delete" type="primary" link size="small" @click="deleteFunc(scope.row)">删除</el-button>
@@ -54,7 +54,7 @@
 
     <el-dialog v-model="dialogFormVisible" title="编辑资源" :destroy-on-close="true">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-      <vue-code-mirror v-model:modelValue="namespaceFormat" :readOnly="true" />
+      <vue-code-mirror v-model:modelValue="formatData" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -67,7 +67,7 @@ import { usePagination } from "@/hooks/usePagination"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { ElMessage, ElMessageBox } from "element-plus"
 import { formatDateTime } from "@/utils/index"
-import { getResourceRawApi } from "@/api/k8s/resource"
+import { useOrch } from "@/hooks/useOrch"
 
 defineOptions({
   name: "NamespaceList"
@@ -106,15 +106,12 @@ const handleCurrentChange = (value: number) => {
   getTableData()
 }
 
-// 查看
+// 查看编排
 const dialogFormVisible = ref(false)
-let namespaceFormat: string
-
-const viewResource = async (name: string) => {
-  const res = await getResourceRawApi({ name: name, resource: "namespaces" })
-  if (res.code === 0) {
-    namespaceFormat = JSON.stringify(res.data)
-  }
+let formatData: string
+const viewOrchFunc = async (name: string) => {
+  const { viewOrch } = useOrch()
+  formatData = await viewOrch(name, "namespaces", "")
   dialogFormVisible.value = true
 }
 

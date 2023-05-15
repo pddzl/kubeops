@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" type="primary" plain @click="viewNode">查看</el-button>
+      <el-button icon="view" type="primary" plain @click="viewOrchFunc">查看</el-button>
       <el-button icon="delete" type="danger" plain>删除</el-button>
     </div>
     <div class="kop-collapse">
@@ -192,7 +192,7 @@
       </el-collapse>
     </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
-      <vue-code-mirror v-model:modelValue="nodeFormat" :readOnly="true" />
+      <vue-code-mirror v-model:modelValue="formatData" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -202,13 +202,13 @@ import { ref } from "vue"
 import { useRoute } from "vue-router"
 // import { type NodeDetail, getNodeDetail, getNodeRaw, getNodePods } from "@/api/k8s/node"
 import { type NodePods, getNodeDetail, getNodePods } from "@/api/k8s/node"
-import { getResourceRawApi } from "@/api/k8s/resource"
 // import { statusPodFilter } from "@/mixin/filter.js"
 import { formatDateTime } from "@/utils/index"
 import MetaData from "@/components/k8s/metadata.vue"
 import PodBrief from "@/components/k8s/pod_brief.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { usePagination } from "@/hooks/usePagination"
+import { useOrch } from "@/hooks/useOrch"
 
 defineOptions({
   name: "NodeDetail"
@@ -218,7 +218,6 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const activeNames = ref(["metadata", "spec", "nodeInfo", "allocated", "status", "pods"])
 const nodeDetail = ref<any>({})
-const dialogFormVisible = ref(false)
 const nodePods = ref<NodePods[]>([])
 
 const route = useRoute()
@@ -258,13 +257,12 @@ const handleCurrentChange = (value: number) => {
   getNodePodsData()
 }
 
-// 操作
-let nodeFormat: string
-const viewNode = async () => {
-  const res = await getResourceRawApi({ name: nodeName, resource: "nodes" })
-  if (res.code === 0) {
-    nodeFormat = JSON.stringify(res.data)
-  }
+// 查看编排
+const dialogFormVisible = ref(false)
+let formatData: string
+const viewOrchFunc = async () => {
+  const { viewOrch } = useOrch()
+  formatData = await viewOrch(nodeName, "nodes")
   dialogFormVisible.value = true
 }
 </script>

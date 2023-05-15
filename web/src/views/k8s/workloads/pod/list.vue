@@ -100,7 +100,7 @@
       </div>
     </el-card>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%" :destroy-on-close="true">
-      <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
+      <vue-code-mirror v-model:modelValue="formatData" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -115,7 +115,6 @@ import { type PodData, getPodsApi } from "@/api/k8s/pod"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
-import { getResourceRawApi } from "@/api/k8s/resource"
 import { useOrch } from "@/hooks/useOrch"
 
 defineOptions({
@@ -192,10 +191,10 @@ const onReset = () => {
 
 // 查看编排
 const dialogFormVisible = ref(false)
-let podFormat: string
+let formatData: string
 const viewOrchFunc = async (name: string, namespace: string) => {
   const { viewOrch } = useOrch()
-  podFormat = await viewOrch(name, "pods", namespace)
+  formatData = await viewOrch(name, "pods", namespace)
   dialogFormVisible.value = true
 }
 

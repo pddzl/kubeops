@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="detail-operation">
-      <el-button icon="view" type="primary" plain @click="viewResource">查看</el-button>
+      <el-button icon="view" type="primary" plain @click="viewOrchFunc">查看</el-button>
       <el-button icon="delete" type="danger" plain @click="deleteFunc" :disabled="testDel()">删除</el-button>
     </div>
     <div class="kop-collapse">
@@ -86,7 +86,7 @@
     </div>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%">
       <!-- eslint-disable-next-line vue/attribute-hyphenation -->
-      <vue-code-mirror v-model:modelValue="namespaceFormat" :readOnly="true" />
+      <vue-code-mirror v-model:modelValue="formatData" :readOnly="true" />
     </el-dialog>
   </div>
 </template>
@@ -98,8 +98,8 @@ import { NamespaceStatusFilter } from "@/hooks/filter"
 import { getNamespaceDetailApi, deleteNamespaceApi } from "@/api/k8s/namespace"
 import MetaData from "@/components/k8s/metadata.vue"
 import VueCodeMirror from "@/components/codeMirror/index.vue"
-import { getResourceRawApi } from "@/api/k8s/resource"
 import { ElMessage, ElMessageBox } from "element-plus"
+import { useOrch } from "@/hooks/useOrch"
 
 defineOptions({
   name: "NamespaceDetail"
@@ -133,14 +133,11 @@ const getData = async () => {
 getData()
 
 // 编辑
-let namespaceFormat: string
 const dialogFormVisible = ref(false)
-
-const viewResource = async () => {
-  const res = await getResourceRawApi({ name: namespace, resource: "namespaces" })
-  if (res.code === 0) {
-    namespaceFormat = JSON.stringify(res.data)
-  }
+let formatData: string
+const viewOrchFunc = async () => {
+  const { viewOrch } = useOrch()
+  formatData = await viewOrch(namespace, "namespaces", "")
   dialogFormVisible.value = true
 }
 
