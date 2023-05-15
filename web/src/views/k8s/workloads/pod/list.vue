@@ -19,7 +19,7 @@
     <el-card v-loading="loading" shadow="never">
       <div class="table-wrapper">
         <el-table :data="tableData">
-          <el-table-column label="名称" min-width="220">
+          <el-table-column label="名称" min-width="200">
             <template #default="scope">
               <router-link :to="{ name: 'PodDetail', query: { pod: scope.row.name, namespace: scope.row.namespace } }">
                 <el-link type="primary" :underline="false">{{ scope.row.name }}</el-link>
@@ -33,10 +33,10 @@
             </template>
           </el-table-column>
           <el-table-column label="节点" prop="node" min-width="100" />
-          <!-- <el-table-column label="创建时间" width="180">
+          <el-table-column label="创建时间" width="180">
             <template #default="scope">{{ formatDateTime(scope.row.creationTimestamp) }}</template>
-          </el-table-column> -->
-          <el-table-column fixed="right" label="操作" min-width="200">
+          </el-table-column>
+          <!-- <el-table-column fixed="right" label="操作" min-width="200">
             <template #default="scope">
               <el-button
                 icon="view"
@@ -53,6 +53,35 @@
                 >终端</el-button
               >
               <el-button icon="delete" type="primary" link size="small" @click="deleteFunc(scope.row)">删除</el-button>
+            </template>
+          </el-table-column> -->
+          <el-table-column fixed="right" label="操作">
+            <template #default="scope">
+              <el-popover placement="bottom" trigger="click">
+                <template #reference>
+                  <el-button icon="more" type="primary" link size="small" />
+                </template>
+                <div style="disply: flex; flex-direction: column; justify-content: center; align-items: center">
+                  <div style="width: 120px; padding: 5px">
+                    <el-button
+                      icon="view"
+                      type="primary"
+                      link
+                      @click="viewOrchFunc(scope.row.name, scope.row.namespace)"
+                      >查 看</el-button
+                    >
+                  </div>
+                  <div style="width: 120px; padding: 5px">
+                    <el-button icon="tickets" type="primary" link>日 志</el-button>
+                  </div>
+                  <div style="width: 120px; padding: 5px">
+                    <el-button icon="ArrowRight" type="primary" link>终 端</el-button>
+                  </div>
+                  <div style="width: 120px; padding: 5px">
+                    <el-button icon="delete" type="primary" link>删 除</el-button>
+                  </div>
+                </div>
+              </el-popover>
             </template>
           </el-table-column>
         </el-table>
@@ -71,7 +100,6 @@
       </div>
     </el-card>
     <el-dialog v-model="dialogFormVisible" title="查看资源" width="55%" :destroy-on-close="true">
-      <!-- eslint-disable-next-line vue/attribute-hyphenation -->
       <vue-code-mirror v-model:modelValue="podFormat" :readOnly="true" />
     </el-dialog>
   </div>
@@ -80,7 +108,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from "vue"
 import { useRouter } from "vue-router"
-// import { formatDateTime } from "@/utils/index"
+import { formatDateTime } from "@/utils/index"
 import { PodStatusFilter } from "@/hooks/filter"
 import { getNamespaceNameApi } from "@/api/k8s/namespace"
 import { type PodData, getPodsApi } from "@/api/k8s/pod"
@@ -88,6 +116,7 @@ import VueCodeMirror from "@/components/codeMirror/index.vue"
 import { ElMessageBox } from "element-plus"
 import { usePagination } from "@/hooks/usePagination"
 import { getResourceRawApi } from "@/api/k8s/resource"
+import { useOrch } from "@/hooks/useOrch"
 
 defineOptions({
   name: "PodList"
@@ -161,14 +190,12 @@ const onReset = () => {
   searchInfo.namespace = ""
 }
 
-// 编辑
+// 查看编排
 const dialogFormVisible = ref(false)
 let podFormat: string
-const viewOrch = async (name: string, namespace: string) => {
-  const result = await getResourceRawApi({ name: name, resource: "pods", namespace: namespace })
-  if (result.code === 0) {
-    podFormat = JSON.stringify(result.data)
-  }
+const viewOrchFunc = async (name: string, namespace: string) => {
+  const { viewOrch } = useOrch()
+  podFormat = await viewOrch(name, "pods", namespace)
   dialogFormVisible.value = true
 }
 
