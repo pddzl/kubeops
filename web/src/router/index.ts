@@ -33,6 +33,13 @@ export const constantRoutes: RouteRecordRaw[] = [
     alias: "/:pathMatch(.*)*"
   },
   {
+    path: "/k8s/pod/webssh",
+    component: () => import("@/views/k8s/workloads/pod/terminal.vue"),
+    meta: {
+      hidden: true
+    }
+  },
+  {
     path: "/login",
     component: () => import("@/views/login/index.vue"),
     meta: {

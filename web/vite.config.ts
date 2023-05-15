@@ -40,6 +40,11 @@ export default (configEnv: ConfigEnv): UserConfigExport => {
           /** 是否允许跨域 */
           changeOrigin: true,
           rewrite: (path) => path.replace(VITE_BASE_API, "")
+        },
+        "^/k8s/pod/getPodWebSSH": {
+          target: `${VITE_BASE_PATH}:${VITE_SERVER_PORT}/`,
+          ws: true,
+          changeOrigin: true
         }
       }
     },
