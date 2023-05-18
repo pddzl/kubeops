@@ -6,6 +6,8 @@
 
 A modern k8s dashboard。
 
+[不再维护了, 新项目 `https://github.com/pddzl/kubefish`]
+
 ## 技术栈
 
 ### 前端
