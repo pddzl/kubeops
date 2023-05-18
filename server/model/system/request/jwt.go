@@ -2,21 +2,18 @@ package request
 
 import (
 	"github.com/golang-jwt/jwt/v4"
-	uuid "github.com/satori/go.uuid"
 )
 
-// Custom claims structure
-
+// CustomClaims Custom claims structure
 type CustomClaims struct {
-	BaseClaims
-	BufferTime int64
-	jwt.StandardClaims
+	ID         uint   `json:"ID"`
+	Username   string `json:"username"`
+	RoleId     uint   `json:"roleId"` // 角色Id
+	BufferTime int64  `json:"bufferTime"`
+	jwt.RegisteredClaims
 }
 
-type BaseClaims struct {
-	UUID        uuid.UUID
-	ID          uint
-	Username    string
-	NickName    string
-	AuthorityId string
-}
+//type CustomClaimsRole struct {
+//	*CustomClaims
+//	Roles []string `json:"roles,omitempty"`
+//}

@@ -2,9 +2,10 @@ package log
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/pddzl/kubeops/server/global"
 	"go.uber.org/zap"
 	"time"
+
+	"github.com/pddzl/kubeops/server/global"
 )
 
 // GinLogger 接收gin框架默认的日志
@@ -16,10 +17,11 @@ func GinLogger() gin.HandlerFunc {
 		c.Next()
 
 		cost := time.Since(start)
-		global.KOP_LOG.Info(path,
+		global.KOP_LOG.Info(
+			path,
 			zap.Int("status", c.Writer.Status()),
 			zap.String("method", c.Request.Method),
-			zap.String("path", path),
+			//zap.String("path", path),
 			zap.String("query", query),
 			zap.String("ip", c.ClientIP()),
 			zap.String("user-agent", c.Request.UserAgent()),

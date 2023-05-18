@@ -15,7 +15,7 @@ func Cors() gin.HandlerFunc {
 		c.Header("Access-Control-Allow-Origin", origin)
 		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token,X-Token,X-User-Id")
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS,DELETE,PUT")
-		c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
+		c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type, New-Token, New-Expires-At")
 		c.Header("Access-Control-Allow-Credentials", "true")
 
 		// 放行所有OPTIONS方法
@@ -29,10 +29,11 @@ func Cors() gin.HandlerFunc {
 
 // CorsByRules 按照配置处理跨域请求
 func CorsByRules() gin.HandlerFunc {
-	// 放行全部
+	// 全部放行
 	if global.KOP_CONFIG.Cors.Mode == "allow-all" {
 		return Cors()
 	}
+
 	return func(c *gin.Context) {
 		whitelist := checkCors(c.GetHeader("origin"))
 

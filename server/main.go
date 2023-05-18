@@ -1,37 +1,42 @@
 package main
 
 import (
+	"go.uber.org/zap"
+	"os"
+
 	"github.com/pddzl/kubeops/server/core"
 	"github.com/pddzl/kubeops/server/global"
 	"github.com/pddzl/kubeops/server/initialize"
-	"go.uber.org/zap"
 )
 
-//go:generate go env -w GO111MODULE=on
-//go:generate go env -w GOPROXY=https://goproxy.cn,direct
-//go:generate go mod tidy
-//go:generate go mod download
-
-// @title Swagger Example API
-// @version 0.0.1
-// @description This is a sample Server pets
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name x-token
-// @BasePath /
 func main() {
-	global.KOP_VP = core.Viper() // 初始化Viper
-	global.KOP_LOG = core.Zap()  // 初始化zap日志库
+	global.KOP_VP = core.Viper() // 初始化viper
+	global.KOP_LOG = core.Zap()  // 初始化zap日志
 	zap.ReplaceGlobals(global.KOP_LOG)
+<<<<<<< HEAD
 	global.KOP_DB = initialize.Gorm()                                         // gorm连接数据库
 	global.KOP_KUBERNETES, global.KUBERNETES_CONFIG = initialize.Kubernetes() // 初始化kubernetes api
 	initialize.Timer()
 	initialize.DBList()
 	if global.KOP_DB != nil {
+=======
+	global.KOP_DB = initialize.Gorm() // gorm连接数据库
+	if global.KOP_DB == nil {
+		global.KOP_LOG.Error("mysql连接失败，退出程序")
+		os.Exit(127)
+	} else {
+>>>>>>> 2.0
 		initialize.RegisterTables(global.KOP_DB) // 初始化表
 		// 程序结束前关闭数据库链接
 		db, _ := global.KOP_DB.DB()
 		defer db.Close()
 	}
+
+	global.KOP_K8S_Client, global.KOP_K8S_CONFIG = initialize.K8sConnect()
+	if global.KOP_K8S_Client == nil {
+		global.KOP_LOG.Error("k8s连接失败，退出程序")
+		os.Exit(128)
+	}
+
 	core.RunServer()
 }
